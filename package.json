@@ -1,0 +1,39 @@
+{
+  "name": "secret-hitler",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Free web platform to play Secret Hitler online, with friends or with strangers.",
+  "license": "CC-BY-NC-SA-4.0",
+  "engines": {
+    "node": "24.x"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm -w @sh/web run dev",
+    "dev:rooms": "npm -w @sh/rooms run dev",
+    "lint": "eslint . && npm -w @sh/web run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "simulate": "npm -w @sh/engine run simulate --",
+    "ci:local": "bash scripts/ci.sh",
+    "prepare": "husky || true"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "eslint": "10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "fast-check": "^4.10.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "4.1.12"
+  }
+}

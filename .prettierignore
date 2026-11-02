@@ -1,0 +1,7 @@
+node_modules
+package-lock.json
+coverage
+.next
+.wrangler
+apps/rooms/worker-configuration.d.ts
+docs/plan.md

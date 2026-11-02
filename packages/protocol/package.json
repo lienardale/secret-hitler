@@ -1,0 +1,21 @@
+{
+  "name": "@sh/protocol",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Message schemas shared by the browser, the rooms Worker and the website.",
+  "license": "CC-BY-NC-SA-4.0",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:ci": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sh/engine": "*",
+    "zod": "4.6.7"
+  }
+}

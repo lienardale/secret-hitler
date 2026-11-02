@@ -1,0 +1,25 @@
+{
+  "name": "@sh/rooms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloudflare Worker hosting live game rooms (one Durable Object per room) and the public lobby.",
+  "license": "CC-BY-NC-SA-4.0",
+  "type": "module",
+  "scripts": {
+    "postinstall": "wrangler types >/dev/null",
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "types": "wrangler types",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:ci": "vitest run"
+  },
+  "dependencies": {
+    "@sh/engine": "*",
+    "@sh/protocol": "*"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "1.4.11",
+    "wrangler": "4.156.0"
+  }
+}

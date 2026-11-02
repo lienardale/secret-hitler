@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens, taken from the game's artwork: parchment, ink, liberal blue,
+ * fascist red. Components use the token utilities (bg-paper, text-ink,
+ * text-liberal, …), never stock Tailwind colours, so dark mode is automatic.
+ */
+@theme {
+  --color-*: initial;
+  --color-paper: #f3e3c3;
+  --color-paper-raised: #f8eed8;
+  --color-ink: #2a221b;
+  --color-ink-muted: #5c4f42;
+  --color-rule: #c9b48f;
+  --color-liberal: #2d6489;
+  --color-fascist: #a8382a;
+  --font-display: var(--font-display), serif;
+  --font-body: var(--font-body), system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #1d1a17;
+    --color-paper-raised: #28231f;
+    --color-ink: #efe3cc;
+    --color-ink-muted: #bcae98;
+    --color-rule: #4a4036;
+    --color-liberal: #7cb4dc;
+    --color-fascist: #ee836c;
+  }
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}

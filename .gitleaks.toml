@@ -1,0 +1,15 @@
+# Gitleaks config — extends the default ruleset shipped with the binary.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Committed-on-purpose templates and lockfiles"
+paths = [
+  '''\.env\.example$''',
+  '''\.dev\.vars\.example$''',
+  '''package-lock\.json$''',
+]
+regexes = [
+  '''ci-only[A-Za-z0-9_.-]*''',
+  '''ci-dummy[A-Za-z0-9_.-]*''',
+]

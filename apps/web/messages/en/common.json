@@ -1,0 +1,16 @@
+{
+  "site": {
+    "name": "Secret Hitler",
+    "description": "Play Secret Hitler online, with friends or with strangers."
+  },
+  "home": {
+    "tagline": "The social deduction game, online and free.",
+    "comingSoon": "Coming soon: create a private game and share the link, or join a public game.",
+    "rulesPdf": "Official rules (PDF)"
+  },
+  "footer": {
+    "credit": "Secret Hitler was created by Mike Boxleiter, Tommy Maranges, and Mac Schubert. © Goat, Wolf & Cabbage.",
+    "license": "Unofficial adaptation licensed CC BY-NC-SA 4.0.",
+    "switchLocale": "Français"
+  }
+}

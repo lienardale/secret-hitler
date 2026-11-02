@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# Fast pre-commit checks. The full CI mirror runs in pre-push.
+set -e
+echo "▶ lint-staged"
+npx --no-install lint-staged

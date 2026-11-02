@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+# Pre-push: run the same scripts CI runs, so a green push means a green pipeline.
+# The Next.js build is skipped by default (CI runs it); RUN_BUILD=1 includes it.
+set -e
+if [ "${RUN_BUILD:-0}" = "1" ]; then
+  exec bash scripts/ci.sh
+fi
+SKIP_BUILD=1 exec bash scripts/ci.sh

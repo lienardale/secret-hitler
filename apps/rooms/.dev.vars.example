@@ -1,0 +1,1 @@
+# Copy to .dev.vars for `wrangler dev`. Secrets arrive in M2 (ticket keys, HMAC secrets).

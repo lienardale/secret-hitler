@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "rangeStrategy": "pin",
+  "packageRules": [
+    {
+      "description": "TypeScript 7 (Go compiler) breaks next build and typescript-eslint; stay on 5.x",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<6"
+    }
+  ]
+}
