@@ -39,9 +39,13 @@ export interface OnboardedUser extends CurrentUser {
 }
 
 async function loadCurrentUser(): Promise<CurrentUser | null> {
+  // Cookies first, unconditionally: reading them is what makes a page that
+  // asks "who is signed in?" render per request. Checking the secret first
+  // let `next build` without secrets (CI) treat /jouer as static and
+  // prerender it.
+  const jar = await cookies();
   const secret = process.env.AUTH_SECRET;
   if (!secret) return null;
-  const jar = await cookies();
   const cookieName = presentSessionCookie(jar.getAll().map((cookie) => cookie.name));
   if (!cookieName) return null;
   const token = jar.get(cookieName)?.value;

@@ -31,3 +31,11 @@ Cost: no rolling refresh — a session lasts 30 days from sign-in. `/api/auth/se
 
 `tests/unit/auth.test.ts` (token round trip, salts, `withoutSessionWrites`) and
 `tests/e2e/accounts.spec.ts` (sign out, then the header shows "Sign in" on the next page).
+
+## Pitfall: read the cookies before anything else
+
+`getCurrentUser()` first returned `null` when `AUTH_SECRET` was unset, before calling
+`cookies()`. A page is only rendered per request if it reads cookies or headers, so in CI's
+`next build` (no secrets) `/fr/jouer` looked static, was prerendered, and failed on `getEnv()`
+(PR #3, job `build`). Locally `.env.local` hid it. `cookies()` now comes first, unconditionally.
+Reproduce a secret-less build with `AUTH_SECRET= ROOMS_URL= … npm -w @sh/web run build`.
