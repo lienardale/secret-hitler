@@ -21,13 +21,27 @@ npm -w @sh/rooms run dev          # wrangler dev, :8787
 npm -w @sh/rooms run test         # rooms tests, inside workerd
 npm run bots -- --players 7 --timers fast [--kill-one]   # bots play a game on wrangler dev
 npm -w @sh/rooms run ticket -- --create                  # a ticket + URL to poke at by hand
-npm -w @sh/web run dev            # next dev, :3000
+npm -w @sh/web run dev            # next dev, :3000 (needs dev:setup and the rooms Worker)
+npm -w @sh/web run test           # web unit (node) + ui (jsdom) tests
+npm -w @sh/web run build && npm -w @sh/web run e2e   # Playwright (RUN_E2E=1 adds it to ci.sh)
 bash scripts/ci.sh                # local mirror of CI (SKIP_BUILD=1 to skip builds)
+npm -w @sh/rooms run deploy:staging   # Cloudflare (needs `npx wrangler login`)
+vercel deploy --prod                  # from the repo root (linked to secret-hitler-staging)
 ```
+
+Deploys, secrets and the staging URLs are in `docs/deploy.md`. Never print a secret: write it to a
+mode-600 file and pipe it into `vercel env add` / `wrangler secret put`.
 
 The rooms Worker is documented in `docs/protocol.md` (tickets, messages, close codes, room
 rules). The room rules live in `apps/rooms/src/room/room-core.ts`, a pure class tested with a
 fake clock; `GameRoom.ts` is only the Durable Object shell (SQLite, sockets, alarm).
+
+The website (`apps/web`): `components/game/` is the game table (pure, driven by a `PlayerView`;
+try it at `/fr/dev/table`, a local engine sandbox shown only with `ENABLE_TEST_PAGES=1`),
+`components/room/` the room around it (lobby, chat, host controls), `lib/room-client/` the
+socket and its store, `lib/guest/` the guest cookie, `lib/rooms/` the signed calls and tickets.
+Server env is checked by `lib/env.ts`. Browser code must not import protocol modules that build
+zod schemas: plain constants live in `packages/protocol/src/constants.ts`.
 
 ## Rules that matter
 

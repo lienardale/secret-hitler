@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./game.css";
 
 /*
  * Design tokens, taken from the game's artwork: parchment, ink, liberal blue,

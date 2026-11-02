@@ -4,9 +4,8 @@
  */
 import { z } from "zod";
 
-import { roomCodeSchema } from "./codes";
-import { identityKeySchema } from "./identity";
-import { LANGS, TIMER_PRESETS } from "./room-view";
+import { LANGS, TIMER_PRESETS } from "./constants";
+import { identityKeySchema, roomCodeSchema } from "./primitives";
 
 /** One public room as lobby viewers see it. */
 export const lobbyEntrySchema = z.strictObject({

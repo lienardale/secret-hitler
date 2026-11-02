@@ -74,6 +74,21 @@ Room → client (`server-messages.ts`):
 - A room closes 30 minutes after a game ends (a rematch reopens the lobby before that), or after
   30 minutes with nobody connected.
 
+## Website side (M3: guests)
+
+- **Guest identity**: the `sh_guest` cookie (httpOnly, 30 days) is an HS256 JWT signed with
+  `GUEST_SECRET`, holding a random guest id and the chosen name (`apps/web/lib/guest/`). Set by
+  the home and room-gate server actions; guests can create and join private rooms only.
+- **Tickets**: `POST /api/rooms/:code/ticket` (same-origin, 60 per minute per guest) answers
+  `{ url }`, the WebSocket URL with a fresh ticket, or `401 { error: "no_guest" }` (the page then
+  asks for a name). The browser never sees the signing key.
+- **Room client** (`apps/web/lib/room-client/`): `state.ts` is a pure reducer over server
+  messages, `connection.ts` the partysocket wrapper (fresh ticket per attempt, keep-alive, close
+  codes), `store.tsx` the React bindings (`RoomProvider`, `useRoomState`, `useRoomActions`).
+- **Invite links**: `/r/CODE` redirects to the room page in the visitor's language (`proxy.ts`).
+- **CSP**: `connect-src` names the rooms host (`ROOMS_PUBLIC_URL`, else `ROOMS_URL`), read when
+  the website is **built** — build with the URL browsers will use.
+
 ## Server to server
 
 Signed with HMAC-SHA256 (`hmac.ts`, header `x-sh-signature: t=<unix>,v1=<hex>`, ±5 minutes), one

@@ -10,6 +10,7 @@
 #   SKIP_BUILD=1     skip the Next.js build and the Worker dry-run bundle
 #   SKIP_SECURITY=1  skip secrets/audit (offline; never before a push)
 #   STEPS="lint …"   run only these steps, in this order
+#   RUN_E2E=1        add the Playwright end-to-end step (builds the website, starts servers)
 #
 # Written for bash 3.2 (macOS system bash).
 set -euo pipefail
@@ -20,6 +21,7 @@ cd "$PROJECT_ROOT"
 
 ALL_STEPS="nvmrc lint typecheck test-engine test-protocol test-rooms test-web secrets audit build"
 STEPS_TO_RUN="${STEPS:-$ALL_STEPS}"
+[[ "${RUN_E2E:-0}" == "1" && -z "${STEPS:-}" ]] && STEPS_TO_RUN="$STEPS_TO_RUN e2e"
 
 drop_step() {
   local drop="$1" kept="" s

@@ -1,0 +1,16 @@
+# Never uploaded by `vercel deploy`: local secrets, build output, test artifacts.
+# (Vercel builds from the repository root with root directory apps/web.)
+.git
+.vercel
+.env*
+**/.env*
+!**/.env.example
+**/.dev.vars
+**/node_modules
+**/.next
+**/.wrangler
+**/dist
+**/coverage
+**/test-results
+**/playwright-report
+**/tsconfig.tsbuildinfo

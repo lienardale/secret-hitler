@@ -18,6 +18,9 @@ export const routing = defineRouting({
   localeDetection: false,
   pathnames: {
     "/": "/",
+    "/salle/[code]": { fr: "/salle/[code]", en: "/room/[code]" },
+    // Test page (404 unless ENABLE_TEST_PAGES=1): the game table on local fixtures.
+    "/dev/table": "/dev/table",
   },
 });
 

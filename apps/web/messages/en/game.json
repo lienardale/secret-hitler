@@ -1,0 +1,270 @@
+{
+  "table": {
+    "label": "Game table",
+    "board": "Board",
+    "seats": "Players",
+    "aside": "Chat and room"
+  },
+  "seat": {
+    "fallback": "Seat {n}",
+    "you": "You",
+    "nameYou": "{name} (you)",
+    "president": "President",
+    "chancellor": "Chancellor",
+    "nominee": "Nominee",
+    "termLimited": "Term-limited",
+    "termLimitedHint": "Cannot be nominated Chancellor this round",
+    "voted": "Voted",
+    "notVoted": "Not voted",
+    "ballot": "Voted {vote, select, ja {Ja!} other {Nein!}}",
+    "notHitler": "Not Hitler",
+    "notHitlerHint": "Elected Chancellor after the 3rd Fascist policy, so publicly known not to be Hitler",
+    "investigated": "Investigated",
+    "dead": "Executed",
+    "offline": "Disconnected",
+    "afk": "Played automatically"
+  },
+  "policy": {
+    "name": {
+      "L": "Liberal",
+      "F": "Fascist"
+    },
+    "card": {
+      "L": "Liberal policy",
+      "F": "Fascist policy"
+    }
+  },
+  "party": {
+    "liberal": "Liberal",
+    "fascist": "Fascist"
+  },
+  "role": {
+    "liberal": "Liberal",
+    "fascist": "Fascist",
+    "hitler": "Hitler"
+  },
+  "power": {
+    "investigate": {
+      "name": "Investigate loyalty",
+      "short": "Investigate"
+    },
+    "peek": {
+      "name": "Policy peek",
+      "short": "Peek"
+    },
+    "specialElection": {
+      "name": "Special election",
+      "short": "Special election"
+    },
+    "execute": {
+      "name": "Execution",
+      "short": "Execution"
+    }
+  },
+  "board": {
+    "liberalTrack": "Liberal policies",
+    "fascistTrack": "Fascist policies",
+    "count": "{count} of {total}",
+    "slot": "Slot {n}",
+    "slotEmpty": "Slot {n}: empty",
+    "slotPower": "Slot {n}: {power}",
+    "slotEnacted": "Slot {n}: {policy}",
+    "liberalWin": "Liberals win",
+    "fascistWin": "Fascists win",
+    "win": "Win",
+    "veto": "Veto",
+    "vetoUnlocked": "Veto unlocked",
+    "vetoLocked": "Veto unlocks with the 5th Fascist policy",
+    "hitlerZone": "Hitler zone: if Hitler is elected Chancellor, the Fascists win.",
+    "hitlerZoneSoon": "From the 3rd Fascist policy, electing Hitler Chancellor wins the game for the Fascists.",
+    "tracker": "Election tracker",
+    "trackerValue": "{count, plural, =0 {No failed election} one {# failed election} other {# failed elections}} of 3",
+    "chaos": "Chaos",
+    "chaosHint": "At 3, the top policy is enacted",
+    "deck": "Draw pile",
+    "discard": "Discard",
+    "cards": "{count, plural, one {# card} other {# cards}}"
+  },
+  "roleCard": {
+    "hold": "Hold to see your role",
+    "holdHint": "Hidden again when you let go. Keyboard: Enter shows and hides it.",
+    "hidden": "Secret role",
+    "yourRole": "Your role",
+    "party": "{party, select, liberal {Liberal party} other {Fascist party}}",
+    "goal": {
+      "liberal": "Enact 5 Liberal policies or execute Hitler.",
+      "fascist": "Enact 6 Fascist policies, or get Hitler elected Chancellor after the 3rd.",
+      "hitler": "Stay hidden. Enact 6 Fascist policies, or get elected Chancellor after the 3rd."
+    },
+    "known": "What you know",
+    "knownRole": "{name}: {role}",
+    "knownNone": {
+      "liberal": "Liberals do not know anyone else's role.",
+      "fascist": "You know no one else's role.",
+      "hitler": "In games of 7 or more, Hitler does not know the Fascists, but they know you."
+    },
+    "investigations": "Your investigations",
+    "investigation": "{name}: {party, select, liberal {Liberal party} other {Fascist party}}"
+  },
+  "phase": {
+    "nominate": "Election",
+    "vote": "Vote",
+    "presidentDiscard": "Legislative session",
+    "chancellorEnact": "Legislative session",
+    "vetoResponse": "Veto",
+    "executive": "Executive action: {power}",
+    "over": "Game over"
+  },
+  "waiting": {
+    "nominate": "{president} is choosing a Chancellor.",
+    "vote": "Vote on the government: {president} as President, {nominee} as Chancellor.",
+    "votes": "Votes: {cast} of {total}",
+    "waitingFor": "Waiting for {names}.",
+    "presidentDiscard": "{president} is discarding one of three policies; {chancellor} gets the other two.",
+    "chancellorEnact": "{chancellor} is choosing which policy to enact.",
+    "vetoRefused": "{president} refused the veto.",
+    "vetoResponse": "{chancellor} proposed a veto. {president} decides.",
+    "investigate": "{president} is choosing whose loyalty to investigate.",
+    "peek": "{president} is looking at the next three policies.",
+    "specialElection": "{president} is choosing the next President.",
+    "execute": "{president} is choosing who to execute."
+  },
+  "timer": {
+    "label": "Time left",
+    "unknown": "Time left: starting"
+  },
+  "action": {
+    "idle": "Nothing to do right now.",
+    "dead": "You have been executed. You can follow the game, but no longer take part.",
+    "voted": "You have voted. Ballots are revealed once everyone has voted.",
+    "pending": "Sending…",
+    "announce": {
+      "nominate": "Your turn: nominate a Chancellor.",
+      "vote": "Your turn: vote Ja! or Nein!",
+      "presidentDiscard": "Your turn: discard one of three policies.",
+      "chancellorEnact": "Your turn: enact one of two policies.",
+      "respondVeto": "Your turn: agree to or refuse the veto.",
+      "investigate": "Your turn: choose a player to investigate.",
+      "acknowledgePeek": "Your turn: look at the next three policies.",
+      "specialElection": "Your turn: choose the next President.",
+      "execute": "Your turn: choose a player to execute."
+    },
+    "pick": {
+      "label": "Players you can choose",
+      "prompt": "Choose a player"
+    },
+    "nominate": {
+      "title": "Nominate a Chancellor",
+      "hint": "Only eligible players are listed."
+    },
+    "nominateConfirm": "Nominate {name}",
+    "vote": {
+      "title": "Vote",
+      "government": "President {president} · Chancellor {nominee}",
+      "secret": "Ballots are revealed once everyone has voted.",
+      "ja": "Ja!",
+      "jaMeaning": "Yes",
+      "jaLabel": "Vote Ja! (yes)",
+      "nein": "Nein!",
+      "neinMeaning": "No",
+      "neinLabel": "Vote Nein! (no)"
+    },
+    "presidentDiscard": {
+      "title": "Discard one policy",
+      "hint": "The other two go to {chancellor}.",
+      "hand": "Your policies"
+    },
+    "discardConfirm": "Discard the {policy, select, L {Liberal} other {Fascist}} policy",
+    "chancellorEnact": {
+      "title": "Enact one policy",
+      "hint": "The other one is discarded.",
+      "hand": "Your policies",
+      "vetoRefused": "{president} refused the veto: you must enact a policy."
+    },
+    "enactConfirm": "Enact the {policy, select, L {Liberal} other {Fascist}} policy",
+    "selectCard": "Choose a policy",
+    "veto": {
+      "propose": "Propose a veto",
+      "hint": "If {president} agrees, both policies are discarded and the election tracker moves on."
+    },
+    "respondVeto": {
+      "title": "Veto proposed",
+      "body": "{chancellor} wants to veto both policies.",
+      "agree": "Agree to the veto",
+      "refuse": "Refuse the veto",
+      "chaosWarning": "Agreeing moves the election tracker to 3: the top policy will be enacted (chaos)."
+    },
+    "investigate": {
+      "title": "Investigate loyalty",
+      "hint": "You will see their party (Hitler shows as Fascist). Nobody can be investigated twice."
+    },
+    "investigateConfirm": "Investigate {name}",
+    "acknowledgePeek": {
+      "title": "Policy peek",
+      "hint": "The next three policies, top of the pile first. Only you can see them.",
+      "position": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+      "done": "Done, continue"
+    },
+    "specialElection": {
+      "title": "Special election",
+      "hint": "Choose the next President. Afterwards, the order resumes from your left."
+    },
+    "specialElectionConfirm": "Make {name} President",
+    "execute": {
+      "title": "Execution",
+      "hint": "The executed player leaves the game. If it is Hitler, the Liberals win.",
+      "confirmTitle": "Execute {name}?",
+      "confirmBody": "This cannot be undone.",
+      "cancel": "Cancel",
+      "yes": "Yes, execute {name}"
+    },
+    "executeConfirm": "Execute {name}"
+  },
+  "log": {
+    "heading": "Game log",
+    "empty": "Nothing has happened yet.",
+    "private": "Private",
+    "nobody": "nobody",
+    "gameStarted": "The game begins with {count} players.",
+    "round": "{president} is President.",
+    "roundSpecial": "Special election: {president} is President.",
+    "nominated": "{president} nominates {nominee} for Chancellor.",
+    "votePassed": "The vote passes ({ja} Ja!, {nein} Nein!): {president} and {nominee} form the government.",
+    "voteFailed": "The vote fails ({ja} Ja!, {nein} Nein!).",
+    "voteDetail": "Ja!: {ja} · Nein!: {nein}",
+    "notHitler": "{name} is not Hitler.",
+    "tracker": "The election tracker moves to {count} of 3.",
+    "drawn": "{president} draws: {policies}.",
+    "presidentDiscarded": "{president} discards a {policy, select, L {Liberal} other {Fascist}} policy.",
+    "chancellorReceived": "{chancellor} receives: {policies}.",
+    "chancellorDiscarded": "{chancellor} discards a {policy, select, L {Liberal} other {Fascist}} policy.",
+    "vetoProposed": "{chancellor} proposes a veto.",
+    "vetoAgreed": "{president} agrees: both policies are discarded.",
+    "vetoRefused": "{president} refuses the veto.",
+    "enacted": "A {policy, select, L {Liberal} other {Fascist}} policy is enacted.",
+    "enactedChaos": "Chaos! The top policy is enacted: {policy, select, L {Liberal} other {Fascist}}. Term limits are lifted.",
+    "reshuffled": "The discards are shuffled back into the draw pile ({count, plural, one {# card} other {# cards}}).",
+    "powerGranted": "{president} gains a power: {power, select, investigate {investigate loyalty} peek {policy peek} specialElection {special election} other {execution}}.",
+    "peeked": "{president} sees the next three policies: {policies}.",
+    "investigated": "{president} investigates {target}.",
+    "investigationResult": "{target} belongs to the {party, select, liberal {Liberal} other {Fascist}} party.",
+    "specialElection": "{president} calls a special election: {target} will be President.",
+    "executed": "{president} executes {target}.",
+    "gameOver": "Game over: {winner, select, liberal {the Liberals win} other {the Fascists win}}."
+  },
+  "over": {
+    "title": {
+      "liberal": "The Liberals win!",
+      "fascist": "The Fascists win!"
+    },
+    "reason": {
+      "liberalPolicies": "Five Liberal policies were enacted.",
+      "hitlerExecuted": "Hitler was executed.",
+      "fascistPolicies": "Six Fascist policies were enacted.",
+      "hitlerElected": "Hitler was elected Chancellor."
+    },
+    "youWon": "You won.",
+    "youLost": "You lost.",
+    "roles": "Every role"
+  }
+}

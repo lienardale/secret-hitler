@@ -2,12 +2,9 @@
  * Room codes: 5 letters from an alphabet without vowels, so a code never
  * spells a word by accident. 20^5 = 3.2 million codes.
  */
-import { z } from "zod";
+import { ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH } from "./constants";
 
-export const ROOM_CODE_ALPHABET = "BCDFGHJKLMNPQRSTVWXZ";
-export const ROOM_CODE_LENGTH = 5;
-
-const ROOM_CODE_PATTERN = new RegExp(`^[${ROOM_CODE_ALPHABET}]{${ROOM_CODE_LENGTH}}$`);
+export const ROOM_CODE_PATTERN = new RegExp(`^[${ROOM_CODE_ALPHABET}]{${ROOM_CODE_LENGTH}}$`);
 
 export function isRoomCode(value: string): boolean {
   return ROOM_CODE_PATTERN.test(value);
@@ -34,5 +31,3 @@ export function generateRoomCode(): string {
   }
   return code;
 }
-
-export const roomCodeSchema = z.string().regex(ROOM_CODE_PATTERN);

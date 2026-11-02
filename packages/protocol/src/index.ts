@@ -1,5 +1,7 @@
 // Shared by the browser, the rooms Worker and the website.
 export * from "./version";
+export * from "./constants";
+export * from "./primitives";
 export * from "./codes";
 export * from "./close-codes";
 export * from "./names";

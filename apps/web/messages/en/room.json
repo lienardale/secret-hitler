@@ -1,0 +1,151 @@
+{
+  "meta": {
+    "title": "Room {code}"
+  },
+  "home": {
+    "createTitle": "Private game",
+    "createLead": "Create a room and send the link to your friends. 5 to 10 players, no account needed.",
+    "createButton": "Create a room",
+    "joinTitle": "Join a room",
+    "joinLead": "Enter the 5-letter code you were given.",
+    "codeLabel": "Room code",
+    "joinButton": "Join",
+    "publicSoon": "Public games with strangers: coming soon.",
+    "playingAs": "You are playing as {name}."
+  },
+  "name": {
+    "title": "What should we call you?",
+    "lead": "No account needed for a private game: just pick a name.",
+    "label": "Your name",
+    "hint": "2 to 20 characters, shown to the other players.",
+    "save": "Enter the room"
+  },
+  "errors": {
+    "name_length": "Your name must be 2 to 20 characters long.",
+    "name_characters": "Letters, digits, spaces, dashes, dots and apostrophes only (not at the start or end).",
+    "name_reserved": "This name is reserved, please pick another one.",
+    "code_invalid": "A code is 5 letters, with no vowels.",
+    "room_not_found": "No room with this code. It may have closed.",
+    "rate_limited": "Too many attempts. Try again in a few minutes.",
+    "rooms_unavailable": "The game server is not answering. Try again in a moment.",
+    "forbidden": "Request refused. Please reload the page."
+  },
+  "notFound": {
+    "title": "Room not found",
+    "lead": "No room has this code. It may have been closed after its game.",
+    "home": "Back to the home page"
+  },
+  "publicGate": {
+    "title": "Public game",
+    "lead": "Public games need an account. Accounts are coming soon."
+  },
+  "unavailable": {
+    "title": "The game server is not answering",
+    "lead": "Try again in a moment.",
+    "retry": "Try again"
+  },
+  "connection": {
+    "connecting": "Connecting to the room…",
+    "reconnecting": "Connection lost. Reconnecting…"
+  },
+  "closed": {
+    "title": "You are no longer in the room",
+    "c4400": "Communication with the room failed.",
+    "c4403": "Public games need an account.",
+    "c4404": "This room does not exist or has closed.",
+    "c4409": "The room is full (10 players and 20 spectators).",
+    "c4410": "The room has closed.",
+    "c4423": "The host removed you from the room.",
+    "c4426": "A new version of the site is live: please reload the page.",
+    "c4429": "Too many messages at once: you were disconnected from the room.",
+    "other": "The connection to the room was closed.",
+    "home": "Back to the home page",
+    "reload": "Reload the page"
+  },
+  "lobby": {
+    "heading": "Room {code}",
+    "codeLabel": "Code",
+    "invite": "Invite your friends",
+    "inviteLead": "Send this link, or read the code out from your screen.",
+    "copy": "Copy the link",
+    "copied": "Link copied!",
+    "share": "Share",
+    "shareText": "Join my game of Secret Hitler",
+    "players": "Players ({count} of 10)",
+    "emptySeat": "Free seat",
+    "spectators": "Spectators ({count})",
+    "you": "you",
+    "host": "host",
+    "disconnected": "disconnected",
+    "kick": "Remove",
+    "kickLabel": "Remove {name} from the room",
+    "kickConfirm": "Remove {name} from the room? They will not be able to come back.",
+    "sit": "Take a seat",
+    "stand": "Just watch",
+    "start": "Start the game",
+    "needPlayers": "{missing, plural, one {# more seated player needed} other {# more seated players needed}} (5 at least).",
+    "waitingDisconnected": "Wait until every seated player is connected.",
+    "waitingHost": "Waiting for the host to start the game.",
+    "settings": "Settings",
+    "timers": "Timers",
+    "timersHelp": "Without timers, everyone takes their time. With them, a default choice is played when time runs out.",
+    "timer": {
+      "off": "No timers",
+      "relaxed": "Relaxed",
+      "standard": "Standard",
+      "fast": "Fast"
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "label": "Message",
+    "placeholder": "Write a message…",
+    "send": "Send",
+    "empty": "No messages yet.",
+    "spectator": "Spectators do not talk during the game.",
+    "dead": "Executed players can no longer talk.",
+    "silence": "Silence: the President and Chancellor stay quiet during the legislative session.",
+    "system": {
+      "playerJoined": "{name} joined the room.",
+      "playerLeft": "{name} left the room.",
+      "playerKicked": "{name} was removed from the room.",
+      "hostChanged": "{name} is now the host.",
+      "gameStarted": "The game begins!",
+      "gameEnded": "The game is over.",
+      "gameAbandoned": "The game was stopped with no winner.",
+      "playerAfk": "{name} stopped responding: the room plays for them.",
+      "playerBack": "{name} is back.",
+      "turnForced": "The host played {name}'s turn."
+    }
+  },
+  "host": {
+    "controls": "Host controls",
+    "endGame": "Stop the game",
+    "endGameConfirm": "Stop the game with no winner?",
+    "forceTurn": "Play for {name}",
+    "forceTurnHelp": "Available once a player has been disconnected for a minute.",
+    "rematch": "Rematch",
+    "rematchWaiting": "Waiting for the host to start a rematch.",
+    "abandoned": "Game stopped with no winner."
+  },
+  "notices": {
+    "invalid_message": "The room refused that message.",
+    "not_host": "Only the host can do that.",
+    "wrong_status": "Not possible right now.",
+    "room_full": "Every seat is taken.",
+    "not_seated": "You are not seated.",
+    "already_seated": "You are already seated.",
+    "not_enough_players": "5 to 10 seated players are needed.",
+    "players_disconnected": "A seated player is disconnected.",
+    "not_a_player": "You are watching this game, not playing it.",
+    "stale_turn": "Too late: the game has moved on.",
+    "unknown_member": "That player is no longer in the room.",
+    "not_disconnected_long_enough": "Wait until they have been disconnected for a minute.",
+    "not_their_turn": "It is not that player's turn.",
+    "private_only": "Only possible in a private game.",
+    "chat_not_allowed": "You cannot talk right now.",
+    "chat_too_fast": "Easy: wait a little before writing again.",
+    "chat_invalid": "Empty or too long message (300 characters at most).",
+    "engine": "That action is not possible."
+  }
+}

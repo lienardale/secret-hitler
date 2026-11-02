@@ -5,12 +5,8 @@
  */
 import { z } from "zod";
 
+import { CHAT_MAX_LENGTH, TIMER_PRESETS } from "./constants";
 import { actionSchema } from "./player-view";
-import { CHAT_MAX_LENGTH } from "./chat";
-import { TIMER_PRESETS } from "./room-view";
-
-/** Larger messages are rejected before parsing. */
-export const MAX_CLIENT_MESSAGE_BYTES = 2048;
 
 export const clientMessageSchema = z.discriminatedUnion("t", [
   /** Lobby: take a free seat. Members are seated automatically when they join. */
@@ -41,10 +37,3 @@ export const clientMessageSchema = z.discriminatedUnion("t", [
 ]);
 
 export type ClientMessage = z.infer<typeof clientMessageSchema>;
-
-/**
- * Keep-alive: the client sends this exact text every 30 s and the room
- * answers `KEEPALIVE_PONG` without waking up (Durable Object auto-response).
- */
-export const KEEPALIVE_PING = "ping";
-export const KEEPALIVE_PONG = "pong";

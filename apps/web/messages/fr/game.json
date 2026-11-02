@@ -1,0 +1,270 @@
+{
+  "table": {
+    "label": "Table de jeu",
+    "board": "Plateau",
+    "seats": "Joueurs",
+    "aside": "Discussion et salle"
+  },
+  "seat": {
+    "fallback": "Siège {n}",
+    "you": "Vous",
+    "nameYou": "{name} (vous)",
+    "president": "Président",
+    "chancellor": "Chancelier",
+    "nominee": "Chancelier proposé",
+    "termLimited": "Inéligible",
+    "termLimitedHint": "Ne peut pas être proposé à la chancellerie ce tour-ci",
+    "voted": "A voté",
+    "notVoted": "N'a pas voté",
+    "ballot": "A voté {vote, select, ja {Ja!} other {Nein!}}",
+    "notHitler": "Pas Hitler",
+    "notHitlerHint": "Élu à la chancellerie après le 3ᵉ décret fasciste : on sait que ce n'est pas Hitler",
+    "investigated": "Loyauté vérifiée",
+    "dead": "Exécuté·e",
+    "offline": "Déconnecté·e",
+    "afk": "Jeu automatique"
+  },
+  "policy": {
+    "name": {
+      "L": "Libéral",
+      "F": "Fasciste"
+    },
+    "card": {
+      "L": "Décret libéral",
+      "F": "Décret fasciste"
+    }
+  },
+  "party": {
+    "liberal": "Libéral",
+    "fascist": "Fasciste"
+  },
+  "role": {
+    "liberal": "Libéral",
+    "fascist": "Fasciste",
+    "hitler": "Hitler"
+  },
+  "power": {
+    "investigate": {
+      "name": "Enquête de loyauté",
+      "short": "Enquête"
+    },
+    "peek": {
+      "name": "Aperçu des décrets",
+      "short": "Aperçu"
+    },
+    "specialElection": {
+      "name": "Élection spéciale",
+      "short": "Élection spéciale"
+    },
+    "execute": {
+      "name": "Exécution",
+      "short": "Exécution"
+    }
+  },
+  "board": {
+    "liberalTrack": "Décrets libéraux",
+    "fascistTrack": "Décrets fascistes",
+    "count": "{count} sur {total}",
+    "slot": "Case {n}",
+    "slotEmpty": "Case {n} : vide",
+    "slotPower": "Case {n} : {power}",
+    "slotEnacted": "Case {n} : {policy}",
+    "liberalWin": "Victoire libérale",
+    "fascistWin": "Victoire fasciste",
+    "win": "Victoire",
+    "veto": "Veto",
+    "vetoUnlocked": "Veto débloqué",
+    "vetoLocked": "Le veto se débloque au 5ᵉ décret fasciste",
+    "hitlerZone": "Zone Hitler : si Hitler est élu chancelier, les fascistes gagnent.",
+    "hitlerZoneSoon": "Dès le 3ᵉ décret fasciste, élire Hitler à la chancellerie fait gagner les fascistes.",
+    "tracker": "Compteur d'élections",
+    "trackerValue": "{count, plural, =0 {Aucune élection ratée} one {# élection ratée} other {# élections ratées}} sur 3",
+    "chaos": "Chaos",
+    "chaosHint": "À 3, le décret du dessus est adopté",
+    "deck": "Pioche",
+    "discard": "Défausse",
+    "cards": "{count, plural, one {# carte} other {# cartes}}"
+  },
+  "roleCard": {
+    "hold": "Maintenez pour voir votre rôle",
+    "holdHint": "Caché dès que vous relâchez. Au clavier : Entrée l'affiche et le masque.",
+    "hidden": "Rôle secret",
+    "yourRole": "Votre rôle",
+    "party": "{party, select, liberal {Parti libéral} other {Parti fasciste}}",
+    "goal": {
+      "liberal": "Adoptez 5 décrets libéraux ou exécutez Hitler.",
+      "fascist": "Adoptez 6 décrets fascistes, ou faites élire Hitler à la chancellerie après le 3ᵉ.",
+      "hitler": "Restez caché. Adoptez 6 décrets fascistes, ou faites-vous élire à la chancellerie après le 3ᵉ."
+    },
+    "known": "Ce que vous savez",
+    "knownRole": "{name} : {role}",
+    "knownNone": {
+      "liberal": "Les libéraux ne connaissent le rôle de personne d'autre.",
+      "fascist": "Vous ne connaissez le rôle de personne d'autre.",
+      "hitler": "À 7 joueurs ou plus, Hitler ne connaît pas les fascistes, mais eux vous connaissent."
+    },
+    "investigations": "Vos enquêtes",
+    "investigation": "{name} : {party, select, liberal {parti libéral} other {parti fasciste}}"
+  },
+  "phase": {
+    "nominate": "Élection",
+    "vote": "Vote",
+    "presidentDiscard": "Session législative",
+    "chancellorEnact": "Session législative",
+    "vetoResponse": "Veto",
+    "executive": "Pouvoir présidentiel : {power}",
+    "over": "Partie terminée"
+  },
+  "waiting": {
+    "nominate": "{president} choisit qui proposer à la chancellerie.",
+    "vote": "Votez pour le gouvernement : {president} à la présidence, {nominee} à la chancellerie.",
+    "votes": "Votes : {cast} sur {total}",
+    "waitingFor": "En attente de {names}.",
+    "presidentDiscard": "{president} défausse un décret sur trois ; {chancellor} reçoit les deux autres.",
+    "chancellorEnact": "{chancellor} choisit le décret à adopter.",
+    "vetoRefused": "{president} a refusé le veto.",
+    "vetoResponse": "{chancellor} propose un veto. {president} décide.",
+    "investigate": "{president} choisit sur qui enquêter.",
+    "peek": "{president} regarde les trois prochains décrets.",
+    "specialElection": "{president} choisit qui prendra la présidence.",
+    "execute": "{president} choisit qui exécuter."
+  },
+  "timer": {
+    "label": "Temps restant",
+    "unknown": "Temps restant : démarrage"
+  },
+  "action": {
+    "idle": "Rien à faire pour l'instant.",
+    "dead": "Vous avez été exécuté·e. Vous pouvez suivre la partie, mais plus y participer.",
+    "voted": "Vous avez voté. Les bulletins seront révélés quand tout le monde aura voté.",
+    "pending": "Envoi…",
+    "announce": {
+      "nominate": "À vous : proposez quelqu'un à la chancellerie.",
+      "vote": "À vous : votez Ja! ou Nein!",
+      "presidentDiscard": "À vous : défaussez un décret sur trois.",
+      "chancellorEnact": "À vous : adoptez un décret sur deux.",
+      "respondVeto": "À vous : acceptez ou refusez le veto.",
+      "investigate": "À vous : choisissez sur qui enquêter.",
+      "acknowledgePeek": "À vous : regardez les trois prochains décrets.",
+      "specialElection": "À vous : choisissez qui prendra la présidence.",
+      "execute": "À vous : choisissez qui exécuter."
+    },
+    "pick": {
+      "label": "Joueurs que vous pouvez choisir",
+      "prompt": "Choisissez un joueur"
+    },
+    "nominate": {
+      "title": "Proposez un chancelier",
+      "hint": "Seuls les joueurs éligibles sont affichés."
+    },
+    "nominateConfirm": "Proposer {name}",
+    "vote": {
+      "title": "Votez",
+      "government": "Président : {president} · Chancelier : {nominee}",
+      "secret": "Les bulletins seront révélés quand tout le monde aura voté.",
+      "ja": "Ja!",
+      "jaMeaning": "Oui",
+      "jaLabel": "Voter Ja! (oui)",
+      "nein": "Nein!",
+      "neinMeaning": "Non",
+      "neinLabel": "Voter Nein! (non)"
+    },
+    "presidentDiscard": {
+      "title": "Défaussez un décret",
+      "hint": "Les deux autres iront à {chancellor}.",
+      "hand": "Vos décrets"
+    },
+    "discardConfirm": "Défausser le décret {policy, select, L {libéral} other {fasciste}}",
+    "chancellorEnact": {
+      "title": "Adoptez un décret",
+      "hint": "L'autre sera défaussé.",
+      "hand": "Vos décrets",
+      "vetoRefused": "{president} a refusé le veto : vous devez adopter un décret."
+    },
+    "enactConfirm": "Adopter le décret {policy, select, L {libéral} other {fasciste}}",
+    "selectCard": "Choisissez un décret",
+    "veto": {
+      "propose": "Proposer un veto",
+      "hint": "Si {president} accepte, les deux décrets sont défaussés et le compteur d'élections avance."
+    },
+    "respondVeto": {
+      "title": "Veto proposé",
+      "body": "{chancellor} veut opposer son veto aux deux décrets.",
+      "agree": "Accepter le veto",
+      "refuse": "Refuser le veto",
+      "chaosWarning": "Accepter fait passer le compteur d'élections à 3 : le décret du dessus sera adopté (chaos)."
+    },
+    "investigate": {
+      "title": "Enquête de loyauté",
+      "hint": "Vous verrez son parti (Hitler apparaît fasciste). Personne ne peut faire l'objet de deux enquêtes."
+    },
+    "investigateConfirm": "Enquêter sur {name}",
+    "acknowledgePeek": {
+      "title": "Aperçu des décrets",
+      "hint": "Les trois prochains décrets, le dessus de la pioche en premier. Vous êtes la seule personne à les voir.",
+      "position": "{n, selectordinal, one {#er} other {#e}}",
+      "done": "C'est vu, continuer"
+    },
+    "specialElection": {
+      "title": "Élection spéciale",
+      "hint": "Choisissez qui prendra la présidence. Ensuite, l'ordre reprend à votre gauche."
+    },
+    "specialElectionConfirm": "Donner la présidence à {name}",
+    "execute": {
+      "title": "Exécution",
+      "hint": "La personne exécutée quitte la partie. Si c'est Hitler, les libéraux gagnent.",
+      "confirmTitle": "Exécuter {name} ?",
+      "confirmBody": "C'est irréversible.",
+      "cancel": "Annuler",
+      "yes": "Oui, exécuter {name}"
+    },
+    "executeConfirm": "Exécuter {name}"
+  },
+  "log": {
+    "heading": "Journal de la partie",
+    "empty": "Rien ne s'est encore passé.",
+    "private": "Privé",
+    "nobody": "personne",
+    "gameStarted": "La partie commence à {count} joueurs.",
+    "round": "{president} prend la présidence.",
+    "roundSpecial": "Élection spéciale : {president} prend la présidence.",
+    "nominated": "{president} propose {nominee} à la chancellerie.",
+    "votePassed": "Le vote est adopté ({ja} Ja!, {nein} Nein!) : {president} et {nominee} forment le gouvernement.",
+    "voteFailed": "Le vote échoue ({ja} Ja!, {nein} Nein!).",
+    "voteDetail": "Ja! : {ja} · Nein! : {nein}",
+    "notHitler": "{name} n'est pas Hitler.",
+    "tracker": "Le compteur d'élections passe à {count} sur 3.",
+    "drawn": "{president} pioche : {policies}.",
+    "presidentDiscarded": "{president} défausse un décret {policy, select, L {libéral} other {fasciste}}.",
+    "chancellorReceived": "{chancellor} reçoit : {policies}.",
+    "chancellorDiscarded": "{chancellor} défausse un décret {policy, select, L {libéral} other {fasciste}}.",
+    "vetoProposed": "{chancellor} propose un veto.",
+    "vetoAgreed": "{president} accepte : les deux décrets sont défaussés.",
+    "vetoRefused": "{president} refuse le veto.",
+    "enacted": "Un décret {policy, select, L {libéral} other {fasciste}} est adopté.",
+    "enactedChaos": "Chaos ! Le décret du dessus est adopté : {policy, select, L {libéral} other {fasciste}}. Les limites de mandat sont levées.",
+    "reshuffled": "La défausse est remélangée dans la pioche ({count, plural, one {# carte} other {# cartes}}).",
+    "powerGranted": "{president} obtient un pouvoir : {power, select, investigate {enquête de loyauté} peek {aperçu des décrets} specialElection {élection spéciale} other {exécution}}.",
+    "peeked": "{president} voit les trois prochains décrets : {policies}.",
+    "investigated": "{president} enquête sur {target}.",
+    "investigationResult": "{target} est du parti {party, select, liberal {libéral} other {fasciste}}.",
+    "specialElection": "{president} déclenche une élection spéciale : {target} prendra la présidence.",
+    "executed": "{president} exécute {target}.",
+    "gameOver": "Fin de la partie : {winner, select, liberal {victoire des libéraux} other {victoire des fascistes}}."
+  },
+  "over": {
+    "title": {
+      "liberal": "Les libéraux gagnent !",
+      "fascist": "Les fascistes gagnent !"
+    },
+    "reason": {
+      "liberalPolicies": "Cinq décrets libéraux ont été adoptés.",
+      "hitlerExecuted": "Hitler a été exécuté.",
+      "fascistPolicies": "Six décrets fascistes ont été adoptés.",
+      "hitlerElected": "Hitler a été élu chancelier."
+    },
+    "youWon": "Vous avez gagné.",
+    "youLost": "Vous avez perdu.",
+    "roles": "Tous les rôles"
+  }
+}
