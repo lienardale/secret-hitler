@@ -10,6 +10,7 @@ export default defineConfig([
     "**/node_modules/**",
     "**/coverage/**",
     "**/.wrangler/**",
+    "**/dist/**",
     "apps/web/**",
     "apps/rooms/worker-configuration.d.ts",
   ]),
