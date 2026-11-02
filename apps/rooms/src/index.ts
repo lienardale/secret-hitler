@@ -29,6 +29,7 @@ import {
 import { checkTicket, originAllowed, readSignedRequest } from "./auth";
 import { LOBBY_NAME } from "./lobby/Lobby";
 import { TICKET_HEADER } from "./room/GameRoom";
+import { PLACEMENT } from "./placement";
 
 export { GameRoom } from "./room/GameRoom";
 export { Lobby } from "./lobby/Lobby";
@@ -67,7 +68,7 @@ async function roomSocket(request: Request, env: Env, code: string): Promise<Res
   }
   const headers = new Headers(request.headers);
   headers.set(TICKET_HEADER, JSON.stringify(checked.ticket));
-  return env.GAME_ROOM.getByName(code).fetch(new Request(request, { headers }));
+  return env.GAME_ROOM.getByName(code, PLACEMENT).fetch(new Request(request, { headers }));
 }
 
 async function createRoom(body: string, env: Env): Promise<Response> {
@@ -78,7 +79,7 @@ async function createRoom(body: string, env: Env): Promise<Response> {
   }
   for (let attempt = 0; attempt < CREATE_ATTEMPTS; attempt++) {
     const code = generateRoomCode();
-    if (await env.GAME_ROOM.getByName(code).create(parsed.data)) {
+    if (await env.GAME_ROOM.getByName(code, PLACEMENT).create(parsed.data)) {
       return Response.json({ code }, { status: 201 });
     }
   }
@@ -90,7 +91,7 @@ async function reportToRoom(body: string, env: Env, code: string): Promise<Respo
   const parsed = roomReportRequestSchema.safeParse(JSON.parse(body));
   if (!parsed.success) return invalid();
   if (!isRoomCode(code)) return noRoom();
-  const outcome = await env.GAME_ROOM.getByName(code).report(parsed.data);
+  const outcome = await env.GAME_ROOM.getByName(code, PLACEMENT).report(parsed.data);
   if (outcome.ok) return Response.json({ ok: true }, { status: 202 });
   if (outcome.error === "no_room") return noRoom();
   return Response.json({ error: outcome.error }, { status: 422 });
@@ -101,7 +102,7 @@ async function roomMember(body: string, env: Env, code: string): Promise<Respons
   const parsed = roomMemberRequestSchema.safeParse(JSON.parse(body));
   if (!parsed.success) return invalid();
   if (!isRoomCode(code)) return noRoom();
-  const outcome = await env.GAME_ROOM.getByName(code).member(parsed.data);
+  const outcome = await env.GAME_ROOM.getByName(code, PLACEMENT).member(parsed.data);
   if (outcome.ok) return Response.json(outcome.member);
   const status = outcome.error === "not_member" ? 422 : 404;
   return Response.json({ error: outcome.error }, { status });
@@ -118,14 +119,14 @@ async function moderate(body: string, env: Env): Promise<Response> {
   const { identity, rooms, action } = parsed.data;
   let listed: string[] = [];
   try {
-    listed = await env.LOBBY.getByName(LOBBY_NAME).roomsWith(identity);
+    listed = await env.LOBBY.getByName(LOBBY_NAME, PLACEMENT).roomsWith(identity);
   } catch (error) {
     // Best effort: the website's own list still gets the action.
     console.error("moderation: lobby lookup failed", error);
   }
   const codes = [...new Set([...rooms, ...listed])].slice(0, MODERATION_MAX_ROOMS);
   const results = await Promise.allSettled(
-    codes.map((code) => env.GAME_ROOM.getByName(code).moderate(identity, action)),
+    codes.map((code) => env.GAME_ROOM.getByName(code, PLACEMENT).moderate(identity, action)),
   );
   const applied = codes.filter((_, i) => {
     const result = results[i];
@@ -142,10 +143,12 @@ async function internal(request: Request, env: Env, path: string): Promise<Respo
     if (request.method === "POST" && path === "/internal/lobby/quickmatch") {
       const parsed = quickMatchRequestSchema.safeParse(JSON.parse(body));
       if (!parsed.success) return invalid();
-      return Response.json(await env.LOBBY.getByName(LOBBY_NAME).quickMatch(parsed.data));
+      return Response.json(
+        await env.LOBBY.getByName(LOBBY_NAME, PLACEMENT).quickMatch(parsed.data),
+      );
     }
     if (request.method === "GET" && path === "/internal/lobby") {
-      return Response.json(await env.LOBBY.getByName(LOBBY_NAME).list());
+      return Response.json(await env.LOBBY.getByName(LOBBY_NAME, PLACEMENT).list());
     }
     if (request.method === "POST" && path === "/internal/moderation") {
       return await moderate(body, env);
@@ -161,7 +164,7 @@ async function internal(request: Request, env: Env, path: string): Promise<Respo
     const info = ROOM_INFO.exec(path);
     if (request.method === "GET" && info) {
       const code = info[1] as string;
-      const room = isRoomCode(code) ? await env.GAME_ROOM.getByName(code).info() : null;
+      const room = isRoomCode(code) ? await env.GAME_ROOM.getByName(code, PLACEMENT).info() : null;
       return room ? Response.json(room) : Response.json({ error: "no such room" }, { status: 404 });
     }
   } catch (error) {
@@ -187,7 +190,7 @@ export default {
         return new Response("Expected a WebSocket upgrade", { status: 426 });
       }
       if (!originAllowed(request, env)) return new Response("Forbidden origin", { status: 403 });
-      return env.LOBBY.getByName(LOBBY_NAME).fetch(request);
+      return env.LOBBY.getByName(LOBBY_NAME, PLACEMENT).fetch(request);
     }
     if (path.startsWith("/internal/")) return internal(request, env, path);
     return new Response("Not found", { status: 404 });

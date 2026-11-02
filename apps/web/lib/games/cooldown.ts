@@ -4,7 +4,8 @@
  * match seats them again.
  *
  * An abandon is a stored `GamePlayer.left`: the room was playing for them
- * when the game ended (away past the grace period, or kicked). Private games
+ * when the game ended (away past the grace period). Kicks and bans never
+ * count (the room sends `left: false` for removed seats). Private games
  * never count: friends stop and leave games as they like.
  */
 import { prisma } from "@/lib/db/prisma";

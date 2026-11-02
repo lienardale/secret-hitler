@@ -5,13 +5,23 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { Link } from "@/lib/i18n/navigation";
 import type { Locale } from "@/lib/i18n/routing";
 
-/** Header shared by every page: home, public games, the account, the other language. */
+/** Header shared by every page: home, public games, the rules, the account, the other language. */
 export async function SiteHeader({
   locale,
   switchHref = "/",
 }: {
   locale: Locale;
-  switchHref?: "/" | "/jouer" | "/profil" | "/conduite" | "/admin/signalements" | "/admin/bannis";
+  switchHref?:
+    | "/"
+    | "/jouer"
+    | "/regles"
+    | "/credits"
+    | "/mentions-legales"
+    | "/confidentialite"
+    | "/profil"
+    | "/conduite"
+    | "/admin/signalements"
+    | "/admin/bannis";
 }) {
   const [t, user] = await Promise.all([
     getTranslations({ locale, namespace: "common" }),
@@ -27,6 +37,9 @@ export async function SiteHeader({
       <nav aria-label={t("nav.label")} className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <Link href="/jouer" className={linkClass}>
           {t("nav.play")}
+        </Link>
+        <Link href="/regles" className={linkClass}>
+          {t("nav.rules")}
         </Link>
         <Link href="/conduite" className={linkClass}>
           {t("nav.conduct")}

@@ -31,10 +31,25 @@ The user wants a free web platform to play **Secret Hitler** online, either priv
 - Google sign-in is coded and turns on when `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` are set; the
   user creates the OAuth client later.
 
+### Decisions taken with the user (2026-11-02, M6)
+- **No domain.** The site is mostly for the user's friends. Production is the existing Vercel
+  project `secret-hitler-staging` (`https://secret-hitler-staging.vercel.app`) and the Worker
+  `sh-rooms-staging` on `workers.dev`. So no Resend: no e-mail is sent, and
+  `REQUIRE_EMAIL_VERIFICATION` stays off. The contact address stays `CONTACT_EMAIL`
+  (alienard.dev@gmail.com).
+- **Legal notice: anonymous non-professional publisher** (LCEN art. 6-III-2). The identity is
+  held by the host (Vercel); the page gives the contact address and the hosts. Set in
+  `apps/web/lib/legal.ts`.
+- **Production database:** a separate Neon database (created by the user from the Vercel
+  Marketplace), connected to the project's Production environment; `sh-staging` stays for Preview.
+- **Private log lines go behind hold-to-reveal**, like the role card (decided during M6 build).
+- **Web Push is a follow-up**, not in M6 (design in § M6 backlog). Turn alerts are a tab-title
+  prefix plus vibration.
+
 ### Defaults chosen in this plan (change during review if needed)
 - **Email verification via Resend** in M4, so bans can't be dodged with throwaway sign-ups.
 - **GitHub repo private until launch**, then made public (fits CC attribution).
-- Neutral domain name (TBD), "Secret Hitler" kept as the game title in the UI, since "Hitler" in URLs gets filtered by some social platforms.
+- ~~Neutral domain name~~: no domain (M6 decision above). "Secret Hitler" stays the game title in the UI. The vercel.app address contains "hitler", which some social platforms filter: a neutral free `*.vercel.app` alias is the cheap fix if shared links get blocked.
 
 ---
 
@@ -50,7 +65,7 @@ apps/web — Next.js 16 on Vercel ── Prisma 7 ──► Neon Postgres
   • createRoom server action → HMAC → rooms /internal/rooms
   • POST /api/internal/{games,reports} (HMAC, idempotent) ◄── DO outbox (alarm retries)
   │
-  │ WSS wss://rooms.<domain>/v1/rooms/:code/ws?t=<ticket>  (Origin allow-list)
+  │ WSS wss://<worker>.workers.dev/v1/rooms/:code/ws?t=<ticket>  (Origin allow-list; no custom domain)
   ▼
 apps/rooms — Cloudflare Worker (verifies ticket / HMAC / Origin)
   ├── GameRoom DO: one per room code, SQLite storage, locationHint "weur"
@@ -190,6 +205,9 @@ Lifecycle: lobby (max 10 seats + 20 spectators, host = creator) → start (≥ 5
 - Mobile-first; accessibility: no colour-only meaning, `aria-live` announcements, focus moves to your action, keyboard operable, reduced motion, axe tests per phase.
 - Fonts: OFL substitutes (Germania One, UnifrakturMaguntia, Jost) via `next/font`. CSP `connect-src` lists the rooms host.
 - Rules page: our own FR/EN text + link to the official PDF. Credits page: official credit line, GW&C ©, license link, asset sources, "What we changed", not-affiliated disclaimer, source link, no-money statement.
+- M6 (built): `/regles` `/rules` (rules + FAQ), `/credits` (`#what-we-changed` mirrors `CREDITS.md`, checked by `tests/unit/credits-sync.test.ts`), `/mentions-legales` `/legal-notice`, `/confidentialite` `/privacy` (publisher, hosts, `SOURCE_CODE_URL` in `lib/legal.ts`), a footer on every page (`components/site/SiteFooter.tsx`, from the layout), a localized 404 (`app/[locale]/not-found.tsx` + `[...rest]`).
+- M6 (built) game table: investigation result panel (behind hold-to-reveal), private log lines behind hold-to-reveal (`components/game/hold.ts`), vote warnings (Hitler zone, tracker at 2), staged ballot reveal + "Ja 4 – Nein 3" strip, CSS reveal animations (`motion.ts`, reduced motion respected), team/policy counters, role tips, "waiting for" markers on every awaited seat (`waitingSeats` = engine `pendingActors`), unique initials per table (`initials.ts`), turn alerts (tab-title prefix + vibration, `lib/turn-alert/`).
+- Art: every drawing is our own SVG in code (not adapted from the print & play); fonts are Germania One and Jost (OFL) via `next/font`.
 
 ---
 
@@ -203,11 +221,12 @@ Lifecycle: lobby (max 10 seats + 20 spectators, host = creator) → start (≥ 5
 | **M3** Private games with guests | Web foundations; guest cookie, create room, ticket route, `/r/[code]`; ∥ room client; ∥ game components on `/dev/table`; room screens, role reveal, end + rematch, basic chat; ∥ SVG assets; e2e (5 guest browsers; 1 browser + 6 bots); staging deploy | 5 phones finish a game from a shared link on staging; e2e green in CI |
 | **M4** Accounts + public play | Prisma schema/migration/seed; ∥ Auth.js + Resend verification, onboarding, profile (blocks, history, delete); ∥ `/api/internal/games` + real outbox; ∥ public mode (lobby UI, quick match, start rule, AFK/abandon, cooldown) | a public game by 5 accounts on staging shows in each profile history |
 | **M5** Chat + moderation | ∥ chat rules, mute/block, system messages; ∥ report flow; ∥ admin queue, bans, rename, Worker kick/close; ∥ name filter, rate limits, conduct page. Added during M5: peek keeps pile order, no host kick in a running public game (kicks never count as abandons), abandoned games reveal roles, cooldown at the ticket route, installable PWA + screen wake lock | e2e: report → admin → ban → banned user's ticket refused |
-| **M6** Polish + launch | Rules/credits/legal pages FR/EN, axe sweep, turn notifications; domain on Cloudflare DNS (Worker custom domain `rooms.<domain>`, web on Vercel), Neon prod, secrets, usage alerts, runbook; friends beta → tune AFK → make repo public → launch | production game played by friends; checks below pass |
+| **M6** Polish + launch | Phase 1 (built): rules/credits/legal pages FR/EN, the M6 backlog below, turn alerts, axe + keyboard sweep. Phase 2: production on the existing Vercel project (no domain), Neon prod database, usage alerts, uptime check, runbook. Phase 3: friends beta → tune AFK → make repo public → launch | production game played by friends; checks below pass |
 
 ### M6 backlog (from comparing with secret-hitler.online, 2026-11-02)
 
-From a comparison with ShrimpCryptid/Secret-Hitler-Online. No code yet; pick from it during M6.
+From a comparison with ShrimpCryptid/Secret-Hitler-Online. **Status after M6 phase 1:** every item
+below is built except Web Push, `launch_handler` and the uptime check (phase 2).
 
 - An investigation result panel for the President (today only a private log line, easy to miss).
 - Warnings in the vote and nomination panels: "If Hitler is elected now, the fascists win" once
@@ -224,11 +243,31 @@ From a comparison with ShrimpCryptid/Secret-Hitler-Online. No code yet; pick fro
   reveal too); votes are public by design; veto then chaos draws from the reshuffled pile.
 - Decide whether the private event-log lines (drawn hand, peek, investigation result:
   `components/game/log-text.ts`, `EventLog.tsx`) go behind the same hold-to-reveal as the role card.
-- A tab-title prefix plus vibration when a decision starts, push notifications, and
+  **Decided: yes.** Their text (and an investigation's colour) is not in the DOM until held; the
+  live decision (hand, peek) stays visible while you act on it.
+- A tab-title prefix plus vibration when a decision starts (**built**), push notifications, and
   `launch_handler` / link capturing for the installed app (the manifest, icons, offline page and
   screen wake lock shipped in M5).
+- **Web Push (follow-up, not built).** One VAPID P-256 pair per environment (`dev:setup`; public
+  key `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, private JWK = Worker secret `VAPID_PRIVATE_JWK`; subject
+  `mailto:` + `CONTACT_EMAIL`). Payload-less push (empty body, `TTL: 60`, `Urgency: high`): no
+  RFC 8291 encryption, the Worker only signs an ES256 VAPID JWT. `sw.js` shows a generic "your
+  turn" notification (one tag) and focuses or opens the room. Subscribe only from a button; an
+  additive client message `{t:"push", endpoint|null}` (deploy the Worker first) stores one row per
+  player in the DO's SQLite (https endpoints of known push services only; deleted on leave, kick,
+  purge, `null`, or a 404/410). Sending never in the message path: when a decision starts for a
+  player with no visible connected socket (additive `{t:"presence", visible}`), the room marks a
+  push due in ~10 s and the alarm sends it through the outbox (kind `push`, give up after ~2 min),
+  at most once per decision and per 30 s. iOS: only in the installed PWA (16.4+).
 - Auto-assigned initials next to each name, so players can tell 10 seats apart.
 - An external uptime check in the runbook.
+
+Found while writing the privacy page (M6), fixed: Google sign-in stored Google's OAuth tokens
+(the id_token carries the name and picture) — `lib/auth/minimal-accounts.ts` now keeps only the
+provider id; rooms were created without the `weur` location hint — every `getByName` now passes
+`PLACEMENT` (`apps/rooms/src/placement.ts`). Open: retention limits (rate-limit rows, report
+evidence, moderation log, game logs, room visits, expired e-mail tokens are kept with no time
+limit; the privacy page says so), and a deleted-then-recreated account escapes its ban.
 
 Decided not to adopt: bots in public play (maybe a solo practice mode one day), portrait avatars
 (licence unclear), secret votes, a private fascist chat, expansions.
@@ -243,14 +282,14 @@ Execution: one sub-agent per task in a git worktree, velo-style (file ownership 
 - **Protocol:** schema round-trips; every engine view passes the strict schema; HMAC test vectors identical in Node and workerd.
 - **Rooms:** `npm -w @sh/rooms test` with `@cloudflare/vitest-plugin` (`--max-workers=1 --no-isolate` for WebSocket suites): forged/expired/replayed/wrong-room tickets, guest in public room, bad Origin/HMAC, actions from non-actors/spectators/dead players, chat silence rules, flood; alarms via `runDurableObjectAlarm`; hibernation/eviction resume via `evictDurableObject`; outbox retry with mocked fetch.
 - **Web:** unit + jsdom component tests from engine fixtures; integration on real Postgres (result ingestion idempotency, ban refusal, rate limits, account-deletion anonymisation).
-- **End to end (Playwright, prod build :3100 + `wrangler dev` :8787, test seed):** 5 guest browser contexts play a private game to the end; 7-player game with 1 browser + 6 bots; 5 signed-in accounts quick-match into a public game and the result lands in Postgres; report → ban → rejoin refused; FR and EN; mobile viewport; axe on every page and each table phase.
+- **End to end (Playwright, prod build :3100 + `wrangler dev` :8787, test seed):** 5 guest browser contexts play a private game to the end; 7-player game with 1 browser + 6 bots; 5 signed-in accounts quick-match into a public game and the result lands in Postgres; report → ban → rejoin refused; FR and EN; mobile viewport. `a11y.spec.ts`: axe (WCAG 2.1 A/AA) on every page FR/EN, desktop and Pixel 7, dark scheme on desktop, signed-in / admin / room screens, every `/dev/table` fixture for a player and a spectator. `keyboard.spec.ts`: keyboard-only play, focus moves and live regions, turn alerts in a real room. `pages.spec.ts`: the content pages and footer links.
 - **Manual on staging:** 5+ real phones from a shared link, kill Wi-Fi mid-game and reconnect, deploy the Worker during a game and confirm it resumes.
 
 ---
 
 ## Risks and open points
 
-1. **Name in links:** "Hitler" in URLs/previews may be down-ranked by social filters → neutral domain, name kept in the UI. Domain still to pick.
+1. **Name in links:** "Hitler" in URLs/previews may be down-ranked by social filters. No domain (M6 decision): the vercel.app address contains it; a neutral `*.vercel.app` alias is free if links get filtered.
 2. **CC BY-NC-SA on code** follows precedent but has no patent grant; NC applies to forks. Dependency notices in `THIRD_PARTY_NOTICES.md`. Not legal advice.
 3. **Free tiers:** DO rows written (~200 games/day), Workers 100k requests/day, Neon 0.5 GB, Vercel Hobby (non-commercial OK). Paying hosting costs doesn't conflict with NC.
 4. **AFK defaults** (Nein vote, random targets) affect balance; tune after the friends beta; a "remake" vote may come in v1.1.

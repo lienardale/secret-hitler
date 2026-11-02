@@ -8,13 +8,19 @@
     "rulesPdf": "Règles officielles (PDF, en anglais)"
   },
   "footer": {
-    "credit": "Secret Hitler a été créé par Mike Boxleiter, Tommy Maranges et Mac Schubert. © Goat, Wolf & Cabbage.",
-    "license": "Adaptation non officielle sous licence CC BY-NC-SA 4.0.",
+    "label": "Informations sur le site",
+    "rules": "Règles",
+    "credits": "Crédits",
+    "conduct": "Code de conduite",
+    "legal": "Mentions légales",
+    "privacy": "Confidentialité",
+    "license": "Adaptation non officielle, gratuite et sans publicité, sous licence <link>CC BY-NC-SA 4.0</link>.",
     "switchLocale": "English"
   },
   "nav": {
     "label": "Navigation principale",
     "play": "Jouer",
+    "rules": "Règles",
     "signIn": "Connexion",
     "signOut": "Se déconnecter",
     "finishAccount": "Terminer mon compte",
@@ -23,5 +29,10 @@
   },
   "errors": {
     "banned": "Votre compte est suspendu : il ne peut pas créer de salle pour l'instant. Le motif et la durée sont sur votre profil."
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "lead": "Cette adresse ne mène à aucune page du site. Le lien est peut-être incomplet.",
+    "home": "Retour à l'accueil"
   }
 }

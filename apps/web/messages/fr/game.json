@@ -16,6 +16,8 @@
     "termLimitedHint": "Ne peut pas être proposé à la chancellerie ce tour-ci",
     "voted": "A voté",
     "notVoted": "N'a pas voté",
+    "yourTurn": "À vous",
+    "theirTurn": "Son tour",
     "ballot": "A voté {vote, select, ja {Ja!} other {Nein!}}",
     "notHitler": "Pas Hitler",
     "notHitlerHint": "Élu à la chancellerie après le 3ᵉ décret fasciste : on sait que ce n'est pas Hitler",
@@ -66,6 +68,7 @@
     "fascistTrack": "Décrets fascistes",
     "count": "{count} sur {total}",
     "slot": "Case {n}",
+    "slotWin": "Case {n} : {label}",
     "slotEmpty": "Case {n} : vide",
     "slotPower": "Case {n} : {power}",
     "slotEnacted": "Case {n} : {policy}",
@@ -83,7 +86,12 @@
     "chaosHint": "À 3, le décret du dessus est adopté",
     "deck": "Pioche",
     "discard": "Défausse",
-    "cards": "{count, plural, one {# carte} other {# cartes}}"
+    "cards": "{count, plural, one {# carte} other {# cartes}}",
+    "teams": "Équipes à {count} joueurs",
+    "teamsValue": "{liberal, plural, one {# libéral} other {# libéraux}} · {fascist, plural, one {# fasciste} other {# fascistes}} · Hitler",
+    "policiesLeft": "Pas encore adoptés",
+    "policiesLeftValue": "{liberal, plural, one {# libéral} other {# libéraux}} · {fascist, plural, one {# fasciste} other {# fascistes}}",
+    "policiesLeftHint": "(pioche, défausse et mains)"
   },
   "roleCard": {
     "hold": "Maintenez pour voir votre rôle",
@@ -91,6 +99,7 @@
     "hidden": "Rôle secret",
     "yourRole": "Votre rôle",
     "party": "{party, select, liberal {Parti libéral} other {Parti fasciste}}",
+    "toWin": "Pour gagner",
     "goal": {
       "liberal": "Adoptez 5 décrets libéraux ou exécutez Hitler.",
       "fascist": "Adoptez 6 décrets fascistes, ou faites élire Hitler à la chancellerie après le 3ᵉ.",
@@ -101,10 +110,29 @@
     "knownNone": {
       "liberal": "Les libéraux ne connaissent le rôle de personne d'autre.",
       "fascist": "Vous ne connaissez le rôle de personne d'autre.",
-      "hitler": "À 7 joueurs ou plus, Hitler ne connaît pas les fascistes, mais eux vous connaissent."
+      "hitler": "Vous ne savez pas qui sont les fascistes."
+    },
+    "knows": {
+      "fascist": {
+        "small": "À 5 ou 6 joueurs, Hitler sait qui vous êtes.",
+        "large": "Hitler ne sait pas qui vous êtes : il ne connaît les fascistes qu'à 5 ou 6 joueurs."
+      },
+      "hitler": {
+        "small": "À 5 ou 6 joueurs, Hitler connaît les fascistes, et eux vous connaissent.",
+        "large": "Hitler ne connaît les fascistes qu'à 5 ou 6 joueurs. Eux savent qui vous êtes."
+      }
     },
     "investigations": "Vos enquêtes",
     "investigation": "{name} : {party, select, liberal {parti libéral} other {parti fasciste}}"
+  },
+  "investigation": {
+    "title": "Vous avez enquêté sur {name}",
+    "hold": "Maintenez pour voir son parti",
+    "holdHint": "Caché dès que vous relâchez. Au clavier : Entrée l'affiche et le masque.",
+    "hidden": "Parti",
+    "result": "{name} : {party, select, liberal {parti libéral} other {parti fasciste}}",
+    "secret": "Personne d'autre ne le sait. Vous pouvez dire la vérité ou mentir.",
+    "dismiss": "Fermer"
   },
   "phase": {
     "nominate": "Élection",
@@ -129,13 +157,24 @@
     "specialElection": "{president} choisit qui prendra la présidence.",
     "execute": "{president} choisit qui exécuter."
   },
+  "warning": {
+    "label": "Ce qui se joue",
+    "hitlerZone": "Si Hitler est élu chancelier maintenant, les fascistes gagnent.",
+    "chaos": "Si ce vote échoue, le décret du dessus de la pioche est adopté d'office."
+  },
+  "banner": {
+    "lastVote": "Dernier vote",
+    "tally": "Ja! {ja} – Nein! {nein}",
+    "elected": "Élu",
+    "rejected": "Rejeté"
+  },
   "timer": {
     "label": "Temps restant",
     "unknown": "Temps restant : démarrage"
   },
   "action": {
     "idle": "Rien à faire pour l'instant.",
-    "dead": "Vous avez été exécuté·e. Vous pouvez suivre la partie, mais plus y participer.",
+    "dead": "Vous avez été exécuté·e : ne révélez pas votre rôle. Vous pouvez suivre la partie, mais plus parler ni y participer.",
     "voted": "Vous avez voté. Les bulletins seront révélés quand tout le monde aura voté.",
     "pending": "Envoi…",
     "announce": {
@@ -164,10 +203,9 @@
       "secret": "Les bulletins seront révélés quand tout le monde aura voté.",
       "ja": "Ja!",
       "jaMeaning": "Oui",
-      "jaLabel": "Voter Ja! (oui)",
       "nein": "Nein!",
       "neinMeaning": "Non",
-      "neinLabel": "Voter Nein! (non)"
+      "prefix": "Voter"
     },
     "presidentDiscard": {
       "title": "Défaussez un décret",
@@ -196,7 +234,8 @@
     },
     "investigate": {
       "title": "Enquête de loyauté",
-      "hint": "Vous verrez son parti (Hitler apparaît fasciste). Personne ne peut faire l'objet de deux enquêtes."
+      "hint": "Vous verrez son parti (Hitler apparaît fasciste). Personne ne peut faire l'objet de deux enquêtes.",
+      "lie": "Le résultat ne s'affichera que pour vous. Vous pourrez dire la vérité à la table, ou mentir."
     },
     "investigateConfirm": "Enquêter sur {name}",
     "acknowledgePeek": {
@@ -224,6 +263,8 @@
     "heading": "Journal de la partie",
     "empty": "Rien ne s'est encore passé.",
     "private": "Privé",
+    "privateHold": "Maintenez pour lire",
+    "privateArrived": "Une ligne privée a été ajoutée au journal.",
     "nobody": "personne",
     "gameStarted": "La partie commence à {count} joueurs.",
     "round": "{president} prend la présidence.",

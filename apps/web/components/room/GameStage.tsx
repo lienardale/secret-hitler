@@ -3,8 +3,8 @@
 /**
  * The room during and after a game: the game table (components/game), the
  * chat beside it, everyone in the room with the player menu (mute, block,
- * report), and the host's controls (stop the game, play for a disconnected
- * player, rematch).
+ * report), the turn alerts (tab title, vibration), and the host's controls
+ * (stop the game, play for a disconnected player, rematch).
  */
 import { useTranslations } from "next-intl";
 import type { RoomView } from "@sh/protocol";
@@ -16,6 +16,7 @@ import { useRoomActions, useRoomState } from "@/lib/room-client/store";
 
 import { ChatPanel } from "./ChatPanel";
 import { RoomMembers } from "./RoomMembers";
+import { TurnAlerts } from "./TurnAlerts";
 
 function HostControls({ room }: { room: RoomView }) {
   const t = useTranslations("room");
@@ -93,6 +94,8 @@ export function GameStage({ room, youPid }: { room: RoomView; youPid: string }) 
         aside={<ChatPanel className="h-[24rem] lg:h-[32rem]" />}
       />
       <RoomMembers room={room} youPid={youPid} />
+      {/* Tab-title prefix + vibration when a decision starts; the vibration switch. */}
+      <TurnAlerts playing={room.status === "playing"} />
       {isHost ? (
         <HostControls room={room} />
       ) : (

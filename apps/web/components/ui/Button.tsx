@@ -6,7 +6,8 @@ const VARIANTS: Record<ButtonVariant, string> = {
   primary: "bg-ink text-paper hover:bg-ink-muted",
   secondary: "border-2 border-ink text-ink hover:bg-paper-raised",
   quiet: "text-ink-muted underline-offset-4 hover:text-ink hover:underline",
-  danger: "bg-fascist text-paper hover:opacity-90",
+  // No opacity on hover: paper on a faded red falls under 4.5:1.
+  danger: "bg-fascist text-paper underline-offset-4 hover:underline",
 };
 
 export const buttonClass = (variant: ButtonVariant = "primary", extra = "") =>

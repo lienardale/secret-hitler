@@ -4,6 +4,9 @@ export default defineConfig({
   test: {
     include: ["test/**/*.test.ts"],
     environment: "node",
+    // Property tests play 1,000 random games each: well under 5 s on an idle machine, but a
+    // loaded laptop (other builds running) timed them out. The limit guards hangs, not speed.
+    testTimeout: 60_000,
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],

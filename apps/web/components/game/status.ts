@@ -2,7 +2,15 @@
  * What the table is doing and who it is waiting for, as text. Pure helpers
  * over the public part of a `PlayerView` (works the same for spectators).
  */
-import type { PlayerView, Seat } from "@sh/engine";
+import {
+  DECK_COMPOSITION,
+  HITLER_ZONE,
+  ROLE_TABLE,
+  TRACKER_LIMIT,
+  type PlayerCount,
+  type PlayerView,
+  type Seat,
+} from "@sh/engine";
 import type { useTranslations } from "next-intl";
 
 import type { SeatNames } from "./names";
@@ -19,6 +27,71 @@ export interface PhaseSummary {
 /** Living seats that have not voted yet (during a vote). */
 export function waitingVoters(view: PlayerView): Seat[] {
   return view.seats.filter((s) => s.alive && s.hasVoted === false).map((s) => s.seat);
+}
+
+/**
+ * Every seat the table is waiting for right now, in any phase: the President
+ * (nomination, discard, veto answer, executive power), the voters who have not
+ * voted yet, or the Chancellor (enacting). Public information: the same for
+ * every viewer, spectators included. Empty once the game is over or stopped.
+ */
+export function waitingSeats(view: PlayerView): Seat[] {
+  const phase = view.phase;
+  if (view.roles !== null) return [];
+  switch (phase.kind) {
+    case "vote":
+      return waitingVoters(view);
+    case "chancellorEnact":
+      return [phase.chancellor];
+    case "nominate":
+    case "presidentDiscard":
+    case "vetoResponse":
+    case "executive":
+      return [view.president];
+    case "over":
+      return [];
+  }
+}
+
+export type VoteWarning = "hitlerZone" | "chaos";
+
+/**
+ * What is at stake in the coming or current vote: Hitler elected Chancellor
+ * wins the game once 3 fascist policies are down; one more failed election
+ * enacts the top policy (chaos). Only during a nomination or a vote.
+ */
+export function voteWarnings(view: PlayerView): VoteWarning[] {
+  const kind = view.phase.kind;
+  if (kind !== "nominate" && kind !== "vote") return [];
+  const warnings: VoteWarning[] = [];
+  if (view.fascist >= HITLER_ZONE) warnings.push("hitlerZone");
+  if (view.tracker === TRACKER_LIMIT - 1) warnings.push("chaos");
+  return warnings;
+}
+
+/** Liberals and Fascists at this table (plus one Hitler), from the official role table. */
+export function teamComposition(playerCount: PlayerCount): { liberal: number; fascist: number } {
+  const row = ROLE_TABLE[playerCount];
+  return { liberal: row.liberal, fascist: row.fascist };
+}
+
+/**
+ * Policies not enacted yet, wherever they are (draw pile, discard, hands):
+ * the 6 L / 11 F deck minus the board, chaos-enacted policies included.
+ */
+export function policiesLeft(view: PlayerView): { liberal: number; fascist: number } {
+  return {
+    liberal: DECK_COMPOSITION.L - view.liberal,
+    fascist: DECK_COMPOSITION.F - view.fascist,
+  };
+}
+
+/** The last vote's counts, for the banner strip. */
+export function voteTally(votes: readonly (boolean | null)[]): { ja: number; nein: number } {
+  return {
+    ja: votes.filter((vote) => vote === true).length,
+    nein: votes.filter((vote) => vote === false).length,
+  };
 }
 
 /** The Chancellor of the government in session or the nominee, if any. */

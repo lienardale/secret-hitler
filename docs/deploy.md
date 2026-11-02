@@ -8,7 +8,16 @@ Two pieces, deployed separately:
 | Game server (`apps/rooms`) | Cloudflare Workers + Durable Objects, `wrangler.jsonc` env `staging` → Worker `sh-rooms-staging`                               | https://sh-rooms-staging.sh-rooms.workers.dev |
 | Database                   | Neon Postgres (free plan, `fra1`), resource `sh-staging` added from the Vercel Marketplace and connected to the Vercel project | (no public URL)                               |
 
-Production (M6) will be a separate Vercel project and a `production` Wrangler env, on a domain.
+**Production (M6 decision, 2026-11-02):** there is no domain and no separate project. The site is
+mostly for the operator's friends, so this project _is_ production: its Production environment
+gets its own Neon database (created by the operator from the Vercel Marketplace and connected to
+Production only), while `sh-staging` stays connected to Preview. The Worker stays
+`sh-rooms-staging` on `workers.dev`. No Resend: no e-mail is sent and `REQUIRE_EMAIL_VERIFICATION`
+stays off. The production runbook (usage alerts, uptime check, first deploy on the new database)
+is added in M6 phase 2.
+
+When a host, a region or a hosting company changes, update `HOSTS` in `apps/web/lib/legal.ts`,
+the `privacy.hosting.*` lines in `messages/*/legal.json` and `LEGAL_UPDATED`.
 
 Access: the stable address `secret-hitler-staging.vercel.app` is public (anyone with the link can
 play); per-deployment URLs (`secret-hitler-staging-<hash>-lienardales-projects.vercel.app`) stay
@@ -96,6 +105,8 @@ deploy before the build, and the previous deployment keeps serving.
   password in `STAGING_ADMIN_EMAIL` / `STAGING_ADMIN_PASSWORD` or in
   `apps/web/.env.staging-e2e.local` (gitignored, mode 600):
   `PLAYWRIGHT_BASE_URL=https://secret-hitler-staging.vercel.app npx -w @sh/web playwright test staging-moderation.spec.ts --project=desktop-chromium`
+- Content pages (M6): `PLAYWRIGHT_BASE_URL=… npx -w @sh/web playwright test pages.spec.ts --project=desktop-chromium --project=mobile-chromium`
+  (rules, credits, legal notice, privacy in FR and EN, footer links, no console errors).
 - Installable app: `PLAYWRIGHT_BASE_URL=… npx -w @sh/web playwright test pwa.spec.ts --project=desktop-chromium`
   (manifest, icons, service worker, offline page, no CSP errors). A real install on a phone
   (Android "Install app", iOS "Add to Home Screen") is checked by hand.

@@ -23,3 +23,26 @@ for (const fixture of FIXTURE_NAMES) {
     expect(errors).toEqual([]);
   });
 }
+
+/**
+ * The team counter reads the engine's role table in the browser: a production
+ * minifier once merged two power boards (.debug/004), so check every player
+ * count against the official table on the built page.
+ */
+const TEAMS: Record<number, [liberal: number, fascist: number]> = {
+  5: [3, 1],
+  6: [4, 1],
+  7: [4, 2],
+  8: [5, 2],
+  9: [5, 3],
+  10: [6, 3],
+};
+
+test("the team counter matches the role table for every player count", async ({ page }) => {
+  for (const [players, [liberal, fascist]] of Object.entries(TEAMS)) {
+    await page.goto(`/fr/dev/table?players=${players}&seed=3&fixture=start&seat=spectator`);
+    const teams = page.getByTestId("teams");
+    await expect(teams).toHaveAttribute("data-liberal", String(liberal));
+    await expect(teams).toHaveAttribute("data-fascist", String(fascist));
+  }
+});

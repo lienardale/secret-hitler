@@ -1,0 +1,254 @@
+{
+  "updated": "Last updated: <date></date>",
+  "countries": {
+    "US": "United States"
+  },
+  "notice": {
+    "meta": {
+      "title": "Legal notice",
+      "description": "Who publishes this site, who hosts it, and how to contact us."
+    },
+    "page": {
+      "title": "Legal notice",
+      "lead": "Who publishes this site, who hosts it, and how to contact us."
+    },
+    "publisher": {
+      "title": "Publisher",
+      "anonymous": "This site is published by a private individual, acting non-professionally, who chose not to publish their identity (article 6-III-2 of French law no. 2004-575 of 21 June 2004, the LCEN). Their details were given to {host}, the site's host.",
+      "named": "This site is published by {name}.",
+      "address": "Address:",
+      "phone": "Phone: {phone}",
+      "directorAnonymous": "Publication director: the site's publisher.",
+      "director": "Publication director: {name}.",
+      "contact": "Contact: <mail>{email}</mail>"
+    },
+    "hosts": {
+      "title": "Hosting",
+      "lead": "The site relies on three hosts:",
+      "role": {
+        "vercel": "the website",
+        "cloudflare": "the game server (rooms and games in progress)",
+        "neon": "the database"
+      },
+      "heading": "{service}, for {role}",
+      "neonCompany": "Neon is provided by Databricks, Inc., the parent company of Neon, LLC.",
+      "phone": "Phone: {phone}",
+      "website": "Website: <link>{url}</link>"
+    },
+    "ip": {
+      "title": "Intellectual property",
+      "game": "The game Secret Hitler belongs to its creators ({copyright}). It is released under the <link>Creative Commons BY-NC-SA 4.0</link> licence. This site is an unofficial adaptation, not affiliated with or endorsed by them.",
+      "ours": "This site's texts, drawings and code are shared under the same licence. The creators and sources are listed on the <credits>Credits</credits> page."
+    },
+    "report": {
+      "title": "Reporting content",
+      "text": "To report illegal content or to appeal a moderation decision, follow the steps in the <conduct>code of conduct</conduct> or write to <mail>{email}</mail>."
+    },
+    "privacy": {
+      "title": "Personal data",
+      "text": "What the site keeps about you, and why, is explained in the <link>privacy policy</link>."
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "Privacy policy",
+      "description": "What the site keeps about you, why, where, for how long, and your rights."
+    },
+    "page": {
+      "title": "Privacy policy",
+      "lead": "What the site keeps about you, why, where and for how long, and your rights. This page describes what the site actually does."
+    },
+    "summary": {
+      "title": "In short",
+      "minimum": "We keep only what is needed to play and to protect the players.",
+      "noTracking": "No ads, no analytics, no tracking: only the cookies the site needs to work, so there is no cookie banner.",
+      "chat": "The chat is kept only while its room exists, unless someone reports a player.",
+      "delete": "You can delete your account yourself, from your profile.",
+      "age": "The site is for people aged 15 and over."
+    },
+    "controller": {
+      "title": "Who is responsible",
+      "anonymous": "The site's publisher is responsible: a private individual acting non-professionally (see the <link>legal notice</link>). For any question: <mail>{email}</mail>.",
+      "named": "{name} is responsible (see the <link>legal notice</link>). For any question: <mail>{email}</mail>."
+    },
+    "data": {
+      "title": "What we keep, and why",
+      "guest": {
+        "title": "If you play as a guest",
+        "text": "The name you choose and a random id are stored in a signed cookie in your browser (sh_guest), valid for 30 days. There is no account. Other players see your name in the rooms you enter, and it appears in the results of the games you play (see \"Games\")."
+      },
+      "account": {
+        "title": "If you create an account",
+        "lead": "We keep:",
+        "email": "your e-mail address, to sign you in. It is shown neither to other players nor to moderators;",
+        "password": "your password, only in a scrambled form that cannot be reversed (bcrypt);",
+        "name": "your player name, the only name others see, and the date you last changed it;",
+        "age": "the date you confirmed being 15 or older;",
+        "other": "your language, your role on the site (player, moderator or admin), whether your e-mail address is verified, and when the account was created and last changed.",
+        "google": "If you sign in with Google (when the site offers it), we keep only your Google account id, to recognise you next time. We keep neither your Google name, nor your picture, nor the sign-in tokens Google sends us."
+      },
+      "games": {
+        "title": "Games",
+        "text": "When a game ends, private or public, its room sends the result to the site: the room code, start and end times, the outcome and, for each seat, the name shown, the role, whether the player was alive, whether they won and whether the site was playing for them at the end. Guests' names are included too.",
+        "log": "We also keep how the game went (the initial draw and every action with its time, identified by seat number, not by name) so it can be replayed later. Your history is shown on your profile."
+      },
+      "blocks": {
+        "title": "Blocks and muted players",
+        "text": "If you block a player, we keep that block until you remove it: it hides their messages and keeps you apart in quick match. Muting a player only concerns your browser: the list is kept in its local storage for 7 days, and the site never knows."
+      },
+      "chat": {
+        "title": "Rooms and the chat",
+        "text": "While a room exists, its server keeps the list of people in it (name, account or guest id, and your blocks to filter the chat), the game in progress and the latest 300 chat messages. None of this is in our database. It is all deleted with the room: 30 minutes after the game ends (a rematch keeps the same room), or once a waiting room has been empty for 30 minutes. If the room cannot deliver a game's result to the site, it keeps trying for up to 3 days before it is deleted.",
+        "lobby": "For quick match, the list of open public rooms also keeps the accounts in each one, until the room closes."
+      },
+      "reports": {
+        "title": "Reports and moderation",
+        "text": "When someone reports a player, the room sends the moderators who reported whom, the reason, any comment, and a copy of what it holds at that moment: the latest 100 chat messages, the game's public log and the list of people present (name, account or guest id, seat, host or not, connected or not). This is the only time chat is stored in our database.",
+        "actions": "We also keep suspensions (reason and dates) and a record of every moderation decision: suspension, lifting it, renaming, dismissing a report, moderators' notes."
+      },
+      "visits": {
+        "title": "Rooms visited",
+        "text": "So that a suspension also closes live connections, we note the codes of the rooms your account entered, with the date of the last entry."
+      },
+      "security": {
+        "title": "Protection against abuse",
+        "text": "To slow down abuse, we count some actions (sign-in attempts, sign-ups, guest names, room creation, reports, quick matches…) per IP address, per e-mail address or per account. We store neither the IP address nor the e-mail address: only a fingerprint (computed with a secret key), a counter and a date. A few short-lived counters exist only in the server's memory."
+      },
+      "technical": {
+        "title": "Technical data at our hosts",
+        "text": "To serve the pages and run the games, our hosts process your IP address and technical details of your requests, and keep logs of them under their own rules."
+      },
+      "mail": {
+        "title": "E-mails",
+        "text": "The site does not send any e-mail for now."
+      },
+      "sharing": "Your data is not sold or used for advertising. It is entrusted only to our hosts, to run the site."
+    },
+    "bases": {
+      "title": "On what grounds",
+      "service": "<b>Running the service you ask for</b>: your account or guest name, games, history, blocks.",
+      "safety": "<b>Keeping the site and its players safe</b>: reports, moderation, suspensions, abuse counters, rooms visited. This is our legitimate interest, and it lets us act on reports of illegal content.",
+      "consent": "As the site uses only necessary cookies, it does not ask for your consent."
+    },
+    "hosting": {
+      "title": "Where your data is",
+      "vercel": "<b>Website</b>: Vercel. Pages go through its worldwide network; the server code runs in Paris (region cdg1).",
+      "neon": "<b>Database</b>: Neon (part of Databricks), in Frankfurt (region fra1).",
+      "cloudflare": "<b>Game server</b>: Cloudflare. We ask for each room to be created in a data centre in Western Europe; Cloudflare usually follows this, but does not guarantee it.",
+      "us": "All three providers are US companies. Their own terms explain how they handle data transfers outside the European Union. Their addresses are in the <link>legal notice</link>."
+    },
+    "retention": {
+      "title": "For how long",
+      "lead": "Where the site does not set a limit yet, we say so.",
+      "caption": "How long each kind of data is kept",
+      "what": "Data",
+      "howLong": "Kept for",
+      "rows": {
+        "guest": {
+          "what": "Guest cookie",
+          "howLong": "30 days"
+        },
+        "account": {
+          "what": "Account (e-mail, scrambled password, player name…)",
+          "howLong": "Until you delete it"
+        },
+        "games": {
+          "what": "Game results and how each game went",
+          "howLong": "No time limit for now. If you delete your account, your name and the link to your account are erased: you appear as \"Deleted player\"."
+        },
+        "chat": {
+          "what": "A room: people present, the game and its chat",
+          "howLong": "The room's life: deleted 30 minutes after the game ends (up to 3 days if the result could not be delivered)"
+        },
+        "reports": {
+          "what": "Reports and their copy (chat, log, people present)",
+          "howLong": "No time limit for now, even after the accounts involved are deleted (the names at the time stay)"
+        },
+        "moderation": {
+          "what": "Record of moderation decisions",
+          "howLong": "No time limit for now; after an account is deleted, its name at the time stays"
+        },
+        "bans": {
+          "what": "Suspensions",
+          "howLong": "Until the suspended account is deleted"
+        },
+        "blocks": {
+          "what": "Blocks",
+          "howLong": "Until you remove them, or either account is deleted"
+        },
+        "visits": {
+          "what": "Rooms visited",
+          "howLong": "One week: older ones are erased the next time you enter a room, and all of them with the account"
+        },
+        "limits": {
+          "what": "Abuse counters (fingerprints, no IP address or e-mail)",
+          "howLong": "No time limit for now"
+        },
+        "links": {
+          "what": "E-mail verification links (fingerprint)",
+          "howLong": "Valid 24 hours; erased when used, when a new link is made, or with the account"
+        },
+        "mutes": {
+          "what": "Muted players (in your browser)",
+          "howLong": "7 days"
+        }
+      }
+    },
+    "cookies": {
+      "title": "Cookies and local storage",
+      "lead": "The site uses only the cookies it needs to work: no analytics, advertising or tracking cookies, and none from third parties. That is why it shows no cookie banner.",
+      "kept": "Kept for: {duration}",
+      "rows": {
+        "guest": {
+          "name": "sh_guest",
+          "purpose": "Your guest name and id",
+          "duration": "30 days"
+        },
+        "session": {
+          "name": "authjs.session-token",
+          "purpose": "Keeping you signed in to your account",
+          "duration": "30 days, or until you sign out"
+        },
+        "signIn": {
+          "name": "authjs.csrf-token, authjs.callback-url",
+          "purpose": "Protecting sign-in and bringing you back to the right page",
+          "duration": "until the browser closes"
+        },
+        "google": {
+          "name": "authjs.state, authjs.pkce.code_verifier, authjs.nonce",
+          "purpose": "Protecting sign-in with Google",
+          "duration": "15 minutes, or until the browser closes"
+        },
+        "locale": {
+          "name": "NEXT_LOCALE",
+          "purpose": "Remembering your language (invite links, sign-in)",
+          "duration": "until the browser closes; one year if set just before a Google sign-in"
+        },
+        "mute": {
+          "name": "sh:muted:CODE (local storage)",
+          "purpose": "The players you muted in a room",
+          "duration": "7 days"
+        }
+      },
+      "prefix": "On the live site, the sign-in cookies' names start with __Secure- or __Host-.",
+      "fonts": "The fonts are served by the site itself: your browser does not contact Google Fonts.",
+      "worker": "The site installs a small program in your browser (a service worker) that caches the site's files (scripts, styles and an offline page), never a page or any personal data."
+    },
+    "rights": {
+      "title": "Your rights",
+      "lead": "You can ask to access your data, to have it corrected or erased, to receive it in a common format (portability), to object to its use or to have its use restricted.",
+      "profile": "On your <link>profile</link> you see your history and your blocks, change your name (once every 30 days) and can delete your account yourself.",
+      "deletion": "Deleting your account erases the account, the link with Google, your blocks (and those aimed at you), your suspensions and the list of rooms visited. In other players' history you become \"Deleted player\". Reports (with their copy of the chat) and the moderation record keep the name you had at the time.",
+      "ask": "For anything else, write to <mail>{email}</mail> from your account's address, with your player name.",
+      "cnil": "If you think your rights are not respected, you can complain to the CNIL, the French data protection authority: <link>cnil.fr/fr/plaintes</link>."
+    },
+    "age": {
+      "title": "Minimum age",
+      "text": "The site is for people aged 15 and over. Creating an account requires confirming you are 15 or older. If you are under 15, do not use the site, even as a guest."
+    },
+    "changes": {
+      "title": "Changes",
+      "text": "If what the site keeps changes, we update this page and its date."
+    }
+  }
+}

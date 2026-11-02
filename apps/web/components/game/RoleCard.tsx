@@ -1,28 +1,42 @@
 "use client";
 
-import type { MeView } from "@sh/engine";
+import { HITLER_KNOWS_FASCISTS_MAX_PLAYERS, type MeView, type PlayerCount } from "@sh/engine";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 
 import { CardBack, RoleFace } from "./cards";
+import { HOLD, useHoldToReveal } from "./hold";
 import type { SeatNames } from "./names";
 
 /**
  * The viewer's secret role, hidden by default ("privacy mode" for players
  * sitting side by side). Pointer/touch: shown only while pressed and held.
  * Keyboard: Enter or Space toggles it (`aria-pressed`); it hides again when
- * focus leaves the button.
+ * focus leaves the button. The card beckons until it is first revealed.
  */
-export function RoleCard({ me, names }: { me: MeView; names: SeatNames }) {
+export function RoleCard({
+  me,
+  names,
+  playerCount,
+}: {
+  me: MeView;
+  names: SeatNames;
+  playerCount: PlayerCount;
+}) {
   const t = useTranslations("game");
-  const [held, setHeld] = useState(false);
-  const [toggled, setToggled] = useState(false);
-  const revealed = held || toggled;
+  const { revealed, buttonProps } = useHoldToReveal();
+  // Once per mount: stop beckoning after the first look.
+  const [seen, setSeen] = useState(false);
+  if (revealed && !seen) setSeen(true);
   const infoId = useId();
   const hintId = useId();
 
-  const release = () => setHeld(false);
   const teammates = me.knownRoles.filter((known) => known.seat !== me.seat);
+  const small = playerCount <= HITLER_KNOWS_FASCISTS_MAX_PLAYERS;
+  const knows =
+    me.role === "liberal"
+      ? null
+      : (`roleCard.knows.${me.role}.${small ? "small" : "large"}` as const);
 
   return (
     <section
@@ -31,27 +45,11 @@ export function RoleCard({ me, names }: { me: MeView; names: SeatNames }) {
     >
       <button
         type="button"
-        aria-pressed={revealed}
         aria-describedby={hintId}
         aria-controls={infoId}
-        className="sh-hold group w-24 shrink-0 cursor-pointer touch-none rounded-lg select-none focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-ink sm:w-28"
-        onPointerDown={(event) => {
-          if (event.button !== 0) return;
-          event.currentTarget.setPointerCapture?.(event.pointerId);
-          setHeld(true);
-        }}
-        onPointerUp={release}
-        onPointerCancel={release}
-        onLostPointerCapture={release}
-        onContextMenu={(event) => event.preventDefault()}
-        onClick={(event) => {
-          // Pointer clicks are handled by press-and-hold; keyboard clicks (detail 0) toggle.
-          if (event.detail === 0) setToggled((value) => !value);
-        }}
-        onBlur={() => {
-          setToggled(false);
-          setHeld(false);
-        }}
+        data-unseen={seen ? undefined : "true"}
+        className={`${HOLD} group w-24 shrink-0 touch-none self-start rounded-lg focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-ink sm:w-28 ${seen ? "" : "sh-unseen"}`}
+        {...buttonProps}
       >
         <span className="sr-only">{t("roleCard.hold")}</span>
         <span key={revealed ? "face" : "back"} className="sh-flip block" aria-hidden>
@@ -87,7 +85,12 @@ export function RoleCard({ me, names }: { me: MeView; names: SeatNames }) {
                 </strong>{" "}
                 <span className="text-ink-muted">({t("roleCard.party", { party: me.party })})</span>
               </p>
-              <p className="text-xs">{t(`roleCard.goal.${me.role}`)}</p>
+              <div>
+                <h3 className="font-display text-xs tracking-wide text-ink-muted uppercase">
+                  {t("roleCard.toWin")}
+                </h3>
+                <p className="mt-0.5 text-xs">{t(`roleCard.goal.${me.role}`)}</p>
+              </div>
               <div>
                 <h3 className="font-display text-xs tracking-wide text-ink-muted uppercase">
                   {t("roleCard.known")}
@@ -106,6 +109,7 @@ export function RoleCard({ me, names }: { me: MeView; names: SeatNames }) {
                 ) : (
                   <p className="mt-0.5 text-xs">{t(`roleCard.knownNone.${me.role}`)}</p>
                 )}
+                {knows ? <p className="mt-0.5 text-xs text-ink-muted">{t(knows)}</p> : null}
               </div>
               {me.investigations.length > 0 ? (
                 <div>

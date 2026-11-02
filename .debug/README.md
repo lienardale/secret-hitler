@@ -15,3 +15,5 @@ Add a line to the index below when you add a note.
 - [007](007-react-form-reset-after-action-2026-11-02.md) — React 19 resets forms after an action: refused forms came back empty
 - [008](008-partysocket-fake-close-1000-2026-11-02.md) — partysocket turns its own failures into a close with code 1000: retry it
 - [009](009-obscenity-in-workerd-and-word-boundaries-2026-11-02.md) — obscenity in workerd tests (deps optimizer), ASCII word boundaries, doubled letters
+- [010](010-e2e-alternate-port-origin-2026-11-02.md) — e2e on another website port: room sockets refused by the Worker's Origin check
+- [011](011-unknown-locale-paths-default-404-2026-11-02.md) — Unknown paths got Next's bare 404 (no `lang`); fixed with a `[locale]` catch-all

@@ -40,6 +40,7 @@ import { OUTBOX_GIVE_UP_MS, deliver, retryDelayMs } from "./outbox";
 import { RoomCore, createRoomState, type Drained, type RoomDeps } from "./room-core";
 import type { HistoryEntry, RoomState } from "./room-state";
 import { RoomStore } from "./storage";
+import { PLACEMENT } from "../placement";
 
 type Core = RoomCore<GameState, Action, Projected<PlayerView>, GameEvent>;
 
@@ -354,7 +355,7 @@ export class GameRoom extends DurableObject<Env> {
   private async syncLobby(core: Core, now: number): Promise<void> {
     const report: LobbyRoomReport | null = core.lobbyReport();
     const sent = this.store.getMeta<LobbySent>("lobbySent");
-    const lobby = this.env.LOBBY.getByName(LOBBY_NAME);
+    const lobby = this.env.LOBBY.getByName(LOBBY_NAME, PLACEMENT);
     try {
       if (report === null) {
         if (sent) await lobby.remove(core.room.code);
@@ -376,7 +377,7 @@ export class GameRoom extends DurableObject<Env> {
   private async purge(): Promise<void> {
     const core = this.core;
     if (core && this.store.getMeta<LobbySent>("lobbySent")) {
-      await this.env.LOBBY.getByName(LOBBY_NAME)
+      await this.env.LOBBY.getByName(LOBBY_NAME, PLACEMENT)
         .remove(core.room.code)
         .catch((error: unknown) => console.error("lobby remove failed", error));
     }

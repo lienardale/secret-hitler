@@ -104,6 +104,18 @@ export function getEnv(): Env {
 }
 
 /** Test pages are read on their own so a page can 404 without the rest of the contract. */
+/**
+ * Whether the site talks about e-mail verification at all: only when a mail can
+ * actually arrive (Resend) or public play requires it. With the log transport
+ * and no requirement (production without a domain), a "resend" button would
+ * promise an e-mail that never comes.
+ */
+export function emailVerificationShown(
+  env: Pick<Env, "MAIL_TRANSPORT" | "REQUIRE_EMAIL_VERIFICATION">,
+): boolean {
+  return env.MAIL_TRANSPORT === "resend" || env.REQUIRE_EMAIL_VERIFICATION;
+}
+
 export function testPagesEnabled(source: EnvSource = process.env): boolean {
   return /^(1|true|yes)$/i.test(source.ENABLE_TEST_PAGES?.trim() ?? "");
 }

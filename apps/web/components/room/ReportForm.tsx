@@ -111,7 +111,7 @@ export function ReportForm({
         maxLength={REPORT_DETAILS_MAX}
         rows={3}
         aria-describedby={`${id}-details-hint`}
-        className="mt-1 w-full rounded-md border-2 border-rule bg-paper px-3 py-2 focus:border-ink focus:outline-none"
+        className="mt-1 w-full rounded-md border-2 border-field bg-paper px-3 py-2 focus:border-ink focus:outline-none"
       />
       <p id={`${id}-details-hint`} className="text-sm text-ink-muted">
         {t("report.detailsHint", { max: REPORT_DETAILS_MAX })}
