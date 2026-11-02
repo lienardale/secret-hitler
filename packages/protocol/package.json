@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@sh/engine": "*",
+    "jose": "6.2.13",
     "zod": "4.6.7"
   }
 }

@@ -14,8 +14,7 @@ describe("rooms worker skeleton", () => {
     expect(res.status).toBe(404);
   });
 
-  it("addresses a GameRoom by its room code", async () => {
-    const stub = env.GAME_ROOM.getByName("BCDFG");
-    expect(await stub.hello()).toEqual({ room: "BCDFG", protocol: 1 });
+  it("has no room behind a code nobody created", async () => {
+    expect(await env.GAME_ROOM.getByName("BCDFG").info()).toBeNull();
   });
 });

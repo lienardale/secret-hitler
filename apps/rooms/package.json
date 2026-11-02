@@ -6,13 +6,15 @@
   "license": "CC-BY-NC-SA-4.0",
   "type": "module",
   "scripts": {
-    "postinstall": "wrangler types >/dev/null",
+    "postinstall": "wrangler types --strict-vars=false >/dev/null",
     "dev": "wrangler dev",
     "build": "wrangler deploy --dry-run --outdir dist",
-    "types": "wrangler types",
-    "typecheck": "tsc --noEmit",
+    "types": "wrangler types --strict-vars=false",
+    "typecheck": "tsc --noEmit && tsc -p scripts --noEmit",
     "test": "vitest run",
-    "test:ci": "vitest run"
+    "test:ci": "vitest run",
+    "bots": "tsx scripts/bots.ts",
+    "ticket": "tsx scripts/dev-ticket.ts"
   },
   "dependencies": {
     "@sh/engine": "*",
@@ -20,6 +22,10 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "1.4.11",
-    "wrangler": "4.156.0"
+    "@types/ws": "8.18.2",
+    "jose": "6.2.13",
+    "partysocket": "1.3.0",
+    "wrangler": "4.156.0",
+    "ws": "8.22.0"
   }
 }

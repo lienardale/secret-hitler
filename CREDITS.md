@@ -30,7 +30,11 @@ The CC license asks adaptations to say what they changed. Compared with the phys
 - **Timers in public games.** Public games use phase timers. When a player runs out of
   time, a default action is played for them (for example a "Nein" vote, or a random
   legal choice). Private games have no timers unless the host turns them on.
+- **Away players.** In public games, a player disconnected for 90 seconds is played
+  automatically (same default actions) until they come back. In private games the host can
+  play the turn of a player who has been disconnected for a minute, or stop the game.
 - **Abandoned games.** A public game ends without a winner if too many players disconnect.
+- **Spectators.** People who arrive after the start watch the game; they cannot chat until it ends.
 - **French translation.** Rules summaries and the interface are available in French and English.
 
 This list is kept up to date as the project evolves.
