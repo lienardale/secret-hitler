@@ -2,9 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Germania_One, Jost } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { ServiceWorker } from "@/components/pwa/ServiceWorker";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { SERVER_ONLY_NAMESPACES } from "@/lib/i18n/namespaces";
 import { routing } from "@/lib/i18n/routing";
 import { APPLE_TOUCH_ICON, PNG_FAVICON, appIconUrl } from "@/lib/pwa/icons";
 
@@ -69,11 +71,27 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const messages = await getMessages({ locale });
+  const clientMessages = Object.fromEntries(
+    Object.entries(messages).filter(
+      ([namespace]) => !(SERVER_ONLY_NAMESPACES as readonly string[]).includes(namespace),
+    ),
+  );
 
   return (
     <html lang={locale} className={`${display.variable} ${body.variable}`}>
-      <body className="min-h-dvh bg-paper text-ink antialiased">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+      <body className="flex min-h-dvh flex-col bg-paper text-ink antialiased">
+        <NextIntlClientProvider messages={clientMessages}>
+          {/*
+           * Page roots are `min-h-dvh` boxes. Inside this column they fill what the footer
+           * leaves instead (min-h-0 + flex-1 on the page's root), so the footer sits at the
+           * bottom of a short page and after the content of a long one. `w-full` keeps a
+           * root with `mx-auto max-w-…` at its full width: in a flex column, auto margins
+           * would otherwise shrink it to its content.
+           */}
+          <div className="flex flex-1 flex-col *:min-h-0! *:w-full *:flex-1">{children}</div>
+          <SiteFooter locale={locale} />
+        </NextIntlClientProvider>
         <ServiceWorker />
       </body>
     </html>

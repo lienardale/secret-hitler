@@ -110,7 +110,7 @@ export function ChatPanel({ className = "" }: { className?: string }) {
             maxLength={CHAT_MAX_LENGTH}
             placeholder={t("chat.placeholder")}
             autoComplete="off"
-            className="min-w-0 flex-1 rounded-md border-2 border-rule bg-paper px-3 py-2 focus:border-ink focus:outline-none"
+            className="min-w-0 flex-1 rounded-md border-2 border-field bg-paper px-3 py-2 focus:border-ink focus:outline-none"
           />
           <Button type="submit" variant="secondary" disabled={text.trim() === ""}>
             {t("chat.send")}

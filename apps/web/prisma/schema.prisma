@@ -235,8 +235,9 @@ model GamePlayer {
   role   GameRole
   alive  Boolean
   won    Boolean
-  /// The room was playing for this player when the game ended (gone too long,
-  /// or kicked): counts as an abandon for the quick-match cooldown.
+  /// The room was playing for this player when the game ended (gone too long;
+  /// never set for kicked or banned players): counts as an abandon for the
+  /// quick-match cooldown.
   left   Boolean    @default(false)
 
   game Game  @relation(fields: [gameId], references: [id], onDelete: Cascade)

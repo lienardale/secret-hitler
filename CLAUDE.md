@@ -28,7 +28,9 @@ npm -w @sh/web run test:integration
 npm -w @sh/web run admin:grant -- <email>   # make an account ADMIN
 npm -w @sh/web run build && npm -w @sh/web run e2e   # Playwright (RUN_E2E=1 adds it to ci.sh)
 # e2e beside a wrangler dev already on :8787: build with ROOMS_URL=http://localhost:8788, run with
-# PLAYWRIGHT_ROOMS_PORT=8788 (its own wrangler, own local state in apps/rooms/.wrangler/e2e)
+# PLAYWRIGHT_ROOMS_PORT=8788 (its own wrangler, own local state in apps/rooms/.wrangler/e2e);
+# PLAYWRIGHT_PORT=3101 moves the website too (the e2e Worker allows that origin)
+npx -w @sh/web playwright test a11y.spec.ts keyboard.spec.ts   # axe (WCAG 2.1 A/AA) + keyboard-only play
 bash scripts/ci.sh                # local mirror of CI (SKIP_BUILD=1 to skip builds)
 npm -w @sh/rooms run deploy:staging   # Cloudflare (needs `npx wrangler login`)
 vercel deploy --prod                  # from the repo root (linked to secret-hitler-staging)
@@ -75,6 +77,27 @@ wake lock during a game). **The worker never caches HTML or `/api/*` responses**
 non-GET and cross-origin requests (the rooms Worker): pages are network-only with
 `/offline.html` as the offline fallback, and only hashed `/_next/static/*` files are cached. Bump
 `VERSION` in `sw.js` when its caching changes.
+
+Content pages (M6): `/regles`, `/credits`, `/mentions-legales`, `/confidentialite` (namespaces
+`rules`, `credits`, `legal`, kept out of the client bundle by the layout), all built with
+`components/site/ContentPage.tsx`; the footer (`components/site/SiteFooter.tsx`) is rendered once
+by `app/[locale]/layout.tsx`; unknown paths reach `app/[locale]/not-found.tsx` through
+`[...rest]`. Publisher, hosts, `SOURCE_CODE_URL` (null until the repo is public) and
+`LEGAL_UPDATED` live in `lib/legal.ts`: bump `LEGAL_UPDATED` whenever the legal pages change, and
+update `HOSTS` + `privacy.hosting.*` when a host, region or company changes. Every item of
+"What we changed" in `CREDITS.md` has a twin in `messages/*/credits.json`
+(`tests/unit/credits-sync.test.ts` checks count, titles and the exact credit line). Any new cookie
+or browser storage key gets a line on the privacy page.
+
+Game table (M6): `components/game/hold.ts` is the shared hold-to-reveal hook (role card, private
+log lines, investigation panel: their content is not in the DOM until revealed); `status.ts` has
+the pure table helpers (`waitingSeats` = engine `pendingActors`, `voteWarnings`, counters);
+`initials.ts` gives unique initials per table; `motion.ts` spots what changed since the last
+render for the CSS reveals (only under `prefers-reduced-motion: no-preference`). Component tests
+are `*.test.tsx` (the `ui` project ignores `components/**/*.test.ts`). Turn alerts (tab-title
+prefix + vibration): `lib/turn-alert/`, mounted by `components/room/TurnAlerts.tsx` in
+`GameStage`; the vibration preference is `localStorage["sh:turn-alert:vibrate"]`. Form fields use
+`border-field` (3:1 contrast); `border-rule` is for decoration only.
 
 ## Rules that matter
 

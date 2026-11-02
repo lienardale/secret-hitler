@@ -56,10 +56,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </a>
         </p>
       </main>
-      <footer className="space-y-2 border-t border-rule px-4 py-4 text-sm text-ink-muted">
-        <p>{t("footer.credit")}</p>
-        <p>{t("footer.license")}</p>
-      </footer>
     </div>
   );
 }

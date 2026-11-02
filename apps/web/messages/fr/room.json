@@ -171,6 +171,10 @@
     "title": "Dans la salle",
     "spectator": "spectateur"
   },
+  "turnAlert": {
+    "titlePrefix": "● À vous",
+    "vibrate": "Faire vibrer le téléphone quand c'est à vous de jouer"
+  },
   "member": {
     "open": "Actions pour {name}",
     "mutedTag": "messages masqués",

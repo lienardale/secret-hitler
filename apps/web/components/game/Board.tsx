@@ -21,11 +21,18 @@ import {
   VetoIcon,
 } from "./art";
 import { PolicyCard } from "./cards";
+import { useBoardChanges } from "./motion";
+import { policiesLeft, teamComposition } from "./status";
 
-/** Liberal and fascist tracks, election tracker and piles. */
+/**
+ * Liberal and fascist tracks, election tracker, piles, and two counters: the
+ * teams at this table and the policies not enacted yet. A newly enacted
+ * policy and the tracker moving up are animated (reduced motion: no motion).
+ */
 export function Board({ view }: { view: PlayerView }) {
   const t = useTranslations("game");
   const headingId = useId();
+  const changes = useBoardChanges(view);
   return (
     <section
       aria-labelledby={headingId}
@@ -34,12 +41,13 @@ export function Board({ view }: { view: PlayerView }) {
       <h2 id={headingId} className="sr-only">
         {t("table.board")}
       </h2>
-      <LiberalTrack enacted={view.liberal} />
-      <FascistTrack view={view} />
+      <LiberalTrack enacted={view.liberal} fresh={changes.liberal} />
+      <FascistTrack view={view} fresh={changes.fascist} />
       <div className="flex flex-wrap items-end justify-between gap-3 border-t border-rule pt-2">
-        <ElectionTracker tracker={view.tracker} />
+        <ElectionTracker tracker={view.tracker} moved={changes.tracker} />
         <Piles deck={view.deckCount} discard={view.discardCount} />
       </div>
+      <Counters view={view} />
     </section>
   );
 }
@@ -85,7 +93,7 @@ function EmptySlot({
   );
 }
 
-function LiberalTrack({ enacted }: { enacted: number }) {
+function LiberalTrack({ enacted, fresh }: { enacted: number; fresh: boolean }) {
   const t = useTranslations("game");
   const id = useId();
   const name = t("policy.name.L");
@@ -110,13 +118,18 @@ function LiberalTrack({ enacted }: { enacted: number }) {
               {i < enacted ? (
                 <>
                   <span className="sr-only">{t("board.slotEnacted", { n, policy: name })}</span>
-                  <PolicyCard policy="L" label={name} size="fluid" className="sh-deal" />
+                  <PolicyCard
+                    policy="L"
+                    label={name}
+                    size="fluid"
+                    className={fresh && n === enacted ? "sh-enact" : ""}
+                  />
                 </>
               ) : (
                 <EmptySlot
                   label={
                     last
-                      ? `${t("board.slot", { n })}: ${t("board.liberalWin")}`
+                      ? t("board.slotWin", { n, label: t("board.liberalWin") })
                       : t("board.slotEmpty", { n })
                   }
                 >
@@ -141,7 +154,7 @@ function LiberalTrack({ enacted }: { enacted: number }) {
   );
 }
 
-function FascistTrack({ view }: { view: PlayerView }) {
+function FascistTrack({ view, fresh }: { view: PlayerView; fresh: boolean }) {
   const t = useTranslations("game");
   const id = useId();
   const name = t("policy.name.F");
@@ -162,14 +175,19 @@ function FascistTrack({ view }: { view: PlayerView }) {
           const last = n === FASCIST_POLICIES_TO_WIN;
           const zone = n > HITLER_ZONE;
           let label = t("board.slotEmpty", { n });
-          if (last) label = `${t("board.slot", { n })}: ${t("board.fascistWin")}`;
+          if (last) label = t("board.slotWin", { n, label: t("board.fascistWin") });
           else if (power) label = t("board.slotPower", { n, power: t(`power.${power}.name`) });
           return (
             <li key={i} className="relative min-w-0">
               {i < enacted ? (
                 <>
                   <span className="sr-only">{t("board.slotEnacted", { n, policy: name })}</span>
-                  <PolicyCard policy="F" label={name} size="fluid" className="sh-deal" />
+                  <PolicyCard
+                    policy="F"
+                    label={name}
+                    size="fluid"
+                    className={fresh && n === enacted ? "sh-enact" : ""}
+                  />
                 </>
               ) : (
                 <EmptySlot label={label} zone={zone}>
@@ -217,7 +235,7 @@ function FascistTrack({ view }: { view: PlayerView }) {
   );
 }
 
-function ElectionTracker({ tracker }: { tracker: number }) {
+function ElectionTracker({ tracker, moved }: { tracker: number; moved: boolean }) {
   const t = useTranslations("game");
   const id = useId();
   return (
@@ -235,7 +253,9 @@ function ElectionTracker({ tracker }: { tracker: number }) {
                 key={i}
                 className={`flex size-6 items-center justify-center rounded-full border-2 font-display text-xs ${
                   filled ? "border-ink bg-ink text-paper" : "border-rule text-ink-muted"
-                } ${chaos && !filled ? "border-fascist text-fascist" : ""}`}
+                } ${chaos && !filled ? "border-fascist text-fascist" : ""} ${
+                  moved && i === tracker - 1 ? "sh-token-move" : ""
+                }`}
               >
                 {chaos ? <ChaosIcon className="size-3.5" /> : i + 1}
               </li>
@@ -257,21 +277,50 @@ function Piles({ deck, discard }: { deck: number; discard: number }) {
   const t = useTranslations("game");
   return (
     <dl className="flex gap-3 text-xs">
-      <div className="flex items-center gap-1.5">
-        <DeckIcon className="size-5 text-ink-muted" />
-        <div>
-          <dt className="font-display tracking-wide text-ink-muted uppercase">{t("board.deck")}</dt>
-          <dd className="tabular-nums">{t("board.cards", { count: deck })}</dd>
-        </div>
+      <div className="relative pl-6.5">
+        <dt className="font-display tracking-wide text-ink-muted uppercase">
+          <DeckIcon className="absolute top-1/2 left-0 size-5 -translate-y-1/2 text-ink-muted" />
+          {t("board.deck")}
+        </dt>
+        <dd className="tabular-nums">{t("board.cards", { count: deck })}</dd>
       </div>
-      <div className="flex items-center gap-1.5">
-        <DiscardIcon className="size-5 text-ink-muted" />
-        <div>
-          <dt className="font-display tracking-wide text-ink-muted uppercase">
-            {t("board.discard")}
-          </dt>
-          <dd className="tabular-nums">{t("board.cards", { count: discard })}</dd>
-        </div>
+      <div className="relative pl-6.5">
+        <dt className="font-display tracking-wide text-ink-muted uppercase">
+          <DiscardIcon className="absolute top-1/2 left-0 size-5 -translate-y-1/2 text-ink-muted" />
+          {t("board.discard")}
+        </dt>
+        <dd className="tabular-nums">{t("board.cards", { count: discard })}</dd>
+      </div>
+    </dl>
+  );
+}
+
+/**
+ * Public counts that help reasoning: who is at this table (official role
+ * table) and how many policies of each party are not on the board yet. Not
+ * the draw pile's contents: the label says they are spread over the pile, the
+ * discard and any hand.
+ */
+function Counters({ view }: { view: PlayerView }) {
+  const t = useTranslations("game");
+  const teams = teamComposition(view.playerCount);
+  const left = policiesLeft(view);
+  return (
+    <dl className="grid gap-x-4 gap-y-1 border-t border-rule pt-2 text-xs leading-snug sm:grid-cols-2">
+      <div data-testid="teams" data-liberal={teams.liberal} data-fascist={teams.fascist}>
+        <dt className="font-display tracking-wide text-ink-muted uppercase">
+          {t("board.teams", { count: view.playerCount })}
+        </dt>
+        <dd>{t("board.teamsValue", teams)}</dd>
+      </div>
+      <div data-testid="policies-left" data-liberal={left.liberal} data-fascist={left.fascist}>
+        <dt className="font-display tracking-wide text-ink-muted uppercase">
+          {t("board.policiesLeft")}
+        </dt>
+        <dd>
+          {t("board.policiesLeftValue", left)}{" "}
+          <span className="text-ink-muted">{t("board.policiesLeftHint")}</span>
+        </dd>
       </div>
     </dl>
   );

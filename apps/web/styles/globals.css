@@ -13,6 +13,8 @@
   --color-ink: #2a221b;
   --color-ink-muted: #5c4f42;
   --color-rule: #c9b48f;
+  /* Form field borders: 3:1 against paper and paper-raised (WCAG 1.4.11); rule is decoration only. */
+  --color-field: #8a7453;
   --color-liberal: #2d6489;
   --color-fascist: #a8382a;
   --font-display: var(--font-display), serif;
@@ -26,6 +28,7 @@
     --color-ink: #efe3cc;
     --color-ink-muted: #bcae98;
     --color-rule: #4a4036;
+    --color-field: #85745f;
     --color-liberal: #7cb4dc;
     --color-fascist: #ee836c;
   }
@@ -35,4 +38,14 @@ html {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-body);
+}
+
+/* Reduced motion: no colour or opacity fades either (buttons use Tailwind's `transition`).
+   The game's own animations are already gated in game.css. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0s !important;
+  }
 }

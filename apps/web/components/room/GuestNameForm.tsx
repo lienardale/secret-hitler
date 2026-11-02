@@ -42,7 +42,7 @@ export function GuestNameForm({
           autoComplete="nickname"
           aria-describedby={`${id}-hint${error ? ` ${id}-error` : ""}`}
           aria-invalid={error ? true : undefined}
-          className="w-full rounded-md border-2 border-rule bg-paper px-3 py-2 text-lg focus:border-ink focus:outline-none"
+          className="w-full rounded-md border-2 border-field bg-paper px-3 py-2 text-lg focus:border-ink focus:outline-none"
         />
         <p id={`${id}-hint`} className="text-sm text-ink-muted">
           {t("name.hint")}

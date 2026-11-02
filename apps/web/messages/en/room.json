@@ -171,6 +171,10 @@
     "title": "In the room",
     "spectator": "spectator"
   },
+  "turnAlert": {
+    "titlePrefix": "● Your turn",
+    "vibrate": "Vibrate the phone when it is your turn"
+  },
   "member": {
     "open": "Actions for {name}",
     "mutedTag": "muted",

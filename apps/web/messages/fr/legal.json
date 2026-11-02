@@ -1,0 +1,254 @@
+{
+  "updated": "Dernière mise à jour : <date></date>",
+  "countries": {
+    "US": "États-Unis"
+  },
+  "notice": {
+    "meta": {
+      "title": "Mentions légales",
+      "description": "Qui édite ce site, qui l'héberge et comment nous contacter."
+    },
+    "page": {
+      "title": "Mentions légales",
+      "lead": "Qui édite ce site, qui l'héberge et comment nous contacter."
+    },
+    "publisher": {
+      "title": "Éditeur",
+      "anonymous": "Ce site est édité par un particulier, à titre non professionnel, qui a choisi de ne pas publier son identité (article 6-III-2 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique). Ses coordonnées ont été communiquées à {host}, hébergeur du site.",
+      "named": "Ce site est édité par {name}.",
+      "address": "Adresse :",
+      "phone": "Téléphone : {phone}",
+      "directorAnonymous": "Directeur de la publication : l'éditeur du site.",
+      "director": "Directeur de la publication : {name}.",
+      "contact": "Contact : <mail>{email}</mail>"
+    },
+    "hosts": {
+      "title": "Hébergement",
+      "lead": "Le site s'appuie sur trois hébergeurs :",
+      "role": {
+        "vercel": "le site web",
+        "cloudflare": "le serveur de jeu (les salles et les parties en cours)",
+        "neon": "la base de données"
+      },
+      "heading": "{service}, pour {role}",
+      "neonCompany": "Neon est fourni par Databricks, Inc., société mère de Neon, LLC.",
+      "phone": "Téléphone : {phone}",
+      "website": "Site : <link>{url}</link>"
+    },
+    "ip": {
+      "title": "Propriété intellectuelle",
+      "game": "Le jeu Secret Hitler appartient à ses auteurs ({copyright}). Il est publié sous licence <link>Creative Commons BY-NC-SA 4.0</link>. Ce site en est une adaptation non officielle, ni affiliée à ses auteurs, ni approuvée par eux.",
+      "ours": "Les textes, les dessins et le code de ce site sont partagés sous la même licence. Le détail des auteurs et des sources est sur la page <credits>Crédits</credits>."
+    },
+    "report": {
+      "title": "Signaler un contenu",
+      "text": "Pour signaler un contenu illicite ou contester une décision de modération, suivez les indications du <conduct>code de conduite</conduct> ou écrivez à <mail>{email}</mail>."
+    },
+    "privacy": {
+      "title": "Données personnelles",
+      "text": "Ce que le site garde sur vous, et pourquoi, est expliqué dans la <link>politique de confidentialité</link>."
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "Politique de confidentialité",
+      "description": "Ce que le site garde sur vous, pourquoi, où, combien de temps, et vos droits."
+    },
+    "page": {
+      "title": "Politique de confidentialité",
+      "lead": "Ce que le site garde sur vous, pourquoi, où et combien de temps, et vos droits. Cette page décrit ce que fait réellement le site."
+    },
+    "summary": {
+      "title": "En bref",
+      "minimum": "Nous ne gardons que ce qu'il faut pour jouer et pour protéger les joueurs.",
+      "noTracking": "Ni publicité, ni mesure d'audience, ni pistage : seulement les cookies nécessaires au site, donc pas de bandeau de cookies.",
+      "chat": "Le chat n'est gardé que le temps de la salle, sauf si quelqu'un signale un joueur.",
+      "delete": "Vous pouvez supprimer votre compte vous-même, depuis votre profil.",
+      "age": "Le site est réservé aux personnes de 15 ans ou plus."
+    },
+    "controller": {
+      "title": "Qui est responsable",
+      "anonymous": "Le responsable est l'éditeur du site, un particulier agissant à titre non professionnel (voir les <link>mentions légales</link>). Pour toute question : <mail>{email}</mail>.",
+      "named": "Le responsable est {name} (voir les <link>mentions légales</link>). Pour toute question : <mail>{email}</mail>."
+    },
+    "data": {
+      "title": "Ce que nous gardons, et pourquoi",
+      "guest": {
+        "title": "Si vous jouez en invité",
+        "text": "Le nom que vous choisissez et un identifiant tiré au hasard sont enregistrés dans un cookie signé de votre navigateur (sh_guest), valable 30 jours. Il n'y a pas de compte. Les autres joueurs voient votre nom dans les salles où vous entrez, et il figure dans le résultat des parties que vous jouez (voir « Les parties »)."
+      },
+      "account": {
+        "title": "Si vous créez un compte",
+        "lead": "Nous gardons :",
+        "email": "votre adresse e-mail, pour vous connecter. Elle n'est montrée ni aux autres joueurs ni aux modérateurs ;",
+        "password": "votre mot de passe, seulement sous une forme chiffrée qu'on ne peut pas inverser (bcrypt) ;",
+        "name": "votre nom de joueur, le seul nom que voient les autres, et la date de votre dernier changement de nom ;",
+        "age": "la date à laquelle vous avez confirmé avoir 15 ans ou plus ;",
+        "other": "votre langue, votre rôle sur le site (joueur, modérateur ou administrateur), si votre adresse e-mail est vérifiée, et les dates de création et de modification du compte.",
+        "google": "Si vous vous connectez avec Google (quand le site le propose), nous gardons seulement l'identifiant de votre compte Google, pour vous reconnaître la fois suivante. Nous ne gardons ni votre nom Google, ni votre photo, ni les jetons de connexion que Google nous envoie."
+      },
+      "games": {
+        "title": "Les parties",
+        "text": "À la fin de chaque partie, privée ou publique, la salle envoie son résultat au site : le code de la salle, les heures de début et de fin, le résultat et, pour chaque place, le nom affiché, le rôle, si le joueur était en vie, s'il a gagné et si le site jouait à sa place à la fin. Les noms des invités y figurent aussi.",
+        "log": "Nous gardons aussi le déroulement de la partie (le tirage initial et chaque action, avec son heure, désignée par un numéro de place et non par un nom) pour pouvoir la rejouer plus tard. Votre historique s'affiche sur votre profil."
+      },
+      "blocks": {
+        "title": "Blocages et joueurs masqués",
+        "text": "Si vous bloquez un joueur, nous gardons ce blocage jusqu'à ce que vous le retiriez : il sert à cacher ses messages et à vous séparer en partie rapide. Masquer un joueur ne concerne que votre navigateur : la liste est gardée dans son stockage local pendant 7 jours, et le site n'en sait rien."
+      },
+      "chat": {
+        "title": "Les salles et le chat",
+        "text": "Pendant qu'une salle existe, son serveur garde la liste des personnes présentes (nom, identifiant de compte ou d'invité, et vos blocages pour filtrer le chat), la partie en cours et les 300 derniers messages du chat. Rien de cela n'est dans notre base de données. Tout est effacé avec la salle : 30 minutes après la fin de la partie (une revanche garde la même salle), ou quand une salle d'attente est restée vide 30 minutes. Si la salle n'arrive pas à transmettre le résultat d'une partie au site, elle réessaie pendant 3 jours au plus avant d'être effacée.",
+        "lobby": "Pour la partie rapide, la liste des salles publiques ouvertes garde aussi les comptes présents dans chacune, jusqu'à la fermeture de la salle."
+      },
+      "reports": {
+        "title": "Signalements et modération",
+        "text": "Quand quelqu'un signale un joueur, la salle transmet aux modérateurs qui signale qui, le motif, le commentaire éventuel, et une copie de ce qu'elle contient à ce moment-là : les 100 derniers messages du chat, le journal public de la partie et la liste des personnes présentes (nom, identifiant de compte ou d'invité, place, hôte ou non, connecté ou non). C'est le seul cas où le chat est enregistré dans notre base de données.",
+        "actions": "Nous gardons aussi les suspensions (motif et dates) et la trace de chaque décision de modération : suspension, levée, changement de nom, signalement classé, notes des modérateurs."
+      },
+      "visits": {
+        "title": "Salles visitées",
+        "text": "Pour qu'une suspension ferme aussi les connexions en cours, nous notons les codes des salles où votre compte est entré, avec la date de la dernière entrée."
+      },
+      "security": {
+        "title": "Protection contre les abus",
+        "text": "Pour freiner les abus, nous comptons certaines actions (tentatives de connexion, inscriptions, noms d'invité, créations de salle, signalements, parties rapides…) par adresse IP, par adresse e-mail ou par compte. Nous n'enregistrons ni l'adresse IP ni l'adresse e-mail : seulement une empreinte (calculée avec une clé secrète), un compteur et une date. Quelques compteurs de courte durée ne vivent que dans la mémoire du serveur."
+      },
+      "technical": {
+        "title": "Données techniques chez nos hébergeurs",
+        "text": "Pour afficher les pages et faire tourner les parties, nos hébergeurs traitent votre adresse IP et des informations techniques sur vos requêtes, et en gardent des journaux selon leurs propres règles."
+      },
+      "mail": {
+        "title": "E-mails",
+        "text": "Le site n'envoie aucun e-mail pour l'instant."
+      },
+      "sharing": "Vos données ne sont ni vendues ni utilisées pour de la publicité. Elles ne sont confiées qu'à nos hébergeurs, pour faire fonctionner le site."
+    },
+    "bases": {
+      "title": "Sur quelles bases",
+      "service": "<b>Faire fonctionner le service que vous demandez</b> : votre compte ou votre nom d'invité, les parties, l'historique, les blocages.",
+      "safety": "<b>Protéger le site et ses joueurs</b> : signalements, modération, suspensions, compteurs contre les abus, salles visitées. C'est notre intérêt légitime, et cela nous permet de traiter les signalements de contenus illicites.",
+      "consent": "Le site n'utilisant que des cookies nécessaires, il ne vous demande pas de consentement."
+    },
+    "hosting": {
+      "title": "Où sont vos données",
+      "vercel": "<b>Site web</b> : Vercel. Les pages passent par son réseau mondial ; le code du serveur tourne à Paris (région cdg1).",
+      "neon": "<b>Base de données</b> : Neon (groupe Databricks), à Francfort (région fra1).",
+      "cloudflare": "<b>Serveur de jeu</b> : Cloudflare. Nous demandons que chaque salle soit créée dans un centre de données d'Europe de l'Ouest ; c'est une indication que Cloudflare suit en général, pas une garantie.",
+      "us": "Ces trois prestataires sont des entreprises américaines. Leurs propres conditions expliquent comment ils encadrent les transferts de données hors de l'Union européenne. Leurs adresses figurent dans les <link>mentions légales</link>."
+    },
+    "retention": {
+      "title": "Combien de temps",
+      "lead": "Quand le site ne fixe pas encore de durée, nous l'écrivons.",
+      "caption": "Durée de conservation de chaque donnée",
+      "what": "Donnée",
+      "howLong": "Durée",
+      "rows": {
+        "guest": {
+          "what": "Cookie d'invité",
+          "howLong": "30 jours"
+        },
+        "account": {
+          "what": "Compte (e-mail, mot de passe chiffré, nom de joueur…)",
+          "howLong": "Jusqu'à ce que vous le supprimiez"
+        },
+        "games": {
+          "what": "Résultats et déroulement des parties",
+          "howLong": "Pas de durée limite pour l'instant. Si vous supprimez votre compte, votre nom et le lien vers votre compte sont effacés : vous apparaissez comme « Joueur supprimé »."
+        },
+        "chat": {
+          "what": "Salle : présents, partie et chat",
+          "howLong": "Le temps de la salle : effacé 30 minutes après la fin de la partie (3 jours au plus si le résultat n'a pas pu être transmis)"
+        },
+        "reports": {
+          "what": "Signalements et copie jointe (chat, journal, présents)",
+          "howLong": "Pas de durée limite pour l'instant, y compris après la suppression des comptes concernés (les noms de l'époque restent)"
+        },
+        "moderation": {
+          "what": "Journal des décisions de modération",
+          "howLong": "Pas de durée limite pour l'instant ; après la suppression d'un compte, le nom de l'époque reste"
+        },
+        "bans": {
+          "what": "Suspensions",
+          "howLong": "Jusqu'à la suppression du compte suspendu"
+        },
+        "blocks": {
+          "what": "Blocages",
+          "howLong": "Jusqu'à ce que vous les retiriez, ou à la suppression de l'un des deux comptes"
+        },
+        "visits": {
+          "what": "Salles visitées",
+          "howLong": "Une semaine : les plus anciennes sont effacées la prochaine fois que vous entrez dans une salle, et toutes avec le compte"
+        },
+        "limits": {
+          "what": "Compteurs contre les abus (empreintes, sans adresse IP ni e-mail)",
+          "howLong": "Pas de durée limite pour l'instant"
+        },
+        "links": {
+          "what": "Liens de vérification d'e-mail (empreinte)",
+          "howLong": "Valables 24 heures ; effacés quand ils servent, quand un nouveau lien est créé, ou avec le compte"
+        },
+        "mutes": {
+          "what": "Joueurs masqués (dans votre navigateur)",
+          "howLong": "7 jours"
+        }
+      }
+    },
+    "cookies": {
+      "title": "Cookies et stockage local",
+      "lead": "Le site n'utilise que des cookies nécessaires à son fonctionnement : aucun cookie de mesure d'audience, de publicité ou de pistage, ni de service tiers. C'est pourquoi il n'affiche pas de bandeau de cookies.",
+      "kept": "Durée : {duration}",
+      "rows": {
+        "guest": {
+          "name": "sh_guest",
+          "purpose": "Votre nom et votre identifiant d'invité",
+          "duration": "30 jours"
+        },
+        "session": {
+          "name": "authjs.session-token",
+          "purpose": "Vous garder connecté à votre compte",
+          "duration": "30 jours, ou jusqu'à la déconnexion"
+        },
+        "signIn": {
+          "name": "authjs.csrf-token, authjs.callback-url",
+          "purpose": "Protéger la connexion et vous ramener à la bonne page",
+          "duration": "jusqu'à la fermeture du navigateur"
+        },
+        "google": {
+          "name": "authjs.state, authjs.pkce.code_verifier, authjs.nonce",
+          "purpose": "Protéger la connexion avec Google",
+          "duration": "15 minutes, ou jusqu'à la fermeture du navigateur"
+        },
+        "locale": {
+          "name": "NEXT_LOCALE",
+          "purpose": "Retenir votre langue (liens d'invitation, connexion)",
+          "duration": "jusqu'à la fermeture du navigateur ; un an s'il est posé juste avant une connexion avec Google"
+        },
+        "mute": {
+          "name": "sh:muted:CODE (stockage local)",
+          "purpose": "Les joueurs que vous avez masqués dans une salle",
+          "duration": "7 jours"
+        }
+      },
+      "prefix": "Sur le site en ligne, les noms des cookies de connexion commencent par __Secure- ou __Host-.",
+      "fonts": "Les polices sont servies par le site lui-même : votre navigateur ne contacte pas Google Fonts.",
+      "worker": "Le site installe dans votre navigateur un petit programme (service worker) qui garde en cache ses fichiers (scripts, styles et une page hors ligne), jamais une page ni une donnée personnelle."
+    },
+    "rights": {
+      "title": "Vos droits",
+      "lead": "Vous pouvez demander à accéder à vos données, à les faire corriger ou effacer, à les recevoir dans un format courant (portabilité), à vous opposer à leur traitement ou à en demander la limitation.",
+      "profile": "Sur votre <link>profil</link>, vous voyez votre historique et vos blocages, vous changez de nom (une fois tous les 30 jours) et vous pouvez supprimer votre compte vous-même.",
+      "deletion": "La suppression efface votre compte, le lien avec Google, vos blocages (et ceux qui vous visent), vos suspensions et la liste des salles visitées. Dans l'historique des autres joueurs, vous devenez « Joueur supprimé ». Les signalements (avec leur copie du chat) et le journal de modération gardent le nom que vous aviez à l'époque.",
+      "ask": "Pour tout le reste, écrivez à <mail>{email}</mail> depuis l'adresse de votre compte, en donnant votre nom de joueur.",
+      "cnil": "Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL : <link>cnil.fr/fr/plaintes</link>."
+    },
+    "age": {
+      "title": "Âge minimum",
+      "text": "Le site est réservé aux personnes de 15 ans ou plus. Pour créer un compte, il faut confirmer avoir 15 ans ou plus. Si vous avez moins de 15 ans, n'utilisez pas le site, même en invité."
+    },
+    "changes": {
+      "title": "Modifications",
+      "text": "Si ce que le site garde change, nous mettons cette page à jour, avec sa date."
+    }
+  }
+}

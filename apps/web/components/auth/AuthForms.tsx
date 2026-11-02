@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/Button";
 
 export const inputClass =
-  "w-full rounded-md border-2 border-rule bg-paper px-3 py-2 text-lg focus:border-ink focus:outline-none";
+  "w-full rounded-md border-2 border-field bg-paper px-3 py-2 text-lg focus:border-ink focus:outline-none";
 const labelClass = "block font-display text-lg";
 
 type Field = "email" | "password" | "displayName" | "age";

@@ -6,9 +6,11 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { PowerIcon, VetoIcon } from "./art";
 import { PolicyCard } from "./cards";
+import { InitialsBadge } from "./InitialsBadge";
 import type { SeatNames } from "./names";
-import { waitingVoters } from "./status";
+import { voteWarnings, waitingVoters } from "./status";
 import { BALLOT, BUTTON, CHOICE, HAND_CARD } from "./ui";
+import { VoteWarnings } from "./VoteWarnings";
 
 /** The kind of decision the viewer faces, from their legal actions. */
 export type DecisionKind =
@@ -50,6 +52,8 @@ interface PanelProps {
   view: PlayerView;
   me: MeView;
   names: SeatNames;
+  /** Initials per seat (index = seat), shown in the player pickers. */
+  initials: readonly string[];
   turn: number;
   onAction: (action: Action) => void;
   pending: boolean;
@@ -60,7 +64,7 @@ interface PanelProps {
  * When a decision starts, focus moves to the panel heading and a polite live
  * region announces it.
  */
-export function ActionPanel({ view, me, names, turn, onAction, pending }: PanelProps) {
+export function ActionPanel({ view, me, names, initials, turn, onAction, pending }: PanelProps) {
   const t = useTranslations("game");
   const kind = decisionKind(me.legal);
   // Not view.seq: other players' votes must not move focus.
@@ -76,9 +80,11 @@ export function ActionPanel({ view, me, names, turn, onAction, pending }: PanelP
   return (
     <section
       data-testid="action-panel"
+      // Focus target when the investigation panel above it closes.
+      tabIndex={-1}
       aria-labelledby={kind ? headingId : undefined}
       aria-busy={pending}
-      className={`sh-panel min-w-0 rounded-xl border-2 p-3 shadow-sm ${
+      className={`sh-panel min-w-0 rounded-xl border-2 p-3 shadow-sm focus:outline-none ${
         kind ? "sh-your-turn border-ink bg-paper-raised" : "border-rule bg-paper-raised/60"
       }`}
     >
@@ -105,6 +111,7 @@ export function ActionPanel({ view, me, names, turn, onAction, pending }: PanelP
             view={view}
             me={me}
             names={names}
+            initials={initials}
             onAction={onAction}
             pending={pending}
           />
@@ -137,22 +144,24 @@ interface DecisionProps {
   view: PlayerView;
   me: MeView;
   names: SeatNames;
+  initials: readonly string[];
   onAction: (action: Action) => void;
   pending: boolean;
 }
 
-function Decision({ kind, view, me, names, onAction, pending }: DecisionProps) {
+function Decision({ kind, view, me, names, initials, onAction, pending }: DecisionProps) {
   const t = useTranslations("game");
   const legal = me.legal;
+  const pickerProps = { names, initials, disabled: pending };
   switch (kind) {
     case "nominate":
       return (
         <>
           <Hint>{t("action.nominate.hint")}</Hint>
+          <VoteWarnings warnings={voteWarnings(view)} className="mt-2" />
           <SeatPicker
             targets={targetsOf(legal, "nominate")}
-            names={names}
-            disabled={pending}
+            {...pickerProps}
             confirmLabel={(name) => t("action.nominateConfirm", { name })}
             onConfirm={(target) => onAction({ type: "nominate", target })}
           />
@@ -250,10 +259,10 @@ function Decision({ kind, view, me, names, onAction, pending }: DecisionProps) {
       return (
         <>
           <Hint>{t("action.investigate.hint")}</Hint>
+          <p className="mt-1 text-sm">{t("action.investigate.lie")}</p>
           <SeatPicker
             targets={targetsOf(legal, "investigate")}
-            names={names}
-            disabled={pending}
+            {...pickerProps}
             confirmLabel={(name) => t("action.investigateConfirm", { name })}
             onConfirm={(target) => onAction({ type: "investigate", target })}
           />
@@ -267,8 +276,7 @@ function Decision({ kind, view, me, names, onAction, pending }: DecisionProps) {
           <Hint>{t("action.specialElection.hint")}</Hint>
           <SeatPicker
             targets={targetsOf(legal, "specialElection")}
-            names={names}
-            disabled={pending}
+            {...pickerProps}
             confirmLabel={(name) => t("action.specialElectionConfirm", { name })}
             onConfirm={(target) => onAction({ type: "specialElection", target })}
           />
@@ -280,8 +288,7 @@ function Decision({ kind, view, me, names, onAction, pending }: DecisionProps) {
           <Hint>{t("action.execute.hint")}</Hint>
           <SeatPicker
             targets={targetsOf(legal, "execute")}
-            names={names}
-            disabled={pending}
+            {...pickerProps}
             danger
             confirmLabel={(name) => t("action.executeConfirm", { name })}
             onConfirm={(target) => onAction({ type: "execute", target })}
@@ -303,6 +310,7 @@ function Hint({ children }: { children: React.ReactNode }) {
 function SeatPicker({
   targets,
   names,
+  initials,
   confirmLabel,
   onConfirm,
   disabled,
@@ -310,6 +318,7 @@ function SeatPicker({
 }: {
   targets: Seat[];
   names: SeatNames;
+  initials: readonly string[];
   confirmLabel: (name: string) => string;
   onConfirm: (target: Seat) => void;
   disabled: boolean;
@@ -343,7 +352,10 @@ function SeatPicker({
             onClick={() => setSelected(choice === seat ? null : seat)}
             className={CHOICE}
           >
-            {names.plain(seat)}
+            <span className="flex min-w-0 items-center gap-2">
+              <InitialsBadge initials={initials[seat] ?? ""} />
+              <span className="truncate">{names.plain(seat)}</span>
+            </span>
           </button>
         ))}
       </div>
@@ -479,14 +491,15 @@ function VoteDecision({
           })}
         </p>
       ) : null}
+      <VoteWarnings warnings={voteWarnings(view)} className="mt-2" />
       <div className="mt-3 grid grid-cols-2 gap-3 sm:gap-4">
         <button
           type="button"
-          aria-label={t("action.vote.jaLabel")}
           disabled={pending}
           onClick={() => onAction({ type: "vote", ja: true })}
           className={`${BALLOT} sh-ballot-ja border-ink bg-paper text-ink`}
         >
+          <span className="sr-only">{t("action.vote.prefix")} </span>
           <span className="font-display text-4xl leading-none sm:text-5xl">
             {t("action.vote.ja")}
           </span>
@@ -494,11 +507,11 @@ function VoteDecision({
         </button>
         <button
           type="button"
-          aria-label={t("action.vote.neinLabel")}
           disabled={pending}
           onClick={() => onAction({ type: "vote", ja: false })}
           className={`${BALLOT} sh-ballot-nein border-ink bg-ink text-paper`}
         >
+          <span className="sr-only">{t("action.vote.prefix")} </span>
           <span className="font-display text-4xl leading-none sm:text-5xl">
             {t("action.vote.nein")}
           </span>

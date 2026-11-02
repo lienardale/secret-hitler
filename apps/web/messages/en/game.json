@@ -16,6 +16,8 @@
     "termLimitedHint": "Cannot be nominated Chancellor this round",
     "voted": "Voted",
     "notVoted": "Not voted",
+    "yourTurn": "Your turn",
+    "theirTurn": "Their turn",
     "ballot": "Voted {vote, select, ja {Ja!} other {Nein!}}",
     "notHitler": "Not Hitler",
     "notHitlerHint": "Elected Chancellor after the 3rd Fascist policy, so publicly known not to be Hitler",
@@ -66,6 +68,7 @@
     "fascistTrack": "Fascist policies",
     "count": "{count} of {total}",
     "slot": "Slot {n}",
+    "slotWin": "Slot {n}: {label}",
     "slotEmpty": "Slot {n}: empty",
     "slotPower": "Slot {n}: {power}",
     "slotEnacted": "Slot {n}: {policy}",
@@ -83,7 +86,12 @@
     "chaosHint": "At 3, the top policy is enacted",
     "deck": "Draw pile",
     "discard": "Discard",
-    "cards": "{count, plural, one {# card} other {# cards}}"
+    "cards": "{count, plural, one {# card} other {# cards}}",
+    "teams": "Teams at {count} players",
+    "teamsValue": "{liberal, plural, one {# Liberal} other {# Liberals}} · {fascist, plural, one {# Fascist} other {# Fascists}} · Hitler",
+    "policiesLeft": "Not enacted yet",
+    "policiesLeftValue": "{liberal} Liberal · {fascist} Fascist",
+    "policiesLeftHint": "(pile, discard and hands)"
   },
   "roleCard": {
     "hold": "Hold to see your role",
@@ -91,6 +99,7 @@
     "hidden": "Secret role",
     "yourRole": "Your role",
     "party": "{party, select, liberal {Liberal party} other {Fascist party}}",
+    "toWin": "To win",
     "goal": {
       "liberal": "Enact 5 Liberal policies or execute Hitler.",
       "fascist": "Enact 6 Fascist policies, or get Hitler elected Chancellor after the 3rd.",
@@ -101,10 +110,29 @@
     "knownNone": {
       "liberal": "Liberals do not know anyone else's role.",
       "fascist": "You know no one else's role.",
-      "hitler": "In games of 7 or more, Hitler does not know the Fascists, but they know you."
+      "hitler": "You do not know who the Fascists are."
+    },
+    "knows": {
+      "fascist": {
+        "small": "At 5–6 players, Hitler knows who you are.",
+        "large": "Hitler does not know who you are: he knows the Fascists only at 5–6 players."
+      },
+      "hitler": {
+        "small": "At 5–6 players, Hitler knows the Fascists, and they know you.",
+        "large": "Hitler knows the Fascists only at 5–6 players. They know who you are."
+      }
     },
     "investigations": "Your investigations",
     "investigation": "{name}: {party, select, liberal {Liberal party} other {Fascist party}}"
+  },
+  "investigation": {
+    "title": "You investigated {name}",
+    "hold": "Hold to see their party",
+    "holdHint": "Hidden again when you let go. Keyboard: Enter shows and hides it.",
+    "hidden": "Party",
+    "result": "{name}: {party, select, liberal {Liberal party} other {Fascist party}}",
+    "secret": "Only you know this. You may tell the truth or lie.",
+    "dismiss": "Close"
   },
   "phase": {
     "nominate": "Election",
@@ -129,13 +157,24 @@
     "specialElection": "{president} is choosing the next President.",
     "execute": "{president} is choosing who to execute."
   },
+  "warning": {
+    "label": "What is at stake",
+    "hitlerZone": "If Hitler is elected Chancellor now, the Fascists win.",
+    "chaos": "If this vote fails, the top policy is enacted automatically."
+  },
+  "banner": {
+    "lastVote": "Last vote",
+    "tally": "Ja! {ja} – Nein! {nein}",
+    "elected": "Elected",
+    "rejected": "Rejected"
+  },
   "timer": {
     "label": "Time left",
     "unknown": "Time left: starting"
   },
   "action": {
     "idle": "Nothing to do right now.",
-    "dead": "You have been executed. You can follow the game, but no longer take part.",
+    "dead": "You have been executed: do not reveal your role. You can follow the game, but no longer talk or take part.",
     "voted": "You have voted. Ballots are revealed once everyone has voted.",
     "pending": "Sending…",
     "announce": {
@@ -164,10 +203,9 @@
       "secret": "Ballots are revealed once everyone has voted.",
       "ja": "Ja!",
       "jaMeaning": "Yes",
-      "jaLabel": "Vote Ja! (yes)",
       "nein": "Nein!",
       "neinMeaning": "No",
-      "neinLabel": "Vote Nein! (no)"
+      "prefix": "Vote"
     },
     "presidentDiscard": {
       "title": "Discard one policy",
@@ -196,7 +234,8 @@
     },
     "investigate": {
       "title": "Investigate loyalty",
-      "hint": "You will see their party (Hitler shows as Fascist). Nobody can be investigated twice."
+      "hint": "You will see their party (Hitler shows as Fascist). Nobody can be investigated twice.",
+      "lie": "Only you will see the result. You may tell the table the truth, or lie."
     },
     "investigateConfirm": "Investigate {name}",
     "acknowledgePeek": {
@@ -224,6 +263,8 @@
     "heading": "Game log",
     "empty": "Nothing has happened yet.",
     "private": "Private",
+    "privateHold": "Hold to read",
+    "privateArrived": "A private line was added to the game log.",
     "nobody": "nobody",
     "gameStarted": "The game begins with {count} players.",
     "round": "{president} is President.",

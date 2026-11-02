@@ -15,6 +15,7 @@ import { expect, type Browser, type BrowserContext, type Page } from "@playwrigh
 import bcrypt from "bcryptjs";
 import { parse as parseDotenv } from "dotenv";
 import pg from "pg";
+import { checkDisplayName } from "@sh/protocol";
 
 import { mintSessionToken, SESSION_COOKIE_NAME } from "../../lib/auth/session-token";
 import { assertTestDatabaseUrl, resolveTestEnv, webRoot } from "../_db/test-db";
@@ -49,8 +50,16 @@ export async function withDb<T>(run: (client: pg.Client) => Promise<T>): Promise
 }
 
 /** A name nobody else has, across parallel workers and runs (display names are unique). */
+/**
+ * A random player name the sign-up form accepts. Random hex can spell a word
+ * the name filter refuses once digits are read as letters (`Ada1c2636b384`
+ * was refused): draw again until the real check passes.
+ */
 export function uniqueName(prefix: string): string {
-  return `${prefix}${randomBytes(5).toString("hex")}`.slice(0, 20);
+  for (;;) {
+    const name = `${prefix}${randomBytes(5).toString("hex")}`.slice(0, 20);
+    if (checkDisplayName(name) === null) return name;
+  }
 }
 
 export interface TestAccount {

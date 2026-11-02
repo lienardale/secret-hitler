@@ -233,7 +233,7 @@ export function TableSandbox({ initial }: { initial: SandboxConfig }) {
     });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-4">
+    <div className="mx-auto w-full max-w-7xl px-4 py-4">
       <details open className="mb-4 rounded-xl border-2 border-dashed border-rule p-3 text-sm">
         <summary className="cursor-pointer font-display text-lg tracking-wide">
           Table sandbox (local engine)

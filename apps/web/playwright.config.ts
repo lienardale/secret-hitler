@@ -25,6 +25,13 @@ const WEB_PORT = Number(process.env.PLAYWRIGHT_PORT ?? 3100);
  * ROOMS_URL (the CSP's connect-src is fixed at build time).
  */
 const ROOMS_PORT = Number(process.env.PLAYWRIGHT_ROOMS_PORT ?? 8787);
+/**
+ * Browser origins the e2e rooms Worker accepts: wrangler.jsonc's defaults (the
+ * bots script uses :3000) and the website's port, which PLAYWRIGHT_PORT may change.
+ */
+const ALLOWED_ORIGINS = [
+  ...new Set(["http://localhost:3000", "http://localhost:3100", `http://localhost:${WEB_PORT}`]),
+].join(",");
 /** Set to test a deployed site (e.g. staging) instead of local servers. */
 const EXTERNAL = process.env.PLAYWRIGHT_BASE_URL;
 
@@ -54,7 +61,8 @@ export default defineConfig({
     : [
         {
           // Its own local state (apps/rooms/.wrangler/e2e): e2e rooms never mix with dev rooms.
-          command: `npm -w @sh/rooms run dev -- --port ${ROOMS_PORT} --inspector-port 0 --persist-to .wrangler/e2e --var WEB_API_URL:http://localhost:${WEB_PORT}`,
+          // ALLOWED_ORIGINS: wrangler.jsonc's list plus the website's port (PLAYWRIGHT_PORT).
+          command: `npm -w @sh/rooms run dev -- --port ${ROOMS_PORT} --inspector-port 0 --persist-to .wrangler/e2e --var WEB_API_URL:http://localhost:${WEB_PORT} --var ALLOWED_ORIGINS:${ALLOWED_ORIGINS}`,
           cwd: "../..",
           url: `http://localhost:${ROOMS_PORT}/health`,
           reuseExistingServer: !CI,

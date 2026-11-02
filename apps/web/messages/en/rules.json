@@ -1,0 +1,157 @@
+{
+  "meta": {
+    "title": "Rules",
+    "description": "The rules of Secret Hitler as this site plays them, with frequently asked questions."
+  },
+  "page": {
+    "title": "Rules",
+    "lead": "A summary of the rules of Secret Hitler, in our own words, describing the game as this site plays it.",
+    "official": "If in doubt, the official rules decide: <link>official rules (PDF)</link>."
+  },
+  "toc": {
+    "label": "On this page"
+  },
+  "goal": {
+    "title": "The goal",
+    "teams": "Players are secretly split into two teams: the Liberals, who are the majority, and the Fascists. One of the Fascists is Hitler. Liberals don't know who is who; Fascists do.",
+    "liberals": "<b>Liberals</b> win by enacting 5 Liberal policies, or by executing Hitler.",
+    "fascists": "<b>Fascists</b> win by enacting 6 Fascist policies, or by getting Hitler elected Chancellor once 3 Fascist policies are enacted.",
+    "talk": "It all comes down to talking: everyone says what they like, true or false, and votes for the governments they trust."
+  },
+  "roles": {
+    "title": "Roles by number of players",
+    "lead": "A game takes 5 to 10 players. There is always exactly one Hitler, who is on the Fascist team.",
+    "caption": "Roles dealt for each number of players",
+    "players": "Players",
+    "liberals": "Liberals",
+    "fascists": "Fascists (besides Hitler)",
+    "hitler": "Hitler"
+  },
+  "knowledge": {
+    "title": "Who knows whom",
+    "lead": "At the start of the game, everyone sees their own role in secret. Then:",
+    "liberals": "a Liberal knows only their own role;",
+    "fascists": "a Fascist knows who the other Fascists are, and who Hitler is;",
+    "hitler": "Hitler knows the Fascists only in 5- and 6-player games. From 7 players up, Hitler does not know who they are, but they know Hitler.",
+    "here": "No need to close your eyes here: the site shows each player what they are allowed to know, and nothing else."
+  },
+  "deck": {
+    "title": "The policies",
+    "text": "The draw pile holds 17 policies: 6 Liberal and 11 Fascist, shuffled at the start. Discarded policies stay face down: nobody sees them.",
+    "boards": "Each enacted policy goes on its team's board: 5 slots for the Liberals, 6 for the Fascists. Some Fascist slots give the President a power (see below)."
+  },
+  "round": {
+    "title": "How a round works",
+    "nomination": {
+      "title": "1. Nomination",
+      "text": "Each round, the presidency passes to the next living player in table order; the first President is drawn at random. The President nominates a Chancellor. Any other living player can be nominated, except:",
+      "chancellor": "the last elected Chancellor;",
+      "president": "the last elected President, while more than 5 players are alive. With 5 or fewer players alive, only the last elected Chancellor is excluded.",
+      "note": "\"Elected\" means the last government that won a vote. A failed vote does not change these term limits; chaos clears them."
+    },
+    "vote": {
+      "title": "2. The vote",
+      "text": "Every living player votes Ja! (yes) or Nein! (no). Ballots stay hidden until the last vote is in; then everyone sees who voted what.",
+      "majority": "The vote needs more Ja! than Nein!: a tie fails. When a vote fails, the election tracker moves one step and the presidency passes to the next player.",
+      "hitler": "If 3 or more Fascist policies are enacted and the elected Chancellor is Hitler, the Fascists win at once. Otherwise everyone now knows that this Chancellor is not Hitler."
+    },
+    "session": {
+      "title": "3. The legislative session",
+      "text": "The President draws the top 3 policies, discards one in secret and passes the other 2 to the Chancellor, who enacts one and discards the other. Nobody sees the discarded policies.",
+      "silence": "During the session, the President and the Chancellor cannot write in the chat. Afterwards, either may tell what they saw, or lie."
+    },
+    "power": {
+      "title": "4. The presidential power",
+      "text": "If the enacted policy is Fascist and its slot grants a power, the President must use it before the next round. A Liberal policy never grants a power."
+    }
+  },
+  "powers": {
+    "title": "Presidential powers",
+    "lead": "The power depends on the number of players and on how many Fascist policies are already enacted.",
+    "caption": "Power granted by each Fascist policy, by number of players",
+    "policy": "Fascist policy",
+    "ordinal": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+    "small": "5 or 6 players",
+    "medium": "7 or 8 players",
+    "large": "9 or 10 players",
+    "none": "None",
+    "win": "Fascists win",
+    "names": {
+      "investigate": "Investigate loyalty",
+      "peek": "Policy peek",
+      "specialElection": "Special election",
+      "execute": "Execution"
+    },
+    "describe": {
+      "investigate": "<b>Investigate loyalty</b>: the President picks another living player and learns their party, Liberal or Fascist (Hitler shows as Fascist). Only the President sees the result. Nobody can be investigated twice.",
+      "peek": "<b>Policy peek</b>: the President secretly looks at the top 3 policies of the draw pile, in order, without moving them.",
+      "specialElection": "<b>Special election</b>: the President picks the next President among the other living players, even one who could not be Chancellor. After that special round, the presidency resumes with the player after the President who called it.",
+      "execute": "<b>Execution</b>: the President picks another living player, who is executed. If it was Hitler, the Liberals win at once. Otherwise their role stays secret; they no longer vote, can no longer be President or Chancellor, and cannot write in the chat."
+    }
+  },
+  "veto": {
+    "title": "The veto",
+    "text": "Once 5 Fascist policies are enacted, the Chancellor may propose to veto the 2 policies they received, once per session. If the President agrees, both policies are discarded, nothing is enacted and the election tracker moves one step. If the President refuses, the Chancellor must enact one of the two."
+  },
+  "chaos": {
+    "title": "The election tracker and chaos",
+    "text": "Each failed vote moves the election tracker one step, and so does an agreed veto. The tracker goes back to zero only when a policy is enacted: a successful election followed by a veto does not reset it.",
+    "lead": "On the third step comes chaos: the top policy of the draw pile is enacted at once. When that happens:",
+    "power": "any power it would grant is ignored;",
+    "hitler": "there is no \"Hitler elected\" check, since nobody was elected;",
+    "terms": "term limits are cleared: in the next round, any other living player can be nominated;",
+    "reset": "the tracker goes back to zero.",
+    "still": "A policy enacted by chaos can still win the game, and a 5th Fascist policy enacted this way still unlocks the veto."
+  },
+  "reshuffle": {
+    "title": "When the pile runs low",
+    "text": "If fewer than 3 policies are left in the draw pile at the end of a legislative session (or after an agreed veto or chaos), they are shuffled together with the discard pile into a new draw pile. This happens before the presidential power, so a policy peek shows the new pile."
+  },
+  "winning": {
+    "title": "How the game ends",
+    "liberals": "<b>Liberals win</b>: 5 Liberal policies enacted, or Hitler executed.",
+    "fascists": "<b>Fascists win</b>: 6 Fascist policies enacted, or Hitler elected Chancellor while 3 or more Fascist policies are enacted.",
+    "reveal": "When the game ends, every role is revealed."
+  },
+  "here": {
+    "title": "Playing on this site",
+    "chat": "Table talk happens in the room's chat. During the game, only living players can write in it, except the President and the Chancellor during the legislative session. Spectators can write before and after the game.",
+    "timers": "In a public game, each decision has a time limit; in a private game, the host decides whether to use one. When time runs out, the site plays for you: Nein! for a vote, refuse for a veto, otherwise a random choice among the allowed ones.",
+    "away": "In a public game, a player disconnected for 90 seconds is played automatically until they come back. If fewer than half of the living players stay connected for 3 minutes, the game ends with no winner.",
+    "more": "These site rules and the other differences from the board game are listed under <link>What we changed</link>."
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "hitlerKnows": {
+      "q": "Does Hitler know who the Fascists are?",
+      "a": "Only with 5 or 6 players. From 7 players up, Hitler does not know the Fascists, but they know who Hitler is. Hitler has to work them out during the game, like the Liberals."
+    },
+    "votes": {
+      "q": "Why can everyone see how I voted?",
+      "a": "By design, as at a real table: everyone shows their Ja! or Nein! at the same time. Ballots stay hidden until the last vote is in; then everyone sees who voted what. Votes are one of the best clues in the game."
+    },
+    "vetoChaos": {
+      "q": "What happens when a veto moves the tracker to 3?",
+      "a1": "Chaos, in this order: the two vetoed policies go to the discard pile; if fewer than 3 policies are left in the draw pile, it is shuffled with the discards; then the tracker moves and the top policy of the draw pile is enacted at once.",
+      "a2": "So if the pile was reshuffled, the enacted policy can be one of the two the government just vetoed. As with any chaos, its power is ignored and there is no \"Hitler elected\" check."
+    },
+    "lying": {
+      "q": "Am I allowed to lie?",
+      "a1": "Yes, about anything: your role, the policies you drew or passed, what you saw with a peek, an investigation result. The site never shows discarded policies or an investigation result to the other players: it is your word against theirs.",
+      "a2": "One exception: an executed player must not reveal their role. They can no longer write in the chat, and showing it any other way (a message, a call) is cheating under our <link>code of conduct</link>. When Hitler is executed, or elected Chancellor after the 3rd Fascist policy, the site announces it."
+    },
+    "leaving": {
+      "q": "What happens when someone leaves?",
+      "public": "<b>Public game</b>: after 90 seconds disconnected, the site plays for that player (Nein! on votes, refuse vetoes, otherwise a random choice) until they come back and take their seat again. If fewer than half of the living players are connected for 3 minutes, the game ends with no winner and every role is revealed. Abandoning 2 public games within 24 hours means a 15-minute wait before joining another one.",
+      "private": "<b>Private game</b>: their seat waits for them. After 1 minute disconnected, the host can play their turn for them. The host can also remove a player (the site then plays for them until the end) or stop the game. A private game with nobody connected for 6 hours ends by itself."
+    },
+    "termLimits": {
+      "q": "Does a failed vote change who can be Chancellor?",
+      "a": "No. Term limits follow the last elected government; a failed vote does not change them. Only chaos clears them."
+    },
+    "investigation": {
+      "q": "Who sees an investigation result?",
+      "a": "Only the President who investigated. They see the player's party, not their role: Hitler shows as Fascist. They may then tell the truth or lie."
+    }
+  }
+}

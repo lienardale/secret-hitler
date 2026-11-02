@@ -1,6 +1,6 @@
 "use client";
 
-import type { PlayerView, Role, SeatView } from "@sh/engine";
+import type { PlayerView, Role, Seat, SeatView } from "@sh/engine";
 import type { PlayerSlot } from "@sh/protocol";
 import { useTranslations } from "next-intl";
 import { useId } from "react";
@@ -16,7 +16,10 @@ import {
   ShieldIcon,
   TombIcon,
 } from "./art";
+import { InitialsBadge } from "./InitialsBadge";
+import { BALLOT_STEP_MS, ballotOrder, useFreshDeaths } from "./motion";
 import type { SeatNames } from "./names";
+import { waitingSeats } from "./status";
 
 /** Width/height ratio used to space seats evenly around the table on wide screens. */
 const TABLE_ASPECT = 1.45;
@@ -55,17 +58,25 @@ export function seatPosition(k: number, n: number): { x: number; y: number } {
 
 /**
  * The players around the table. Phones: a compact grid under the board.
- * From 768 px: seats around a table with the board in the middle.
+ * From 768 px: seats around a table with the board in the middle. Every seat
+ * the game waits for is marked, in every phase. A fresh vote result shows the
+ * ballots one by one from the President (at once under reduced motion).
  */
 export function Seats({
   view,
   players,
   names,
+  initials,
+  freshVote = false,
   center,
 }: {
   view: PlayerView;
   players: readonly PlayerSlot[];
   names: SeatNames;
+  /** Initials per seat (index = seat). */
+  initials: readonly string[];
+  /** The last vote just came in: stage its ballots. */
+  freshVote?: boolean;
   /** Drawn in the middle of the table (the board). */
   center: React.ReactNode;
 }) {
@@ -73,8 +84,12 @@ export function Seats({
   const headingId = useId();
   const n = view.seats.length;
   const anchor = view.me?.seat ?? 0;
+  const waiting = new Set<Seat>(waitingSeats(view));
+  const executed = useFreshDeaths(view);
+  const order =
+    freshVote && view.lastVote ? ballotOrder(view.lastVote.votes, view.lastVote.president) : null;
   return (
-    <section aria-labelledby={headingId} className="relative md:mx-auto md:h-[41rem] md:max-w-4xl">
+    <section aria-labelledby={headingId} className="relative md:mx-auto md:h-[44rem] md:max-w-4xl">
       <h2 id={headingId} className="sr-only">
         {t("table.seats")}
       </h2>
@@ -99,7 +114,11 @@ export function Seats({
                 view={view}
                 player={players[seat.seat]}
                 name={names.plain(seat.seat)}
+                initials={initials[seat.seat] ?? ""}
                 isMe={view.me?.seat === seat.seat}
+                waiting={waiting.has(seat.seat)}
+                executed={executed.includes(seat.seat)}
+                ballotRank={order?.[seat.seat] ?? null}
               />
             </li>
           );
@@ -142,13 +161,24 @@ function SeatCard({
   view,
   player,
   name,
+  initials,
   isMe,
+  waiting,
+  executed,
+  ballotRank,
 }: {
   seat: SeatView;
   view: PlayerView;
   player: PlayerSlot | undefined;
   name: string;
+  initials: string;
   isMe: boolean;
+  /** The game waits for this seat (any phase). */
+  waiting: boolean;
+  /** Executed since the previous render. */
+  executed: boolean;
+  /** Position in the staged ballot reveal, or null to show the ballot at once. */
+  ballotRank: number | null;
 }) {
   const t = useTranslations("game");
   const icon = "size-3 shrink-0";
@@ -167,9 +197,10 @@ function SeatCard({
       data-testid="seat"
       data-seat={seat.seat}
       {...(isMe ? { "data-you": "true" } : {})}
+      {...(waiting ? { "data-waiting": "true" } : {})}
       className={`sh-seat relative flex h-full flex-col gap-1 rounded-lg border-2 bg-paper-raised p-2 shadow-sm ${
         isMe ? "border-ink ring-2 ring-ink/20" : "border-rule"
-      } ${seat.alive ? "" : "sh-dead"}`}
+      } ${seat.alive ? "" : "sh-dead"} ${executed ? "sh-executed" : ""}`}
     >
       {office ? (
         <p
@@ -182,19 +213,20 @@ function SeatCard({
           {office}
         </p>
       ) : null}
-      <p className="flex min-w-0 items-baseline gap-1.5">
+      <p className="flex min-w-0 items-center gap-1.5">
+        <InitialsBadge initials={initials} className="text-ink-muted" />
         <span
           className={`truncate font-display text-lg leading-tight ${seat.alive ? "" : "line-through decoration-2"}`}
         >
           {name}
         </span>
-        {isMe ? (
-          <span className="shrink-0 rounded-sm bg-ink px-1 text-[0.6rem] font-medium tracking-wide text-paper uppercase">
-            {t("seat.you")}
-          </span>
-        ) : null}
       </p>
       <ul className="flex flex-wrap gap-1">
+        {isMe ? (
+          <Badge tone="border-ink bg-ink font-medium tracking-wide text-paper uppercase">
+            {t("seat.you")}
+          </Badge>
+        ) : null}
         {role ? (
           <Badge icon={<RoleEmblem role={role} className={icon} />} tone={ROLE_CHIP[role]}>
             {t(`role.${role}`)}
@@ -210,14 +242,24 @@ function SeatCard({
             {t("seat.voted")}
           </Badge>
         ) : null}
-        {seat.hasVoted === false && seat.alive ? (
+        {waiting && view.phase.kind === "vote" ? (
           <Badge icon={<HourglassIcon className={icon} />}>{t("seat.notVoted")}</Badge>
+        ) : null}
+        {waiting && view.phase.kind !== "vote" ? (
+          <Badge icon={<HourglassIcon className={icon} />} tone="border-ink bg-ink text-paper">
+            {isMe ? t("seat.yourTurn") : t("seat.theirTurn")}
+          </Badge>
         ) : null}
         {ballot !== null ? (
           <li
+            style={
+              ballotRank === null
+                ? undefined
+                : ({ "--sh-delay": `${ballotRank * BALLOT_STEP_MS}ms` } as React.CSSProperties)
+            }
             className={`sh-ballot-chip inline-flex items-center rounded-sm border-2 px-1.5 font-display text-xs leading-tight ${
               ballot ? "border-ink bg-paper text-ink" : "border-ink bg-ink text-paper"
-            }`}
+            } ${ballotRank === null ? "" : "sh-ballot-reveal"}`}
           >
             <span className="sr-only">{t("seat.ballot", { vote: ballot ? "ja" : "nein" })}</span>
             <span aria-hidden>{ballot ? t("action.vote.ja") : t("action.vote.nein")}</span>

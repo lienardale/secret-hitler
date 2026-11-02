@@ -22,6 +22,9 @@ export const FIXTURE_NAMES = [
   "start",
   "nominate",
   "vote",
+  "voteHitlerZone",
+  "voteChaos",
+  "voteResult",
   "presidentDiscard",
   "chancellorEnact",
   "veto",
@@ -99,6 +102,24 @@ export const FIXTURES: Readonly<Record<FixtureName, FixtureSpec>> = {
       s.phase.kind === "vote" &&
       s.lastElected.chancellor !== null &&
       votesCast(s) === Math.floor(aliveCount(s) / 2),
+  },
+  voteHitlerZone: {
+    description: "Voting with 3+ fascist policies down (Hitler elected would win)",
+    timed: true,
+    stop: (s) => s.phase.kind === "vote" && s.fascist >= 3 && votesCast(s) >= 1,
+  },
+  voteChaos: {
+    description: "Voting with the election tracker at 2 (a failed vote means chaos)",
+    timed: true,
+    stop: (s) => s.phase.kind === "vote" && s.tracker === 2 && votesCast(s) >= 1,
+  },
+  voteResult: {
+    description: "Right after a vote result (ballots on the seats, result strip)",
+    stop: (s, events) =>
+      enacted(s) >= 1 &&
+      s.phase.kind !== "over" &&
+      events.some((e) => e.type === "voteResult" && !e.passed) &&
+      !events.some((e) => e.type === "policyEnacted"),
   },
   presidentDiscard: {
     description: "President discards 1 of 3",

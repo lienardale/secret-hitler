@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "title": "Crédits",
+    "description": "Les auteurs de Secret Hitler, la licence du jeu, les illustrations, les polices et ce que ce site change par rapport au jeu de société."
+  },
+  "page": {
+    "title": "Crédits",
+    "lead": "Secret Hitler est un jeu de société. Ce site en est une adaptation en ligne, non officielle et gratuite."
+  },
+  "game": {
+    "title": "Le jeu original",
+    "intro": "Voici la mention des auteurs, telle que la donnent les règles officielles :",
+    "site": "Site officiel du jeu : <link>secrethitler.com</link>",
+    "rules": "Règles officielles (PDF, en anglais)",
+    "printAndPlay": "Version à imprimer officielle (PDF, en anglais)"
+  },
+  "license": {
+    "title": "Licence",
+    "text": "Le jeu est publié sous la licence <link>Creative Commons BY-NC-SA 4.0</link>. Ce site l'utilise aux mêmes conditions : il crédite les auteurs, n'a aucun but commercial et est lui-même partagé sous la même licence.",
+    "disclaimer": "Ce site n'est pas affilié à Goat, Wolf, & Cabbage, qui ne l'ont pas approuvé."
+  },
+  "free": {
+    "title": "Aucun argent en jeu",
+    "text": "Le site est gratuit. Il n'y a ni publicité, ni option payante, ni version dans les boutiques d'applications, et il ne sera jamais vendu."
+  },
+  "art": {
+    "title": "Illustrations et polices",
+    "art": "Aucune illustration du jeu original n'est utilisée. Les décrets, les emblèmes des partis et des rôles, les icônes des pouvoirs et l'icône de l'application sont de simples dessins créés pour ce site. Ils sont partagés sous la même licence que le site.",
+    "fonts": "Polices : <germania>Germania One</germania>, de John Vargas Beltrán, et <jost>Jost</jost>, d'Owen Earl, toutes deux sous licence <ofl>SIL Open Font License 1.1</ofl>. Le site les sert lui-même. Les polices du jeu original ne sont pas utilisées."
+  },
+  "software": {
+    "title": "Logiciels libres",
+    "text": "Le site repose sur des logiciels libres, chacun sous sa propre licence (surtout MIT, Apache-2.0 et ISC) : Next.js, React, next-intl, Auth.js, Prisma et Zod, entre autres. Le filtre du chat utilise obscenity, avec les listes de mots des projets cuss et confusables ; la liste des mots de passe trop courants vient de SecLists. La liste complète figure dans le fichier THIRD_PARTY_NOTICES.md du code source.",
+    "source": "Code source : <link>{url}</link>",
+    "noSource": "Le code source n'est pas encore public."
+  },
+  "changed": {
+    "title": "Ce que nous avons changé",
+    "lead": "La licence demande à une adaptation de dire ce qu'elle change. Par rapport au jeu de société :",
+    "items": {
+      "online": {
+        "title": "Jeu en ligne.",
+        "text": "Le site distribue les rôles, mélange les décrets et fait respecter toutes les règles à la place des joueurs. Les places autour de la table sont tirées au sort au début de chaque partie. La discussion se fait dans un chat écrit."
+      },
+      "art": {
+        "title": "Nos propres illustrations.",
+        "text": "Les décrets, emblèmes et icônes sont de simples dessins faits pour ce site, et les polices sont des alternatives libres. Les illustrations et les polices du jeu original ne sont pas utilisées."
+      },
+      "chat": {
+        "title": "Silences dans le chat.",
+        "text": "Le président et le chancelier ne peuvent pas écrire dans le chat pendant la session législative (les règles officielles leur interdisent seulement de communiquer entre eux). Les joueurs exécutés ne peuvent plus écrire jusqu'à la fin de la partie. Les spectateurs ne peuvent écrire qu'avant et après une partie."
+      },
+      "timers": {
+        "title": "Temps limité.",
+        "text": "Les parties publiques ont toujours un temps limité. Le rythme standard (par défaut) donne 60 s pour proposer un chancelier, 45 s pour voter, 45 s pour chaque choix de décret, 30 s pour répondre à un veto, 60 s pour une enquête ou une élection spéciale, 90 s pour une exécution et 20 s pour un aperçu des décrets ; l'hôte peut choisir à la place un rythme détendu (deux fois plus long) ou rapide. Les parties privées n'ont pas de limite de temps, sauf si l'hôte en choisit une."
+      },
+      "defaults": {
+        "title": "Coups par défaut.",
+        "text": "Quand le temps est écoulé, ou pour un joueur que le site joue à sa place, le site vote Nein!, refuse un veto et, pour le reste, fait un choix au hasard parmi ceux permis (jamais une proposition de veto)."
+      },
+      "away": {
+        "title": "Joueurs déconnectés.",
+        "text": "Dans une partie publique, un joueur déconnecté depuis 90 secondes est joué automatiquement jusqu'à sa reconnexion. Dans une partie privée, sa place l'attend ; l'hôte peut jouer le tour d'un joueur déconnecté depuis au moins une minute."
+      },
+      "removal": {
+        "title": "Retirer un joueur.",
+        "text": "Dans une salle privée, l'hôte peut retirer n'importe qui, même pendant une partie : le joueur retiré ne peut plus revenir dans cette salle et le site joue sa place jusqu'à la fin. Dans une salle publique, l'hôte ne peut retirer quelqu'un qu'avant le début de la partie ; ensuite, seuls les modérateurs le peuvent, en suspendant un compte, avec le même effet."
+      },
+      "abandoned": {
+        "title": "Parties abandonnées.",
+        "text": "Une partie publique s'arrête sans vainqueur quand moins de la moitié des joueurs vivants restent connectés pendant 3 minutes. Une partie privée s'arrête sans vainqueur quand son hôte l'arrête, ou après 6 heures sans personne de connecté. Tous les rôles sont alors révélés, comme à la fin d'une partie."
+      },
+      "cooldown": {
+        "title": "Pause après des abandons.",
+        "text": "Une partie publique compte comme abandonnée par un joueur si elle se termine alors que le site joue à sa place parce qu'il était absent (pas parce qu'il a été retiré). Après 2 parties de ce genre en 24 heures, le joueur attend 15 minutes avant la partie rapide ou une autre salle publique."
+      },
+      "start": {
+        "title": "Début d'une partie publique.",
+        "text": "Pas de bouton « prêt » : un compte à rebours de 30 secondes démarre dès qu'assez de joueurs connectés sont assis (l'hôte fixe ce minimum, de 5 à 10, 7 par défaut), réduit à 5 secondes quand la table est complète (10 joueurs). Une partie privée commence quand l'hôte le décide, avec 5 à 10 joueurs assis, tous connectés."
+      },
+      "spectators": {
+        "title": "Spectateurs.",
+        "text": "Les personnes qui arrivent après le début, ou qui ne prennent pas de place, regardent la partie (20 au plus par salle). Elles ne voient que ce qui est public."
+      },
+      "languages": {
+        "title": "En français et en anglais.",
+        "text": "L'interface et le résumé des règles du site existent en français et en anglais ; les règles officielles sont en anglais."
+      }
+    },
+    "kept": "Cette liste est tenue à jour au fil des évolutions du site."
+  }
+}

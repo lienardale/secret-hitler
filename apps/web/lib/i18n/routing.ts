@@ -26,6 +26,11 @@ export const routing = defineRouting({
     "/verifier-email": { fr: "/verifier-email", en: "/verify-email" },
     "/profil": { fr: "/profil", en: "/profile" },
     "/conduite": { fr: "/conduite", en: "/conduct" },
+    // Content pages (M6): the rules, the credits and the two legal pages.
+    "/regles": { fr: "/regles", en: "/rules" },
+    "/credits": "/credits",
+    "/mentions-legales": { fr: "/mentions-legales", en: "/legal-notice" },
+    "/confidentialite": { fr: "/confidentialite", en: "/privacy" },
     // Moderators and admins only (MODERATOR / ADMIN role).
     "/admin/signalements": { fr: "/admin/signalements", en: "/admin/reports" },
     "/admin/signalements/[id]": { fr: "/admin/signalements/[id]", en: "/admin/reports/[id]" },

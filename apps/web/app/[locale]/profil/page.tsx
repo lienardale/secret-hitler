@@ -18,6 +18,7 @@ import { requireOnboardedUser } from "@/lib/auth/current-user";
 import { nextRenameAt } from "@/lib/auth/display-name";
 import { CONTACT_EMAIL } from "@/lib/contact";
 import { prisma } from "@/lib/db/prisma";
+import { emailVerificationShown, getEnv } from "@/lib/env";
 import { userGameHistory } from "@/lib/games/history";
 import { getPathname, Link } from "@/lib/i18n/navigation";
 import { routing, type Locale } from "@/lib/i18n/routing";
@@ -169,12 +170,12 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
                 </p>
                 {user.emailVerified ? (
                   <p className="text-sm">✓ {t("account.verified")}</p>
-                ) : (
+                ) : emailVerificationShown(getEnv()) ? (
                   <div className="space-y-1">
                     <p className="text-sm font-semibold">{t("account.unverified")}</p>
                     <ResendVerificationButton email={user.email} />
                   </div>
-                )}
+                ) : null}
               </dd>
             </div>
           </dl>

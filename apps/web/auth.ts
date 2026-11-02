@@ -14,8 +14,10 @@
  *   refuses a Google profile without `email_verified === true`, and the link
  *   guard refuses to attach a Google account to whoever a session cookie names
  *   unless it is provably theirs (lib/auth/oauth-link-guard.ts).
- * - Google's name and picture are never stored (`profile` keeps id + e-mail):
- *   the only name other players see is the display name chosen at onboarding.
+ * - Google's name and picture are never stored (`profile` keeps id + e-mail,
+ *   and `linkAccount` keeps only the Google account id, none of the OAuth
+ *   tokens: Google's id_token carries the name and picture): the only name
+ *   other players see is the display name chosen at onboarding.
  *
  * The config is built per request (`NextAuth(() => …)`), so `next build`
  * needs no secret and the Google provider follows the environment.
@@ -27,6 +29,7 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
 import { authorizeCredentials } from "@/lib/auth/authorize";
+import { minimalAccounts } from "@/lib/auth/minimal-accounts";
 import { guardedSignIn } from "@/lib/auth/oauth-link-guard";
 import {
   decodeSessionToken,
@@ -89,7 +92,9 @@ function config(): NextAuthConfig {
   }
 
   return {
-    adapter: PrismaAdapter(prisma as unknown as Parameters<typeof PrismaAdapter>[0]),
+    adapter: minimalAccounts(
+      PrismaAdapter(prisma as unknown as Parameters<typeof PrismaAdapter>[0]),
+    ),
     providers,
     session: { strategy: "jwt", maxAge: SESSION_MAX_AGE_S },
     // Unprefixed: Auth.js builds these URLs itself; proxy.ts adds the locale.

@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "title": "Credits",
+    "description": "Who created Secret Hitler, the game's licence, the artwork, the fonts, and what this site changes compared with the board game."
+  },
+  "page": {
+    "title": "Credits",
+    "lead": "Secret Hitler is a board game. This site is an unofficial, free online adaptation of it."
+  },
+  "game": {
+    "title": "The original game",
+    "intro": "The designers' credit, as the official rules give it:",
+    "site": "The game's official site: <link>secrethitler.com</link>",
+    "rules": "Official rules (PDF)",
+    "printAndPlay": "Official print & play (PDF)"
+  },
+  "license": {
+    "title": "Licence",
+    "text": "The game is released under the <link>Creative Commons BY-NC-SA 4.0</link> licence. This site uses it on the same terms: it credits the designers, has no commercial purpose, and is itself shared under the same licence.",
+    "disclaimer": "This site is not affiliated with or endorsed by Goat, Wolf, & Cabbage."
+  },
+  "free": {
+    "title": "No money involved",
+    "text": "The site is free. There are no ads, no paid features and no app-store version, and it will never be sold."
+  },
+  "art": {
+    "title": "Artwork and fonts",
+    "art": "No artwork from the original game is used. The policy cards, the party and role emblems, the power icons and the app icon are simple drawings made for this site. They are shared under the same licence as the site.",
+    "fonts": "Fonts: <germania>Germania One</germania> by John Vargas Beltrán and <jost>Jost</jost> by Owen Earl, both under the <ofl>SIL Open Font License 1.1</ofl>. The site serves them itself. The original game's fonts are not used."
+  },
+  "software": {
+    "title": "Open-source software",
+    "text": "The site is built on open-source software, each under its own licence (mostly MIT, Apache-2.0 and ISC): Next.js, React, next-intl, Auth.js, Prisma and Zod, among others. The chat filter uses obscenity, with word lists from the cuss and confusables projects; the list of too-common passwords comes from SecLists. The full list is in the THIRD_PARTY_NOTICES.md file of the source code.",
+    "source": "Source code: <link>{url}</link>",
+    "noSource": "The source code is not public yet."
+  },
+  "changed": {
+    "title": "What we changed",
+    "lead": "The licence asks an adaptation to say what it changes. Compared with the board game:",
+    "items": {
+      "online": {
+        "title": "Played online.",
+        "text": "The site deals the roles, shuffles the policies and enforces every rule instead of the players. Seats around the table are drawn at random when a game starts. Table talk happens in a text chat."
+      },
+      "art": {
+        "title": "Our own artwork.",
+        "text": "The cards, emblems and icons are simple drawings made for this site, and the fonts are free alternatives. The original artwork and fonts are not used."
+      },
+      "chat": {
+        "title": "Chat silences.",
+        "text": "The President and the Chancellor cannot write in the chat during the legislative session (the official rules only forbid them to communicate with each other). Executed players cannot write until the game ends. Spectators can write only before and after a game."
+      },
+      "timers": {
+        "title": "Turn timers.",
+        "text": "Public games always have timers. The standard ones (the default) give 60 s to nominate, 45 s to vote, 45 s for each policy choice, 30 s to answer a veto, 60 s to investigate or to call a special election, 90 s to execute and 20 s for a policy peek; the host may pick relaxed timers (twice as long) or fast ones instead. Private games have no timers unless the host picks some."
+      },
+      "defaults": {
+        "title": "Default moves.",
+        "text": "When time runs out, or for a player the site plays for, the site votes Nein!, refuses a veto, and otherwise makes a random allowed choice (never a veto proposal)."
+      },
+      "away": {
+        "title": "Disconnected players.",
+        "text": "In a public game, a player disconnected for 90 seconds is played automatically until they reconnect. In a private game the seat waits; the host may play the turn of a player who has been disconnected for at least a minute."
+      },
+      "removal": {
+        "title": "Removing players.",
+        "text": "In a private room the host can remove anyone, even during a game: the removed player cannot come back to that room, and the site plays their seat until the end. In a public room the host can remove people only before the game starts; after that, only moderators can, by suspending an account, with the same effect."
+      },
+      "abandoned": {
+        "title": "Abandoned games.",
+        "text": "A public game ends with no winner when fewer than half of the living players stay connected for 3 minutes. A private game ends with no winner when its host stops it, or after 6 hours with nobody connected. Every role is then revealed, as at the end of a game."
+      },
+      "cooldown": {
+        "title": "Quick-match cooldown.",
+        "text": "A public game counts as abandoned by a player when it ends while the site is playing for them because they were away (not because they were removed). After 2 such games within 24 hours, the player waits 15 minutes before quick match or joining another public room."
+      },
+      "start": {
+        "title": "Starting a public game.",
+        "text": "There is no ready check: a 30-second countdown starts as soon as enough connected players are seated (the host sets the minimum, from 5 to 10, 7 by default), cut to 5 seconds when the table is full (10 players). A private game starts when its host decides, with 5 to 10 seated players, all connected."
+      },
+      "spectators": {
+        "title": "Spectators.",
+        "text": "People who arrive after the start, or who do not take a seat, watch the game (up to 20 per room). They see only what is public."
+      },
+      "languages": {
+        "title": "In French and English.",
+        "text": "The interface and the site's summary of the rules are in French and English; the official rules are in English."
+      }
+    },
+    "kept": "This list is kept up to date as the site evolves."
+  }
+}

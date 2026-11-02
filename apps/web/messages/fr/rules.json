@@ -1,0 +1,157 @@
+{
+  "meta": {
+    "title": "Règles du jeu",
+    "description": "Les règles de Secret Hitler telles que ce site les applique, avec une foire aux questions."
+  },
+  "page": {
+    "title": "Règles du jeu",
+    "lead": "Un résumé des règles de Secret Hitler, écrit par nous, qui décrit le jeu tel que ce site l'applique.",
+    "official": "En cas de doute, les règles officielles font foi : <link>règles officielles (PDF, en anglais)</link>."
+  },
+  "toc": {
+    "label": "Sur cette page"
+  },
+  "goal": {
+    "title": "Le but du jeu",
+    "teams": "Les joueurs sont répartis en secret en deux camps : les libéraux, plus nombreux, et les fascistes. L'un des fascistes est Hitler. Les libéraux ne savent pas qui est qui ; les fascistes, si.",
+    "liberals": "<b>Les libéraux</b> gagnent en adoptant 5 décrets libéraux, ou en exécutant Hitler.",
+    "fascists": "<b>Les fascistes</b> gagnent en adoptant 6 décrets fascistes, ou en faisant élire Hitler à la chancellerie une fois 3 décrets fascistes adoptés.",
+    "talk": "Tout se joue à la discussion : chacun dit ce qu'il veut, vrai ou faux, et vote pour les gouvernements en qui il a confiance."
+  },
+  "roles": {
+    "title": "Les rôles selon le nombre de joueurs",
+    "lead": "Une partie se joue de 5 à 10 joueurs. Il y a toujours un seul Hitler, qui fait partie du camp fasciste.",
+    "caption": "Rôles distribués selon le nombre de joueurs",
+    "players": "Joueurs",
+    "liberals": "Libéraux",
+    "fascists": "Fascistes (hors Hitler)",
+    "hitler": "Hitler"
+  },
+  "knowledge": {
+    "title": "Qui connaît qui",
+    "lead": "Au début de la partie, chacun découvre son rôle en secret. Ensuite :",
+    "liberals": "un libéral ne connaît que son propre rôle ;",
+    "fascists": "un fasciste sait qui sont les autres fascistes et qui est Hitler ;",
+    "hitler": "Hitler ne connaît les fascistes qu'à 5 ou 6 joueurs. À partir de 7 joueurs, il ne sait pas qui ils sont, alors qu'eux le connaissent.",
+    "here": "Ici, pas besoin de fermer les yeux : le site montre à chacun ce qu'il a le droit de savoir, et rien d'autre."
+  },
+  "deck": {
+    "title": "Les décrets",
+    "text": "La pioche compte 17 décrets : 6 libéraux et 11 fascistes, mélangés en début de partie. Les décrets défaussés restent face cachée : personne ne les voit.",
+    "boards": "Chaque décret adopté prend place sur le plateau de son camp : 5 cases côté libéral, 6 côté fasciste. Certaines cases fascistes donnent un pouvoir au président (voir plus bas)."
+  },
+  "round": {
+    "title": "Le déroulement d'un tour",
+    "nomination": {
+      "title": "1. La proposition",
+      "text": "À chaque tour, la présidence passe au joueur vivant suivant, dans l'ordre de la table ; le premier président est tiré au sort. Le président propose un chancelier. Il peut choisir n'importe quel autre joueur vivant, sauf :",
+      "chancellor": "le dernier chancelier élu ;",
+      "president": "le dernier président élu, tant que plus de 5 joueurs sont en vie. À 5 joueurs vivants ou moins, seul le dernier chancelier élu est exclu.",
+      "note": "« Élu » veut dire : le dernier gouvernement qui a remporté un vote. Un vote raté ne change rien à ces limites de mandat ; le chaos les efface."
+    },
+    "vote": {
+      "title": "2. Le vote",
+      "text": "Tous les joueurs vivants votent Ja! (oui) ou Nein! (non). Les bulletins restent cachés jusqu'au dernier vote, puis tout le monde voit qui a voté quoi.",
+      "majority": "Il faut plus de Ja! que de Nein! : en cas d'égalité, le vote échoue. Si le vote échoue, le compteur d'élections avance d'une case et la présidence passe au joueur suivant.",
+      "hitler": "Si 3 décrets fascistes ou plus sont adoptés et que le chancelier élu est Hitler, les fascistes gagnent aussitôt. Sinon, tout le monde sait désormais que ce chancelier n'est pas Hitler."
+    },
+    "session": {
+      "title": "3. La session législative",
+      "text": "Le président pioche les 3 décrets du dessus, en défausse un en secret et passe les 2 autres au chancelier, qui en adopte un et défausse l'autre. Personne ne voit les décrets défaussés.",
+      "silence": "Pendant la session, le président et le chancelier ne peuvent pas écrire dans le chat. Ensuite, chacun peut raconter ce qu'il a vu, ou mentir."
+    },
+    "power": {
+      "title": "4. Le pouvoir présidentiel",
+      "text": "Si le décret adopté est fasciste et que sa case donne un pouvoir, le président doit l'utiliser avant le tour suivant. Un décret libéral ne donne jamais de pouvoir."
+    }
+  },
+  "powers": {
+    "title": "Les pouvoirs présidentiels",
+    "lead": "Le pouvoir dépend du nombre de joueurs et du nombre de décrets fascistes déjà adoptés.",
+    "caption": "Pouvoir donné par chaque décret fasciste, selon le nombre de joueurs",
+    "policy": "Décret fasciste",
+    "ordinal": "{n, selectordinal, one {#ᵉʳ} other {#ᵉ}}",
+    "small": "5 ou 6 joueurs",
+    "medium": "7 ou 8 joueurs",
+    "large": "9 ou 10 joueurs",
+    "none": "Aucun",
+    "win": "Victoire des fascistes",
+    "names": {
+      "investigate": "Enquête de loyauté",
+      "peek": "Aperçu des décrets",
+      "specialElection": "Élection spéciale",
+      "execute": "Exécution"
+    },
+    "describe": {
+      "investigate": "<b>Enquête de loyauté</b> : le président choisit un autre joueur vivant et découvre son parti, libéral ou fasciste (Hitler apparaît comme fasciste). Lui seul voit le résultat. Personne ne peut faire l'objet de deux enquêtes.",
+      "peek": "<b>Aperçu des décrets</b> : le président regarde en secret les 3 décrets du dessus de la pioche, dans l'ordre, sans les changer de place.",
+      "specialElection": "<b>Élection spéciale</b> : le président choisit le prochain président parmi les autres joueurs vivants, même un joueur qui ne pourrait pas être chancelier. Après ce tour spécial, la présidence reprend au joueur qui suit le président qui l'a déclenchée.",
+      "execute": "<b>Exécution</b> : le président choisit un autre joueur vivant, qui est exécuté. Si c'était Hitler, les libéraux gagnent aussitôt. Sinon, son rôle reste secret ; il ne vote plus, ne peut plus être président ni chancelier, et ne peut plus écrire dans le chat."
+    }
+  },
+  "veto": {
+    "title": "Le droit de veto",
+    "text": "Dès que 5 décrets fascistes sont adoptés, le chancelier peut proposer un veto sur les 2 décrets qu'il a reçus, une fois par session. Si le président accepte, les deux décrets sont défaussés, rien n'est adopté et le compteur d'élections avance d'une case. S'il refuse, le chancelier doit adopter l'un des deux."
+  },
+  "chaos": {
+    "title": "Le compteur d'élections et le chaos",
+    "text": "Chaque vote raté fait avancer le compteur d'élections d'une case, tout comme un veto accepté. Le compteur ne revient à zéro que lorsqu'un décret est adopté : une élection réussie suivie d'un veto ne le remet pas à zéro.",
+    "lead": "À la troisième case, c'est le chaos : le décret du dessus de la pioche est adopté d'office. Dans ce cas :",
+    "power": "son pouvoir éventuel est ignoré ;",
+    "hitler": "il n'y a pas de vérification « Hitler chancelier », puisque personne n'a été élu ;",
+    "terms": "les limites de mandat sont effacées : au tour suivant, tout autre joueur vivant peut être proposé ;",
+    "reset": "le compteur revient à zéro.",
+    "still": "Un décret adopté par le chaos peut quand même faire gagner la partie, et un 5ᵉ décret fasciste adopté ainsi débloque le veto."
+  },
+  "reshuffle": {
+    "title": "Quand la pioche s'épuise",
+    "text": "S'il reste moins de 3 décrets dans la pioche à la fin d'une session législative (ou après un veto accepté ou un chaos), ils sont mélangés avec la défausse pour former une nouvelle pioche. Cela se fait avant le pouvoir présidentiel : un aperçu des décrets montre donc la nouvelle pioche."
+  },
+  "winning": {
+    "title": "La fin de la partie",
+    "liberals": "<b>Victoire libérale</b> : 5 décrets libéraux adoptés, ou Hitler exécuté.",
+    "fascists": "<b>Victoire fasciste</b> : 6 décrets fascistes adoptés, ou Hitler élu chancelier alors que 3 décrets fascistes ou plus sont adoptés.",
+    "reveal": "À la fin de la partie, tous les rôles sont révélés."
+  },
+  "here": {
+    "title": "Jouer sur ce site",
+    "chat": "La discussion se fait dans le chat de la salle. Pendant la partie, seuls les joueurs vivants peuvent y écrire, sauf le président et le chancelier pendant la session législative. Les spectateurs peuvent écrire avant et après la partie.",
+    "timers": "Dans une partie publique, chaque décision a un temps limité ; dans une partie privée, c'est l'hôte qui choisit d'en mettre ou non. Quand le temps est écoulé, le site joue à votre place : Nein! pour un vote, refus pour un veto, sinon un choix au hasard parmi ceux permis.",
+    "away": "Dans une partie publique, un joueur déconnecté depuis 90 secondes est joué automatiquement jusqu'à son retour. Si moins de la moitié des joueurs vivants restent connectés pendant 3 minutes, la partie s'arrête sans vainqueur.",
+    "more": "Ces règles propres au site et les autres différences avec le jeu de société sont listées dans <link>Ce que nous avons changé</link>."
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "hitlerKnows": {
+      "q": "Hitler sait-il qui sont les fascistes ?",
+      "a": "Seulement à 5 ou 6 joueurs. À partir de 7 joueurs, Hitler ne connaît pas les fascistes, mais eux savent qui il est. Il doit donc les repérer au fil de la partie, comme les libéraux."
+    },
+    "votes": {
+      "q": "Pourquoi tout le monde voit-il mon vote ?",
+      "a": "C'est voulu, comme autour d'une table : chacun montre son Ja! ou son Nein! en même temps. Les bulletins restent cachés jusqu'au dernier vote, puis chacun voit qui a voté quoi. Ces votes sont l'un des meilleurs indices du jeu."
+    },
+    "vetoChaos": {
+      "q": "Que se passe-t-il si un veto fait passer le compteur à 3 ?",
+      "a1": "C'est le chaos, dans cet ordre : les deux décrets refusés vont à la défausse ; s'il reste moins de 3 décrets dans la pioche, elle est mélangée avec la défausse ; puis le compteur avance et le décret du dessus de la pioche est adopté d'office.",
+      "a2": "Si la pioche a été mélangée, le décret adopté peut donc être l'un des deux que le gouvernement venait de refuser. Comme pour tout chaos, son pouvoir est ignoré et il n'y a pas de vérification « Hitler chancelier »."
+    },
+    "lying": {
+      "q": "A-t-on le droit de mentir ?",
+      "a1": "Oui, sur tout : votre rôle, les décrets que vous avez piochés ou passés, ce que vous avez vu avec un aperçu, le résultat d'une enquête. Le site ne montre jamais les décrets défaussés ni le résultat d'une enquête aux autres joueurs : c'est votre parole contre la leur.",
+      "a2": "Une seule exception : un joueur exécuté ne doit pas révéler son rôle. Il ne peut plus écrire dans le chat, et le montrer autrement (message, appel) est de la triche selon notre <link>code de conduite</link>. Quand Hitler est exécuté, ou élu chancelier après le 3ᵉ décret fasciste, c'est le site qui l'annonce."
+    },
+    "leaving": {
+      "q": "Que se passe-t-il quand quelqu'un s'en va ?",
+      "public": "<b>Partie publique</b> : après 90 secondes de déconnexion, le site joue pour ce joueur (Nein! aux votes, refus des vetos, sinon un choix au hasard) jusqu'à son retour ; il retrouve alors sa place. Si moins de la moitié des joueurs vivants sont connectés pendant 3 minutes, la partie s'arrête sans vainqueur et tous les rôles sont révélés. Qui abandonne 2 parties publiques en 24 heures doit attendre 15 minutes avant d'en rejoindre une autre.",
+      "private": "<b>Partie privée</b> : sa place l'attend. Après 1 minute de déconnexion, l'hôte peut jouer son tour à sa place. L'hôte peut aussi retirer un joueur (le site joue alors pour lui jusqu'à la fin) ou arrêter la partie. Une partie privée où plus personne n'est connecté pendant 6 heures s'arrête d'elle-même."
+    },
+    "termLimits": {
+      "q": "Un vote raté change-t-il qui peut être chancelier ?",
+      "a": "Non. Les limites de mandat suivent le dernier gouvernement élu ; un vote raté ne les change pas. Seul le chaos les efface."
+    },
+    "investigation": {
+      "q": "Qui voit le résultat d'une enquête ?",
+      "a": "Seul le président qui a enquêté. Il voit le parti du joueur, pas son rôle : Hitler apparaît comme fasciste. Il peut ensuite dire la vérité ou mentir."
+    }
+  }
+}

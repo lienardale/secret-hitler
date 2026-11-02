@@ -212,7 +212,7 @@ export function Lobby({ room, youPid }: { room: RoomView; youPid: string }) {
               onChange={(event) =>
                 send({ t: "settings", timers: event.target.value as TimerPreset })
               }
-              className="mt-1 rounded-md border-2 border-rule bg-paper px-3 py-2"
+              className="mt-1 rounded-md border-2 border-field bg-paper px-3 py-2"
             >
               {TIMER_PRESETS.filter(
                 (preset) => room.visibility === "private" || preset !== "off",
@@ -234,7 +234,7 @@ export function Lobby({ room, youPid }: { room: RoomView; youPid: string }) {
                   onChange={(event) =>
                     send({ t: "settings", minPlayers: Number(event.target.value) })
                   }
-                  className="mt-1 rounded-md border-2 border-rule bg-paper px-3 py-2"
+                  className="mt-1 rounded-md border-2 border-field bg-paper px-3 py-2"
                 >
                   {Array.from(
                     { length: MAX_PLAYERS - MIN_PLAYERS + 1 },
