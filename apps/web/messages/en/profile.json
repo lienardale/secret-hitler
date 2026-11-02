@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "My profile"
+  },
+  "page": {
+    "title": "My profile",
+    "lead": "Your account, the players you blocked and your games."
+  },
+  "account": {
+    "title": "Account",
+    "displayName": "Player name",
+    "newName": "New name",
+    "renameHint": "2 to 20 characters. At most one change every 30 days.",
+    "renameSubmit": "Change name",
+    "renameLocked": "You can change your name again on {date}.",
+    "renamed": "Done: your player name is now {name}.",
+    "email": "E-mail address",
+    "emailPrivate": "Only you can see it.",
+    "verified": "Address verified.",
+    "unverified": "Address not verified yet."
+  },
+  "blocks": {
+    "title": "Blocked players",
+    "lead": "A blocked player's chat messages are hidden from you, and quick match never puts you in the same game, whichever of you blocked the other.",
+    "byName": "Block a player by name",
+    "nameLabel": "Player name",
+    "nameHint": "The exact name; capitals and accents do not matter.",
+    "submit": "Block",
+    "blocked": "Blocked: {name}.",
+    "alreadyBlocked": "Already blocked: {name}.",
+    "listLabel": "Players you blocked",
+    "empty": "You have not blocked anyone.",
+    "since": "since {date}",
+    "noName": "Unnamed player",
+    "unblock": "Unblock",
+    "unblockLabel": "Unblock {name}"
+  },
+  "history": {
+    "title": "Game history",
+    "empty": "No games yet. Every game you finish will show up here.",
+    "public": "Public game",
+    "private": "Private game",
+    "room": "Room {room}",
+    "number": "game {number}",
+    "finished": "{team, select, liberal {Liberals won} other {Fascists won}}",
+    "abandoned": "Game abandoned",
+    "reason": {
+      "liberalPolicies": "5 liberal policies enacted",
+      "hitlerExecuted": "Hitler executed",
+      "fascistPolicies": "6 fascist policies enacted",
+      "hitlerElected": "Hitler elected chancellor"
+    },
+    "you": "Your role: <strong>{role}</strong>",
+    "won": "Won",
+    "lost": "Lost",
+    "noResult": "No result",
+    "executed": "executed",
+    "left": "You had left the game.",
+    "players": "The other players",
+    "deletedPlayer": "Deleted player",
+    "guest": "guest",
+    "block": "Block",
+    "blockLabel": "Block {name}",
+    "blockedTag": "Blocked",
+    "older": "Older games",
+    "newest": "Latest games"
+  },
+  "roles": {
+    "liberal": "Liberal",
+    "fascist": "Fascist",
+    "hitler": "Hitler"
+  },
+  "delete": {
+    "title": "Delete my account",
+    "lead": "Your account, your e-mail address and your blocks are erased. Your games stay in the other players' history, as \"Deleted player\". This cannot be undone.",
+    "open": "Delete my account…",
+    "password": "Your password",
+    "passwordHint": "To confirm it is really you.",
+    "name": "Type your player name to confirm: {name}",
+    "submit": "Delete permanently",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "forbidden": "Request refused. Reload the page.",
+    "signInRequired": "Sign in to continue.",
+    "rateLimited": "Too many attempts. Try again in {minutes, plural, one {# minute} other {# minutes}}.",
+    "name_length": "The name must be 2 to 20 characters long.",
+    "name_characters": "Letters, digits, spaces, hyphens, dots and apostrophes only (not at the start or end).",
+    "name_reserved": "This name is reserved, please choose another.",
+    "nameTaken": "This name is already taken.",
+    "sameName": "That is already your name.",
+    "renameTooSoon": "One name change every 30 days. You can change it again on {date}.",
+    "accountNotFound": "Account not found. Reload the page.",
+    "playerNotFound": "No player has this name.",
+    "blockSelf": "You cannot block yourself.",
+    "tooManyBlocks": "You blocked 500 players, the maximum. Unblock some first.",
+    "wrongPassword": "Wrong password.",
+    "wrongName": "That is not your player name."
+  }
+}

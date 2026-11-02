@@ -10,7 +10,6 @@
     "joinLead": "Enter the 5-letter code you were given.",
     "codeLabel": "Room code",
     "joinButton": "Join",
-    "publicSoon": "Public games with strangers: coming soon.",
     "playingAs": "You are playing as {name}."
   },
   "name": {
@@ -37,7 +36,11 @@
   },
   "publicGate": {
     "title": "Public game",
-    "lead": "Public games need an account. Accounts are coming soon."
+    "lead": "Public games need an account: that is what lets players block and report each other.",
+    "signIn": "Sign in",
+    "signUp": "Create an account",
+    "verifyTitle": "E-mail address to verify",
+    "verifyLead": "Verify your e-mail address to play public games. The link is in the e-mail you received when you signed up."
   },
   "unavailable": {
     "title": "The game server is not answering",
@@ -60,7 +63,8 @@
     "c4429": "Too many messages at once: you were disconnected from the room.",
     "other": "The connection to the room was closed.",
     "home": "Back to the home page",
-    "reload": "Reload the page"
+    "reload": "Reload the page",
+    "signIn": "Sign in"
   },
   "lobby": {
     "heading": "Room {code}",
@@ -94,7 +98,11 @@
       "relaxed": "Relaxed",
       "standard": "Standard",
       "fast": "Fast"
-    }
+    },
+    "publicStartsIn": "The game starts in {seconds, plural, one {# second} other {# seconds}}.",
+    "publicWaiting": "The game starts on its own once {min} players are seated and connected{missing, plural, =0 {.} one { (# more).} other { (# more).}}",
+    "minPlayers": "Players to start",
+    "minPlayersHelp": "The 30-second countdown starts as soon as this many players are seated (5 seconds at 10 players)."
   },
   "chat": {
     "title": "Chat",

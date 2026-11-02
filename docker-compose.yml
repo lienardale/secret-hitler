@@ -1,0 +1,34 @@
+# Local PostgreSQL for the website: development (`sh`) and the test tiers (`sh_test`).
+#
+#   npm -w @sh/web run db:up      docker compose up -d --wait, then migrate both databases
+#   npm -w @sh/web run db:seed    demo accounts in the dev database
+#   docker compose down           stop, keep the data
+#
+# Port 5434, not 5432: other local projects (velo-atelier) already use 5432.
+# `docker/initdb/01-test-db.sh` creates `sh_test`, but only on an empty volume
+# (that is how the postgres image's entrypoint works). On an old volume without
+# it: `docker compose down -v` (destroys the local data) and `db:up` again.
+services:
+  db:
+    container_name: secret-hitler-postgres
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: sh
+      POSTGRES_PASSWORD: sh
+      POSTGRES_DB: sh
+      # Deterministic collation: citext comparisons and index order depend on it.
+      POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
+    volumes:
+      - secret_hitler_pgdata:/var/lib/postgresql/data
+      - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sh -d sh"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  secret_hitler_pgdata:

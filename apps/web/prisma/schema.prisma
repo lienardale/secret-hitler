@@ -1,0 +1,219 @@
+// Secret Hitler online — Prisma 7 schema (website only: the rooms Worker never
+// touches Postgres, it posts game results to /api/internal/games).
+//
+// Prisma 7 notes (same as velo-atelier):
+//   - the connection URL lives in `prisma.config.ts`, not here;
+//   - `postgresqlExtensions` no longer emits DDL, so `citext` is created by hand
+//     as the first statement of the init migration;
+//   - the `prisma-client` generator writes ESM into lib/generated/prisma
+//     (gitignored). Import it only as `@/lib/generated/prisma/client`.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------- enums ----
+
+enum UserLocale {
+  fr
+  en
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum EmailTokenPurpose {
+  VERIFY_EMAIL
+}
+
+enum GameVisibility {
+  private
+  public
+}
+
+enum GameOutcome {
+  finished
+  abandoned
+}
+
+enum GameTeam {
+  liberal
+  fascist
+}
+
+enum GameRole {
+  liberal
+  fascist
+  hitler
+}
+
+enum PlayerKind {
+  user
+  guest
+}
+
+// ------------------------------------------------------ auth / identity ----
+
+model User {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  /// `citext`: one account per address whatever the case. Never shown to other players.
+  email         String    @unique @db.Citext
+  emailVerified DateTime?
+
+  /// bcrypt hash (`$2b$…`, 60 chars). NULL for Google-only accounts.
+  passwordHash String? @db.VarChar(72)
+
+  /// The only name other players ever see. NULL until onboarding (Google
+  /// sign-ups); Google's own name is never stored.
+  displayName          String?   @unique @db.Citext
+  /// `nameKey(displayName)` from @sh/protocol (lowercase, accents removed), so
+  /// "Élise" and "elise" cannot both exist.
+  displayNameKey       String?   @unique @db.VarChar(40)
+  displayNameChangedAt DateTime?
+  /// The player confirmed being 15 or older (onboarding).
+  ageConfirmedAt       DateTime?
+
+  role   UserRole   @default(USER)
+  locale UserLocale @default(fr)
+
+  /// Bumped to sign every device out; the `jwt` callback re-reads it every 5 minutes.
+  sessionVersion Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts    Account[]
+  emailTokens EmailToken[]
+  blocks      Block[]      @relation("blocker")
+  blockedBy   Block[]      @relation("blocked")
+  games       GamePlayer[]
+}
+
+/// Exact @auth/prisma-adapter shape (OAuth accounts: Google).
+model Account {
+  userId            String  @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@index([userId])
+}
+
+/// Single-use e-mail links. Only the SHA-256 of the token is stored.
+model EmailToken {
+  id        String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String            @db.Uuid
+  purpose   EmailTokenPurpose
+  tokenHash String            @unique @db.Char(64)
+  expiresAt DateTime
+  createdAt DateTime          @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+}
+
+/// Fixed-window rate limits that hold across serverless instances (velo's
+/// AuthAttempt). `key` is a salted SHA-256: no address or e-mail is stored.
+model RateLimit {
+  key         String    @id @db.Char(64)
+  count       Int
+  windowStart DateTime
+  lockedUntil DateTime?
+}
+
+// ------------------------------------------------------------- players ----
+
+/// `blocker` blocked `blocked`: their chat is hidden from the blocker, and
+/// quick match keeps the two apart (both directions). Deleted with either account.
+model Block {
+  blockerId String   @db.Uuid
+  blockedId String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  blocker User @relation("blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@id([blockerId, blockedId])
+  @@index([blockedId])
+}
+
+// --------------------------------------------------------------- games ----
+
+/// A finished or abandoned game, as reported by its room. `id` is the room's
+/// `gameId`: a repeated delivery finds the row and changes nothing.
+model Game {
+  id         String         @id @db.Uuid
+  room       String         @db.Char(5)
+  visibility GameVisibility
+  lang       UserLocale
+  /// Game number within the room (rematches count up).
+  number     Int
+  startedAt  DateTime
+  endedAt    DateTime
+  outcome    GameOutcome
+  /// NULL when abandoned.
+  winner     GameTeam?
+  /// `liberalPolicies`, `hitlerExecuted`, `fascistPolicies` or `hitlerElected`; NULL when abandoned.
+  reason     String?        @db.VarChar(32)
+  receivedAt DateTime       @default(now())
+
+  players GamePlayer[]
+  log     GameLog?
+
+  @@index([endedAt])
+}
+
+model GamePlayer {
+  gameId String     @db.Uuid
+  seat   Int        @db.SmallInt
+  kind   PlayerKind
+  /// The account, while it exists. Account deletion sets it (and `name`) to
+  /// NULL: the game stays in everyone else's history as "Deleted player".
+  userId String?    @db.Uuid
+  /// The name shown in that game. NULL once the account is deleted.
+  name   String?    @db.VarChar(40)
+  role   GameRole
+  alive  Boolean
+  won    Boolean
+  /// The room was playing for this player when the game ended (gone too long,
+  /// or kicked): counts as an abandon for the quick-match cooldown.
+  left   Boolean    @default(false)
+
+  game Game  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@id([gameId, seat])
+  @@index([userId])
+}
+
+/// Everything needed to replay a game later (seed, moves), one JSONB row per
+/// game (Postgres compresses it). Never sent to a browser.
+model GameLog {
+  gameId String @id @db.Uuid
+  data   Json
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+}

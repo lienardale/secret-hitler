@@ -25,21 +25,29 @@ export function compareRooms(a: Ordered, b: Ordered): number {
  * The room code to join, or null when no room fits (the website then creates
  * a new public room).
  *
+ * A room that excluded the player (kicked by its host) is never offered, not
+ * even their own: a kicked player stays a member of the game record, and the
+ * room would close them with 4423.
+ *
  * A player who is already in a room goes back to it, whatever its state, so a
  * reload or a second tab never seats them twice. If they somehow sit in two
  * rooms, a game in progress wins over a waiting room.
+ *
+ * `request.blocks` should hold blocks in both directions (the website sends
+ * the union), so two players who blocked each other are never matched.
  */
 export function pickRoom(
   entries: readonly LobbyRoomReport[],
   request: QuickMatchRequest,
 ): string | null {
-  const own = entries
+  const allowed = entries.filter((entry) => !entry.excluded.includes(request.identity));
+  const own = allowed
     .filter((entry) => entry.members.includes(request.identity))
     .sort((a, b) => statusRank(b) - statusRank(a) || compareRooms(a, b));
   if (own[0]) return own[0].code;
 
   const blocked = new Set(request.blocks);
-  const candidates = entries
+  const candidates = allowed
     .filter(
       (entry) =>
         entry.status === "lobby" &&

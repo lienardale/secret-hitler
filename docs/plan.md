@@ -23,6 +23,14 @@ The user wants a free web platform to play **Secret Hitler** online, either priv
 - v1 = private games (guests allowed) + public games with strangers (accounts, lobby, quick match, reports, moderation) + in-game text chat. Not in v1: ranked/Elo, voice, replay UI (event log stored for later), bots in public games.
 - French + English.
 
+### Decisions taken with the user (2026-11-02, M4)
+- Staging database: Neon free plan through the Vercel Marketplace (resource `sh-staging`, `fra1`).
+- E-mail verification is built now with a dev mail sink (`MAIL_TRANSPORT=log`); real sending and
+  the "verified e-mail for public play" rule (`REQUIRE_EMAIL_VERIFICATION`) are switched on once a
+  domain exists (M6). The e2e suite runs with the rule on.
+- Google sign-in is coded and turns on when `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` are set; the
+  user creates the OAuth client later.
+
 ### Defaults chosen in this plan (change during review if needed)
 - **Email verification via Resend** in M4, so bans can't be dodged with throwaway sign-ups.
 - **GitHub repo private until launch**, then made public (fits CC attribution).

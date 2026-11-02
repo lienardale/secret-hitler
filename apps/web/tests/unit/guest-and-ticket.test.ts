@@ -60,7 +60,9 @@ describe("environment contract", () => {
     ROOMS_URL: "http://localhost:8787",
     TICKET_PRIVATE_JWK: '{"kty":"OKP","crv":"Ed25519","d":"x","x":"y"}',
     WEB_TO_ROOMS_SECRET: "ci-dummy-web-to-rooms-0123456789abcdef",
+    ROOMS_TO_WEB_SECRET: "ci-dummy-rooms-to-web-0123456789abcdef",
     GUEST_SECRET: SECRET,
+    AUTH_SECRET: "ci-dummy-auth-secret-0123456789abcdefgh",
   };
 
   it("parses a complete environment and defaults the public rooms URL", () => {
@@ -80,6 +82,19 @@ describe("environment contract", () => {
     expect(attempt).toThrow(/GUEST_SECRET/);
     expect(attempt).toThrow(/ROOMS_URL/);
     expect(attempt).not.toThrow(/short-secret-value/);
+  });
+
+  it("defaults mail to the log sink and requires both Google values or neither", () => {
+    expect(parseEnv(valid)).toMatchObject({
+      MAIL_TRANSPORT: "log",
+      REQUIRE_EMAIL_VERIFICATION: false,
+    });
+    expect(() => parseEnv({ ...valid, AUTH_GOOGLE_ID: "id-only" })).toThrow(/AUTH_GOOGLE_SECRET/);
+    expect(() => parseEnv({ ...valid, MAIL_TRANSPORT: "resend" })).toThrow(/RESEND_API_KEY/);
+    expect(
+      parseEnv({ ...valid, MAIL_TRANSPORT: "resend", RESEND_API_KEY: "re_x", MAIL_FROM: "a@b.c" })
+        .MAIL_TRANSPORT,
+    ).toBe("resend");
   });
 
   it("reads the test-pages flag on its own", () => {

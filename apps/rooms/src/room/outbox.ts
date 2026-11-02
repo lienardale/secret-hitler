@@ -13,6 +13,9 @@ const FIRST_RETRY_MS = 30_000;
 const MAX_RETRY_MS = 60 * 60_000;
 const REQUEST_TIMEOUT_MS = 10_000;
 
+/** The website refused the payload itself: sending it again cannot help. */
+const DROP_STATUSES: ReadonlySet<number> = new Set([400, 413, 422]);
+
 const PATHS: Record<OutboxItem["kind"], string> = {
   gameResult: "/api/internal/games",
 };
@@ -24,7 +27,8 @@ export function retryDelayMs(attempts: number): number {
 
 /**
  * - `done`: delivered (2xx), or the website already has it (409);
- * - `drop`: will never succeed (payload refused with 400/422, or no website configured);
+ * - `drop`: will never succeed (payload refused with 400/422, over the size cap with 413,
+ *   or no website configured);
  * - `retry`: network error, timeout, 5xx, or anything else.
  */
 export type Delivery = "done" | "drop" | "retry";
@@ -46,7 +50,7 @@ export async function deliver(
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
     if (response.ok || response.status === 409) return "done";
-    if (response.status === 400 || response.status === 422) return "drop";
+    if (DROP_STATUSES.has(response.status)) return "drop";
     return "retry";
   } catch {
     return "retry";

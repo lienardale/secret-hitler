@@ -29,8 +29,16 @@ function room(code: string, overrides: Partial<LobbyRoomReport> = {}): LobbyRoom
     timers: "standard",
     startsAt: null,
     members: ["u:secret-a", "u:secret-b"],
+    excluded: ["u:secret-kicked"],
     ...overrides,
   };
+}
+
+/** A report as rooms sent it before `excluded` existed. */
+function withoutExcluded(report: LobbyRoomReport): Omit<LobbyRoomReport, "excluded"> {
+  const older: Partial<LobbyRoomReport> = { ...report };
+  delete older.excluded;
+  return older as Omit<LobbyRoomReport, "excluded">;
 }
 
 /** Pins the clock seen by the Lobby (it runs in the test isolate). */
@@ -93,8 +101,9 @@ async function connectViewer(stub: LobbyStub): Promise<Viewer> {
     next,
     async nextList() {
       const raw = await next();
-      // Whatever reaches a viewer must never carry room members.
+      // Whatever reaches a viewer must never carry room members or exclusions.
       expect(raw).not.toContain("members");
+      expect(raw).not.toContain("excluded");
       expect(raw).not.toContain("u:secret");
       return JSON.parse(raw) as LobbyMessage;
     },
@@ -128,7 +137,7 @@ describe("Lobby: registry", () => {
     expect(LOBBY_NAME).toBe("global");
   });
 
-  it("lists reported rooms without their members", async () => {
+  it("lists reported rooms without their members or exclusions", async () => {
     const lobby = freshLobby();
     await lobby.report(room("BCDFG", { players: 4, startsAt: 1_700_000_000_000 }));
 
@@ -146,6 +155,15 @@ describe("Lobby: registry", () => {
       },
     ]);
     expect(JSON.stringify(list)).not.toContain("u:secret");
+  });
+
+  it("accepts a report without exclusions (rooms that predate them)", async () => {
+    const lobby = freshLobby();
+    await lobby.report(withoutExcluded(room("BCDFG")) as LobbyRoomReport);
+    expect((await lobby.list()).map((entry) => entry.code)).toEqual(["BCDFG"]);
+    expect(await lobby.quickMatch({ identity: "u:me", lang: "fr", blocks: [] })).toEqual({
+      code: "BCDFG",
+    });
   });
 
   it("replaces a room's entry on its next report", async () => {
@@ -186,6 +204,7 @@ describe("Lobby: registry", () => {
       room("AEIOU"), // not a room code
       room("BCDFG", { players: 11 }),
       room("BCDFG", { members: ["alice"] }), // not an identity key
+      room("BCDFG", { excluded: ["alice"] }),
       { ...room("BCDFG"), secret: true }, // strict: no extra fields
     ];
     for (const report of invalid) {
@@ -207,6 +226,29 @@ describe("Lobby: quick match", () => {
 
     const pick = (blocks: string[]) => lobby.quickMatch({ identity: "u:me", lang: "fr", blocks });
     expect(await pick(["u:foe"])).toEqual({ code: "TVWXZ" });
+  });
+
+  it("never sends a player to a room that excluded them, even their own", async () => {
+    const lobby = freshLobby();
+    await lobby.report(
+      room("BCDFG", { status: "playing", players: 7, members: ["u:me"], excluded: ["u:me"] }),
+    );
+    await lobby.report(room("HJKLM", { players: 8, excluded: ["u:me"] }));
+    const match = (identity: string) => lobby.quickMatch({ identity, lang: "fr", blocks: [] });
+    expect(await match("u:me")).toEqual({ code: null });
+    expect(await match("u:other")).toEqual({ code: "HJKLM" });
+
+    await lobby.report(room("NPQRS", { players: 1 }));
+    expect(await match("u:me")).toEqual({ code: "NPQRS" });
+  });
+
+  it("skips a room with someone the player blocked, or who blocked them (sent in blocks)", async () => {
+    const lobby = freshLobby();
+    await lobby.report(room("BCDFG", { players: 8, members: ["u:blocked-me"] }));
+    await lobby.report(room("HJKLM", { players: 2 }));
+    expect(
+      await lobby.quickMatch({ identity: "u:me", lang: "fr", blocks: ["u:blocked-me"] }),
+    ).toEqual({ code: "HJKLM" });
   });
 
   it("returns null when nothing fits", async () => {
@@ -324,6 +366,7 @@ describe("Lobby: viewers", () => {
 
     await lobby.report(room("BCDFG", { members: ["u:secret-c"] }));
     await lobby.report(room("BCDFG", { members: ["u:secret-c"] })); // keep-alive
+    await lobby.report(room("BCDFG", { members: ["u:secret-c"], excluded: ["u:secret-d"] }));
     await viewer.expectSilence();
   });
 
@@ -415,6 +458,44 @@ describe("Lobby: expiry and storage", () => {
     setNow(t0 + 2 * MINUTE);
     await lobby.report(room("BCDFG", { members: ["u:secret-c", "u:secret-a"] }));
     expect((await storedRows(lobby))[0]?.last_seen).toBe(t0 + MINUTE);
+  });
+
+  it("writes a changed exclusion list at once, whatever its order", async () => {
+    const t0 = Date.now();
+    setNow(t0);
+    const lobby = freshLobby();
+    await lobby.report(room("BCDFG"));
+
+    setNow(t0 + MINUTE);
+    const excluded = ["u:secret-kicked", "u:secret-x"];
+    await lobby.report(room("BCDFG", { excluded }));
+    const [row] = await storedRows(lobby);
+    expect(row?.last_seen).toBe(t0 + MINUTE);
+    expect(row?.report).toContain("u:secret-x");
+
+    setNow(t0 + 2 * MINUTE);
+    await lobby.report(room("BCDFG", { excluded: [...excluded].reverse() }));
+    expect((await storedRows(lobby))[0]?.last_seen).toBe(t0 + MINUTE);
+  });
+
+  it("reads back rows stored before exclusions existed", async () => {
+    const lobby = freshLobby();
+    const older = withoutExcluded(room("HJKLM", { members: ["u:one"] }));
+    await runInDurableObject(lobby, (_lobby, state) => {
+      state.storage.sql.exec(
+        "INSERT INTO rooms (code, report, last_seen) VALUES (?, ?, ?)",
+        "HJKLM",
+        JSON.stringify(older),
+        Date.now(),
+      );
+    });
+
+    await evictDurableObject(lobby);
+
+    expect((await lobby.list()).map((entry) => entry.code)).toEqual(["HJKLM"]);
+    expect(await lobby.quickMatch({ identity: "u:one", lang: "fr", blocks: [] })).toEqual({
+      code: "HJKLM",
+    });
   });
 
   it("survives eviction, and hibernated viewers still get updates", async () => {

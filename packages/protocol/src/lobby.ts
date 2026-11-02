@@ -22,11 +22,15 @@ export const lobbyEntrySchema = z.strictObject({
 export type LobbyEntry = z.infer<typeof lobbyEntrySchema>;
 
 /**
- * What a public room reports to the lobby. `members` (identity keys) never
- * reaches viewers: quick match uses it to keep blocked players apart.
+ * What a public room reports to the lobby. `members` and `excluded` (identity
+ * keys) never reach viewers: quick match uses `members` to keep blocked
+ * players apart, and never sends anyone to a room that `excluded` them (kicked
+ * by the host). `excluded` defaults to `[]` so reports stored before it
+ * existed still parse.
  */
 export const lobbyRoomReportSchema = lobbyEntrySchema.extend({
   members: z.array(identityKeySchema).max(40),
+  excluded: z.array(identityKeySchema).max(100).default([]),
 });
 export type LobbyRoomReport = z.infer<typeof lobbyRoomReportSchema>;
 

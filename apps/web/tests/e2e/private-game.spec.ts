@@ -82,6 +82,9 @@ test("one browser plays with six bots", async ({ browser }) => {
       "60",
       "--timeout",
       "170",
+      // The rooms Worker the e2e servers use (PLAYWRIGHT_ROOMS_PORT, see playwright.config.ts).
+      "--url",
+      `http://localhost:${process.env.PLAYWRIGHT_ROOMS_PORT ?? 8787}`,
     ],
     { cwd: repo, stdio: "pipe" },
   );

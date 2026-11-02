@@ -74,14 +74,25 @@ Room → client (`server-messages.ts`):
 - A room closes 30 minutes after a game ends (a rematch reopens the lobby before that), or after
   30 minutes with nobody connected.
 
-## Website side (M3: guests)
+## Website side
 
+- **Accounts** (M4): Auth.js (e-mail + password, Google when configured), JWT session cookie
+  holding only the account id and its `sessionVersion`; every request reads the account row
+  (`apps/web/lib/auth/current-user.ts`). An account plays under its unique display name (chosen at
+  sign-up or on `/bienvenue`). Public rooms need an onboarded account (and a verified e-mail when
+  `REQUIRE_EMAIL_VERIFICATION` is set): the room page asks visitors to sign in before connecting.
 - **Guest identity**: the `sh_guest` cookie (httpOnly, 30 days) is an HS256 JWT signed with
   `GUEST_SECRET`, holding a random guest id and the chosen name (`apps/web/lib/guest/`). Set by
   the home and room-gate server actions; guests can create and join private rooms only.
-- **Tickets**: `POST /api/rooms/:code/ticket` (same-origin, 60 per minute per guest) answers
+- **Tickets**: `POST /api/rooms/:code/ticket` (same-origin, 60 per minute per identity) answers
   `{ url }`, the WebSocket URL with a fresh ticket, or `401 { error: "no_guest" }` (the page then
-  asks for a name). The browser never sees the signing key.
+  asks for a name). An onboarded account gets `kind: "user"` with `blocks` = the identity keys
+  it blocked (at most 500); otherwise the guest cookie is used. The browser never sees the key.
+- **Public lobby** (`/jouer`, `/play`): the page opens `/v1/lobby/ws` (anyone may watch the
+  list). Quick match is a server action: onboarded account → verified e-mail if required → the
+  abandon cooldown (2 public games left within 24 h → 15 min) → `POST /internal/lobby/quickmatch`
+  with the account's identity and **blocks in both directions** → `POST /internal/rooms`
+  (public) when the lobby answers `code: null` → redirect to the room.
 - **Room client** (`apps/web/lib/room-client/`): `state.ts` is a pure reducer over server
   messages, `connection.ts` the partysocket wrapper (fresh ticket per attempt, keep-alive, close
   codes), `store.tsx` the React bindings (`RoomProvider`, `useRoomState`, `useRoomActions`).
@@ -97,12 +108,37 @@ secret per direction:
 - website → rooms: `POST /internal/rooms`, `GET /internal/rooms/:code`,
   `POST /internal/lobby/quickmatch`, `GET /internal/lobby`;
 - rooms → website: `POST /api/internal/games` with `GameResultPayload` (from the room's outbox,
-  retried with backoff for 3 days; the website upserts on `gameId`).
+  retried with backoff for 3 days).
 
-## Known gaps (to close in M4/M5)
+Game results (`apps/web/app/api/internal/games`, stored by `lib/games/ingest.ts`):
 
-- Quick match only keeps a player away from people **they** blocked. The website should send
-  blocks in both directions in `QuickMatchRequest.blocks`.
-- A player kicked from a public room is not a member any more, so quick match may offer that room
-  again (the room then refuses them with 4423). Add an `excluded` list to `LobbyRoomReport`.
+| Status                        | When                                          | Outbox does |
+| ----------------------------- | --------------------------------------------- | ----------- |
+| 200 `{ ok: true, duplicate }` | stored now, or already stored                 | done        |
+| 400                           | not JSON, or not a valid `GameResultPayload`  | drops it    |
+| 401                           | signature missing, forged or older than 5 min | retries     |
+| 413                           | body over 256 KB                              | drops it    |
+| 500                           | database failure                              | retries     |
+
+- **Idempotent on `gameId`.** The first delivery writes `Game`, its `GamePlayer` rows and the
+  `GameLog` in one transaction; a repeated or concurrent one answers `duplicate: true` and changes
+  nothing.
+- **Players.** `kind: "user"` links the account (`sub` is `User.id`) only if it still exists;
+  otherwise `userId` and `name` are stored as null ("Deleted player"). Guests keep their name.
+- **`left`**: the room was playing for this player when the game ended (away past the grace
+  period, or kicked). Two `left` public games within 24 h → 15 min quick-match cooldown
+  (`lib/games/cooldown.ts`). Defaults to false for rooms that predate it.
+- Never logged: the payload holds the seed and every move.
+
+Lobby (`LobbyRoomReport`, room → Lobby DO): besides the public entry, `members` (identity keys of
+everyone in the room) and `excluded` (identities the room refuses: kicked, latest 100). Viewers
+never see either. Quick match never offers a room that excluded the player, not even their own
+(a kicked player stays in the game record), and skips rooms with a member listed in
+`QuickMatchRequest.blocks`, which the website fills with blocks in both directions.
+
+## Known gaps (to close in M5/M6)
+
 - An abandoned game does not reveal the roles.
+- The abandon cooldown is checked by quick match only: a player can still open a public room
+  from the lobby list (or its link) during the 15 minutes.
+- Banned accounts (M5) are not refused yet: tickets do not check bans.

@@ -14,6 +14,7 @@ function room(code: string, overrides: Partial<LobbyRoomReport> = {}): LobbyRoom
     timers: "standard",
     startsAt: null,
     members: [],
+    excluded: [],
     ...overrides,
   };
 }
@@ -71,6 +72,35 @@ describe("pickRoom", () => {
     ];
     expect(pickRoom(rooms, request({ blocks: ["u:foe"] }))).toBe("HJKLM");
     expect(pickRoom(rooms, request({ blocks: ["u:foe", "u:b"] }))).toBeNull();
+  });
+
+  it("keeps apart players who blocked each other (the website sends both directions)", () => {
+    // u:foe blocked u:me; u:me never blocked u:foe. The website adds u:foe to u:me's blocks.
+    const rooms = [
+      room("BCDFG", { players: 8, members: ["u:foe"] }),
+      room("HJKLM", { players: 2, members: ["u:b"] }),
+    ];
+    expect(pickRoom(rooms, request({ blocks: ["u:foe"] }))).toBe("HJKLM");
+  });
+
+  it("never offers a room that excluded the player", () => {
+    const rooms = [
+      room("BCDFG", { players: 8, excluded: ["u:me"] }),
+      room("HJKLM", { players: 3 }),
+    ];
+    expect(pickRoom(rooms, request())).toBe("HJKLM");
+    expect(pickRoom([rooms[0]!], request())).toBeNull();
+    expect(pickRoom([rooms[0]!], request({ identity: "u:other" }))).toBe("BCDFG");
+  });
+
+  it("does not send a kicked player back to their own room", () => {
+    // Kicked from a game in progress: still a member of the game record.
+    const rooms = [
+      room("BCDFG", { status: "playing", players: 7, members: ["u:me"], excluded: ["u:me"] }),
+      room("HJKLM", { players: 3 }),
+    ];
+    expect(pickRoom(rooms, request())).toBe("HJKLM");
+    expect(pickRoom([rooms[0]!], request())).toBeNull();
   });
 
   it("picks the fullest room first", () => {

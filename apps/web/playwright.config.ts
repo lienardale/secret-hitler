@@ -15,14 +15,26 @@
  */
 import { defineConfig, devices } from "@playwright/test";
 
+import { resolveTestEnv } from "./tests/_db/test-db";
+
 const CI = Boolean(process.env.CI);
 const WEB_PORT = Number(process.env.PLAYWRIGHT_PORT ?? 3100);
-const ROOMS_PORT = 8787;
+/**
+ * The rooms Worker's port. Another one (PLAYWRIGHT_ROOMS_PORT) lets the e2e run
+ * beside a `wrangler dev` already on 8787; build the website with the same
+ * ROOMS_URL (the CSP's connect-src is fixed at build time).
+ */
+const ROOMS_PORT = Number(process.env.PLAYWRIGHT_ROOMS_PORT ?? 8787);
 /** Set to test a deployed site (e.g. staging) instead of local servers. */
 const EXTERNAL = process.env.PLAYWRIGHT_BASE_URL;
 
+// The e2e web server uses the `_test` database (emptied by the global setup)
+// and the dev mail sink, and requires verified e-mails for public play.
+const testEnv = EXTERNAL ? {} : resolveTestEnv();
+
 export default defineConfig({
   testDir: "tests/e2e",
+  globalSetup: EXTERNAL ? undefined : "./tests/e2e/global-setup.ts",
   timeout: 180_000,
   expect: { timeout: 10_000 },
   retries: CI ? 1 : 0,
@@ -41,7 +53,8 @@ export default defineConfig({
     ? undefined
     : [
         {
-          command: `npm -w @sh/rooms run dev -- --port ${ROOMS_PORT} --inspector-port 0`,
+          // Its own local state (apps/rooms/.wrangler/e2e): e2e rooms never mix with dev rooms.
+          command: `npm -w @sh/rooms run dev -- --port ${ROOMS_PORT} --inspector-port 0 --persist-to .wrangler/e2e --var WEB_API_URL:http://localhost:${WEB_PORT}`,
           cwd: "../..",
           url: `http://localhost:${ROOMS_PORT}/health`,
           reuseExistingServer: !CI,
@@ -52,7 +65,16 @@ export default defineConfig({
           url: `http://localhost:${WEB_PORT}/fr`,
           reuseExistingServer: !CI,
           timeout: 120_000,
-          env: { ROOMS_URL: `http://localhost:${ROOMS_PORT}`, ENABLE_TEST_PAGES: "1" },
+          env: {
+            ROOMS_URL: `http://localhost:${ROOMS_PORT}`,
+            ENABLE_TEST_PAGES: "1",
+            POSTGRES_URL: testEnv.POSTGRES_URL ?? "",
+            POSTGRES_URL_NON_POOLING: testEnv.POSTGRES_URL_NON_POOLING ?? "",
+            MAIL_TRANSPORT: "log",
+            MAIL_SINK_FILE: ".mail/e2e-outbox.jsonl",
+            REQUIRE_EMAIL_VERIFICATION: "1",
+            AUTH_TRUST_HOST: "true",
+          },
         },
       ],
 });

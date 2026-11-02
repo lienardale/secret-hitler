@@ -46,3 +46,19 @@ skip_step() {
 workspace_has_tests() {
   [[ -n "$(find "$PROJECT_ROOT/$1" -path '*/node_modules' -prune -o -name '*.test.ts' -print -quit 2>/dev/null)" ]]
 }
+
+# ensure_test_database: the website's integration and e2e tiers need Postgres.
+# On GitHub Actions a service container provides it (POSTGRES_URL set by the
+# workflow). Locally, start docker-compose's database unless it already
+# answers, then apply the migrations to the `_test` database.
+ensure_test_database() {
+  if [[ -z "${CI:-}" ]]; then
+    if ! (echo >/dev/tcp/127.0.0.1/5434) >/dev/null 2>&1; then
+      command -v docker >/dev/null 2>&1 || { log_err "Docker is needed for the website's database tests"; return 1; }
+      log_step "docker compose up (Postgres on :5434)"
+      docker compose -f "$PROJECT_ROOT/docker-compose.yml" up -d --wait
+    fi
+  fi
+  log_step "migrate the _test database"
+  PRISMA_HIDE_UPDATE_MESSAGE=1 npm -w @sh/web run db:migrate:test
+}
