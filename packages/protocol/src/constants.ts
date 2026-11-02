@@ -26,6 +26,10 @@ export const SYSTEM_MESSAGE_KEYS = [
   "playerAfk",
   "playerBack",
   "turnForced",
+  /** A moderator removed the player (account suspended). */
+  "playerRemoved",
+  /** A moderator replaced the player's name: `{ old, name }`. */
+  "playerRenamed",
 ] as const;
 export type SystemMessageKey = (typeof SYSTEM_MESSAGE_KEYS)[number];
 
@@ -56,3 +60,11 @@ export const MAX_CLIENT_MESSAGE_BYTES = 2048;
  */
 export const KEEPALIVE_PING = "ping";
 export const KEEPALIVE_PONG = "pong";
+
+/** Why a player reports another (the report dialog and the admin queue). */
+export const REPORT_REASONS = ["harassment", "hate", "cheating", "spam", "name", "other"] as const;
+export type ReportReason = (typeof REPORT_REASONS)[number];
+/** Free text a reporter may add. */
+export const REPORT_DETAILS_MAX = 500;
+/** Chat messages a room puts in a report's evidence (the latest ones). */
+export const REPORT_EVIDENCE_CHAT = 100;

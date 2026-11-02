@@ -24,5 +24,13 @@ export default defineConfig({
       miniflare: { bindings: TEST_BINDINGS },
     }),
   ],
-  test: { include: ["test/**/*.test.ts"] },
+  test: {
+    include: ["test/**/*.test.ts"],
+    // obscenity (word filters in @sh/protocol) ships CommonJS behind a thin
+    // .mjs wrapper (`import mod from "./index.js"`). The pool transforms every
+    // dependency as ESM, so that default import comes back undefined in
+    // workerd. Pre-bundling it with esbuild turns it into real ESM; wrangler's
+    // own bundle and Next already handle the interop.
+    deps: { optimizer: { ssr: { enabled: true, include: ["obscenity"] } } },
+  },
 });

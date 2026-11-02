@@ -4,18 +4,24 @@ import { useActionState, useId } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { DISPLAY_NAME_MAX, ROOM_CODE_LENGTH } from "@sh/protocol";
 
-import { createRoomAction, joinRoomAction, type FormState } from "@/app/[locale]/actions";
+import {
+  createRoomAction,
+  joinRoomAction,
+  type CreateRoomState,
+  type FormState,
+} from "@/app/[locale]/actions";
 import { Button } from "@/components/ui/Button";
 
 const inputClass =
   "w-full rounded-md border-2 border-rule bg-paper px-3 py-2 text-lg focus:border-ink focus:outline-none";
 
-function FormError({ id, state }: { id: string; state: FormState }) {
+function FormError({ id, state }: { id: string; state: FormState | CreateRoomState }) {
   const t = useTranslations("room");
+  const common = useTranslations("common");
   if (!state || state.ok) return null;
   return (
     <p id={id} role="alert" className="text-fascist">
-      {t(`errors.${state.error}`)}
+      {state.error === "banned" ? common("errors.banned") : t(`errors.${state.error}`)}
     </p>
   );
 }
@@ -31,7 +37,10 @@ export function CreateRoomForm({
   const t = useTranslations("room");
   const locale = useLocale();
   const id = useId();
-  const [state, action, pending] = useActionState<FormState, FormData>(createRoomAction, null);
+  const [state, action, pending] = useActionState<CreateRoomState, FormData>(
+    createRoomAction,
+    null,
+  );
   const failed = state !== null && !state.ok;
   return (
     <section className="rounded-lg border-2 border-ink bg-paper-raised p-5 shadow-sm">

@@ -265,6 +265,7 @@
     },
     "youWon": "You won.",
     "youLost": "You lost.",
-    "roles": "Every role"
+    "roles": "Every role",
+    "stopped": "Game stopped with no winner"
   }
 }

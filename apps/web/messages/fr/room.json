@@ -27,7 +27,8 @@
     "room_not_found": "Aucune salle avec ce code. Elle est peut-être fermée.",
     "rate_limited": "Trop de tentatives. Réessayez dans quelques minutes.",
     "rooms_unavailable": "Le serveur de jeu ne répond pas. Réessayez dans un instant.",
-    "forbidden": "Requête refusée. Rechargez la page."
+    "forbidden": "Requête refusée. Rechargez la page.",
+    "name_offensive": "Ce nom n'est pas accepté, choisissez-en un autre."
   },
   "notFound": {
     "title": "Salle introuvable",
@@ -64,7 +65,13 @@
     "other": "La connexion à la salle a été fermée.",
     "home": "Retour à l'accueil",
     "reload": "Recharger la page",
-    "signIn": "Se connecter"
+    "signIn": "Se connecter",
+    "c4451": "Votre compte est suspendu par la modération.",
+    "c4451Help": "Le motif, la date de fin et l'adresse pour contester la décision sont sur votre profil.",
+    "profile": "Voir mon profil",
+    "cooldown": "Vous avez quitté deux parties publiques en 24 h : vous pourrez rejoindre une partie publique à {time}.",
+    "cooldownSoon": "Vous avez quitté deux parties publiques en 24 h : vous pourrez rejoindre une partie publique d'ici un quart d'heure.",
+    "publicGames": "Retour aux parties publiques"
   },
   "lobby": {
     "heading": "Salle {code}",
@@ -123,8 +130,11 @@
       "gameAbandoned": "La partie a été arrêtée sans vainqueur.",
       "playerAfk": "{name} ne répond plus : la salle joue à sa place.",
       "playerBack": "{name} est de retour.",
-      "turnForced": "L'hôte a joué le tour de {name}."
-    }
+      "turnForced": "L'hôte a joué le tour de {name}.",
+      "playerRemoved": "{name} a été retiré de la salle par la modération.",
+      "playerRenamed": "{old} s'appelle désormais {name}."
+    },
+    "hidden": "{count, plural, one {# message masqué} other {# messages masqués}} (joueurs que vous avez masqués)."
   },
   "host": {
     "controls": "Contrôles de l'hôte",
@@ -154,6 +164,64 @@
     "chat_not_allowed": "Vous ne pouvez pas parler maintenant.",
     "chat_too_fast": "Doucement : attendez un peu avant d'écrire.",
     "chat_invalid": "Message vide ou trop long (300 caractères au plus).",
-    "engine": "Action impossible."
+    "engine": "Action impossible.",
+    "chat_offensive": "Message refusé : il contient un mot interdit (voir le code de conduite)."
+  },
+  "members": {
+    "title": "Dans la salle",
+    "spectator": "spectateur"
+  },
+  "member": {
+    "open": "Actions pour {name}",
+    "mutedTag": "messages masqués",
+    "guestTag": "invité",
+    "mute": "Masquer ses messages",
+    "unmute": "Afficher ses messages",
+    "muteHelp": "Pour vous seulement, dans cette salle. Personne n'est prévenu.",
+    "block": "Bloquer {name}",
+    "blockHelp": "Vous ne verrez plus ses messages, et la partie rapide ne vous réunira plus.",
+    "blocked": "Vous avez bloqué {name} : ses messages vous sont masqués et la partie rapide ne vous réunira plus.",
+    "alreadyBlocked": "Vous aviez déjà bloqué {name} : ses messages vous sont masqués et la partie rapide ne vous réunit pas.",
+    "unblockHint": "Pour débloquer : votre profil, rubrique « Joueurs bloqués ».",
+    "profileLink": "Ouvrir mon profil",
+    "report": "Signaler {name}",
+    "guestTarget": "Les invités ne peuvent être ni bloqués ni signalés : l'hôte peut les retirer de la salle.",
+    "accountOnly": "Bloquer et signaler un joueur demandent un compte.",
+    "close": "Fermer",
+    "pending": "Un instant…",
+    "errors": {
+      "forbidden": "Requête refusée. Rechargez la page.",
+      "account_required": "Bloquer et signaler un joueur demandent un compte.",
+      "invalid": "Demande invalide. Rechargez la page.",
+      "rate_limited": "Trop de demandes en peu de temps. Réessayez dans une heure.",
+      "not_member": "Vous n'êtes plus dans cette salle.",
+      "unknown_target": "Ce joueur n'est plus dans la salle.",
+      "self": "Impossible sur vous-même.",
+      "guest_target": "Les invités ne peuvent être ni bloqués ni signalés : l'hôte peut les retirer de la salle.",
+      "too_many_blocks": "Vous avez bloqué 500 joueurs, c'est le maximum. Débloquez-en d'abord depuis votre profil.",
+      "no_room": "Cette salle est fermée.",
+      "unavailable": "Le serveur de jeu ne répond pas. Réessayez dans un instant.",
+      "failed": "L'envoi a échoué. Vérifiez votre connexion et réessayez."
+    }
+  },
+  "report": {
+    "title": "Signaler {name}",
+    "reason": "Motif",
+    "reasons": {
+      "harassment": "Harcèlement ou insultes",
+      "hate": "Propos haineux ou discriminatoires",
+      "cheating": "Triche ou anti-jeu volontaire",
+      "spam": "Spam ou flood",
+      "name": "Nom inapproprié",
+      "other": "Autre"
+    },
+    "reasonRequired": "Choisissez un motif.",
+    "details": "Précisions (facultatif)",
+    "detailsHint": "Ce qui s'est passé, en quelques mots ({max} caractères au plus).",
+    "evidence": "Avec votre signalement, les modérateurs reçoivent les {count} derniers messages de la discussion, l'historique public de la partie et les noms des joueurs.",
+    "conduct": "Lire le code de conduite",
+    "submit": "Envoyer le signalement",
+    "back": "Retour",
+    "sent": "Signalement envoyé : les modérateurs vont l'examiner."
   }
 }

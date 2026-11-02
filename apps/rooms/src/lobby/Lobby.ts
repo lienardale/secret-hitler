@@ -16,6 +16,7 @@ import { DurableObject } from "cloudflare:workers";
 import {
   KEEPALIVE_PING,
   KEEPALIVE_PONG,
+  identityKeySchema,
   lobbyMessageSchema,
   lobbyRoomReportSchema,
   quickMatchRequestSchema,
@@ -163,6 +164,19 @@ export class Lobby extends DurableObject<Env> {
     }
     this.reschedule();
     return { code };
+  }
+
+  /**
+   * Public rooms an identity is in (from the rooms' reported `members`), or was
+   * just sent to by quick match. Used to apply a moderator's action (M5).
+   */
+  roomsWith(identity: string): string[] {
+    const key = identityKeySchema.parse(identity);
+    this.sweep(Date.now());
+    this.reschedule();
+    return [...this.rooms.values()]
+      .filter(({ report, claims }) => report.members.includes(key) || claims.has(key))
+      .map(({ report }) => report.code);
   }
 
   /** The list viewers see: waiting rooms first, fullest first, then games in progress. */

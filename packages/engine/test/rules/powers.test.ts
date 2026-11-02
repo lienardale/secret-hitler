@@ -89,13 +89,15 @@ describe("Policy Peek", () => {
     ];
     const state = makeState({ playerCount: 5, fascist: 2, president: 1, deck });
     const { state: next, events } = governAndEnact(state, 2, "F");
-    expect(next.phase).toEqual({ kind: "executive", power: "peek", peek: ["L", "F", "F"] });
+    // In pile order, not sorted: "without changing the order" (the next chaos enacts the first).
+    expect(next.phase).toEqual({ kind: "executive", power: "peek", peek: ["F", "L", "F"] });
+    expect(next.deck.slice(0, 3)).toEqual(["F", "L", "F"]);
     expect(events.at(-1)).toEqual({
       type: "peekRevealed",
       president: 1,
-      policies: ["L", "F", "F"],
+      policies: ["F", "L", "F"],
     });
-    expect(viewFor(next, 1).me?.peek).toEqual(["L", "F", "F"]);
+    expect(viewFor(next, 1).me?.peek).toEqual(["F", "L", "F"]);
     expect(viewFor(next, 2).me?.peek).toBeNull();
     expect(legalActions(next, 1)).toEqual([{ type: "acknowledgePeek" }]);
 

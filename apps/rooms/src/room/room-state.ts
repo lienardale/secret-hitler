@@ -9,6 +9,7 @@ import type {
   GameResultPayload,
   IdentityKind,
   Lang,
+  ReportPayload,
   RoomSettings,
   Visibility,
 } from "@sh/protocol";
@@ -49,8 +50,13 @@ export interface GameRecord<S> {
   phaseKey: string;
   /** When the current decision times out, or null without timers. */
   deadline: number | null;
-  /** Seats played automatically: away too long (public games) or kicked. */
+  /** Seats played automatically: away too long (public games), kicked or banned. */
   auto: boolean[];
+  /**
+   * Seats whose player was removed (host kick, moderator ban): played by the
+   * room but never counted as having left. Optional: games stored before M5.
+   */
+  removed?: boolean[];
   /** Public games: since when fewer than half of the living players are connected. */
   underHalfSince: number | null;
 }
@@ -71,8 +77,13 @@ export interface RoomState<S> {
   members: Member[];
   /** Lobby: pids of seated members, in seating order. */
   seated: string[];
-  /** Identity keys refused for the rest of the room's life. */
+  /** Identity keys refused for the rest of the room's life (kicked by the host: 4423). */
   kicked: string[];
+  /**
+   * Identity keys a moderator banned (M5): refused with 4451 for the rest of the
+   * room's life. Optional because rooms stored before M5 do not have it.
+   */
+  banned?: string[];
   status: RoomStatus;
   /** Public lobby: when the game starts by itself. */
   startsAt: number | null;
@@ -110,11 +121,11 @@ export interface StoredChat {
   authorKey: string | null;
 }
 
-export interface OutboxItem {
-  id: string;
-  kind: "gameResult";
-  payload: GameResultPayload;
-}
+/** Something to deliver to the website from the alarm (outbox.ts). The id is unique per room. */
+export type OutboxItem =
+  | { id: string; kind: "gameResult"; payload: GameResultPayload }
+  /** A player's report; `id` is the website's `reportId`, so a repeated report is queued once. */
+  | { id: string; kind: "report"; payload: ReportPayload };
 
 /** What changed and must be sent to clients after a room operation. */
 export type Note<E> =

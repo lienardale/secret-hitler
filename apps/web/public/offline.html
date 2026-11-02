@@ -1,0 +1,126 @@
+<!doctype html>
+<!--
+  Shown by the service worker (public/sw.js) when a page cannot be loaded because
+  the network is down. Self-contained: inline CSS, no external request, no font
+  download. The address bar keeps the page the visitor asked for, so "retry"
+  reloads it (the link to / works without JavaScript).
+-->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3e3c3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1d1a17" media="(prefers-color-scheme: dark)" />
+    <meta name="robots" content="noindex" />
+    <title>Hors ligne · Offline · Secret Hitler</title>
+    <style>
+      :root {
+        --paper: #f3e3c3;
+        --paper-raised: #f8eed8;
+        --ink: #2a221b;
+        --ink-muted: #5c4f42;
+        --rule: #c9b48f;
+        --liberal: #2d6489;
+        color-scheme: light dark;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #1d1a17;
+          --paper-raised: #28231f;
+          --ink: #efe3cc;
+          --ink-muted: #bcae98;
+          --rule: #4a4036;
+          --liberal: #7cb4dc;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--paper);
+        color: var(--ink);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        line-height: 1.5;
+      }
+      main {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 2rem 1rem;
+      }
+      .langs {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+        gap: 1rem;
+        width: 100%;
+        max-width: 40rem;
+      }
+      section {
+        background: var(--paper-raised);
+        border: 1px solid var(--rule);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+      }
+      h1 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.5rem;
+        line-height: 1.2;
+        margin: 0 0 0.5rem;
+      }
+      p {
+        margin: 0;
+        color: var(--ink-muted);
+      }
+      a {
+        display: inline-block;
+        padding: 0.65rem 1.5rem;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--paper);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      a:focus-visible {
+        outline: 3px solid var(--liberal);
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="langs">
+        <section lang="fr">
+          <h1>Vous êtes hors ligne</h1>
+          <p>Impossible de joindre Secret Hitler. Vérifiez votre connexion, puis réessayez.</p>
+        </section>
+        <section lang="en">
+          <h1>You are offline</h1>
+          <p>Secret Hitler cannot be reached. Check your connection, then try again.</p>
+        </section>
+      </div>
+      <a id="retry" href="/">Réessayer · Retry</a>
+    </main>
+    <script>
+      // Reload the page the visitor asked for (still in the address bar), and do
+      // it by itself as soon as the connection comes back.
+      document.getElementById("retry").addEventListener("click", function (event) {
+        event.preventDefault();
+        location.reload();
+      });
+      window.addEventListener("online", function () {
+        location.reload();
+      });
+    </script>
+  </body>
+</html>

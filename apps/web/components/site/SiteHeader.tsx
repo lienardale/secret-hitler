@@ -11,7 +11,7 @@ export async function SiteHeader({
   switchHref = "/",
 }: {
   locale: Locale;
-  switchHref?: "/" | "/jouer" | "/profil";
+  switchHref?: "/" | "/jouer" | "/profil" | "/conduite" | "/admin/signalements" | "/admin/bannis";
 }) {
   const [t, user] = await Promise.all([
     getTranslations({ locale, namespace: "common" }),
@@ -28,6 +28,14 @@ export async function SiteHeader({
         <Link href="/jouer" className={linkClass}>
           {t("nav.play")}
         </Link>
+        <Link href="/conduite" className={linkClass}>
+          {t("nav.conduct")}
+        </Link>
+        {user && user.role !== "USER" && (
+          <Link href="/admin/signalements" className={linkClass}>
+            {t("nav.admin")}
+          </Link>
+        )}
         {user ? (
           <>
             {user.onboarded ? (

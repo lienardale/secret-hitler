@@ -1,6 +1,8 @@
 import type { routing } from "@/lib/i18n/routing";
+import type admin from "./messages/fr/admin.json";
 import type auth from "./messages/fr/auth.json";
 import type common from "./messages/fr/common.json";
+import type conduct from "./messages/fr/conduct.json";
 import type game from "./messages/fr/game.json";
 import type lobby from "./messages/fr/lobby.json";
 import type profile from "./messages/fr/profile.json";
@@ -16,6 +18,8 @@ declare module "next-intl" {
       auth: typeof auth;
       lobby: typeof lobby;
       profile: typeof profile;
+      conduct: typeof conduct;
+      admin: typeof admin;
     };
   }
 }

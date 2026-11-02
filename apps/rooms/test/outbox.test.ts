@@ -31,6 +31,21 @@ describe("outbox delivery", () => {
     );
   });
 
+  it("posts reports to the website's reports endpoint", async () => {
+    let url = "";
+    const fetcher: typeof fetch = (input) => {
+      url = input instanceof Request ? input.url : String(input);
+      return Promise.resolve(new Response(null, { status: 200 }));
+    };
+    const report = {
+      id: "r1",
+      kind: "report",
+      payload: { reportId: "r" },
+    } as unknown as OutboxItem;
+    expect(await deliver(report, config, fetcher)).toBe("done");
+    expect(url).toBe("https://web.test/api/internal/reports");
+  });
+
   it("is done on 2xx and 409, drops what the website refuses, retries the rest", async () => {
     const outcomes: Record<number, string> = {};
     for (const status of [200, 204, 409, 400, 413, 422, 401, 404, 429, 500, 503]) {

@@ -27,7 +27,8 @@
     "room_not_found": "No room with this code. It may have closed.",
     "rate_limited": "Too many attempts. Try again in a few minutes.",
     "rooms_unavailable": "The game server is not answering. Try again in a moment.",
-    "forbidden": "Request refused. Please reload the page."
+    "forbidden": "Request refused. Please reload the page.",
+    "name_offensive": "This name is not accepted, please choose another one."
   },
   "notFound": {
     "title": "Room not found",
@@ -64,7 +65,13 @@
     "other": "The connection to the room was closed.",
     "home": "Back to the home page",
     "reload": "Reload the page",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "c4451": "Your account is suspended by the moderators.",
+    "c4451Help": "The reason, the end date and how to appeal are on your profile.",
+    "profile": "See my profile",
+    "cooldown": "You left two public games within 24 hours: you can join a public game again at {time}.",
+    "cooldownSoon": "You left two public games within 24 hours: you can join a public game again within a quarter of an hour.",
+    "publicGames": "Back to public games"
   },
   "lobby": {
     "heading": "Room {code}",
@@ -123,8 +130,11 @@
       "gameAbandoned": "The game was stopped with no winner.",
       "playerAfk": "{name} stopped responding: the room plays for them.",
       "playerBack": "{name} is back.",
-      "turnForced": "The host played {name}'s turn."
-    }
+      "turnForced": "The host played {name}'s turn.",
+      "playerRemoved": "{name} was removed from the room by a moderator.",
+      "playerRenamed": "{old} is now called {name}."
+    },
+    "hidden": "{count, plural, one {# message hidden} other {# messages hidden}} (players you muted)."
   },
   "host": {
     "controls": "Host controls",
@@ -154,6 +164,64 @@
     "chat_not_allowed": "You cannot talk right now.",
     "chat_too_fast": "Easy: wait a little before writing again.",
     "chat_invalid": "Empty or too long message (300 characters at most).",
-    "engine": "That action is not possible."
+    "engine": "That action is not possible.",
+    "chat_offensive": "Message refused: it contains a word that is not allowed (see the code of conduct)."
+  },
+  "members": {
+    "title": "In the room",
+    "spectator": "spectator"
+  },
+  "member": {
+    "open": "Actions for {name}",
+    "mutedTag": "muted",
+    "guestTag": "guest",
+    "mute": "Mute their messages",
+    "unmute": "Unmute their messages",
+    "muteHelp": "Only for you, in this room. Nobody is told.",
+    "block": "Block {name}",
+    "blockHelp": "You will no longer see their messages, and quick match will never put you together again.",
+    "blocked": "You blocked {name}: their messages are hidden from you and quick match will never put you together again.",
+    "alreadyBlocked": "You had already blocked {name}: their messages are hidden from you and quick match keeps you apart.",
+    "unblockHint": "To unblock: your profile, under “Blocked players”.",
+    "profileLink": "Open my profile",
+    "report": "Report {name}",
+    "guestTarget": "Guests cannot be blocked or reported: the host can remove them from the room.",
+    "accountOnly": "Blocking and reporting a player need an account.",
+    "close": "Close",
+    "pending": "One moment…",
+    "errors": {
+      "forbidden": "Request refused. Please reload the page.",
+      "account_required": "Blocking and reporting a player need an account.",
+      "invalid": "Invalid request. Please reload the page.",
+      "rate_limited": "Too many requests in a short time. Try again in an hour.",
+      "not_member": "You are no longer in this room.",
+      "unknown_target": "This player is no longer in the room.",
+      "self": "Not possible on yourself.",
+      "guest_target": "Guests cannot be blocked or reported: the host can remove them from the room.",
+      "too_many_blocks": "You blocked 500 players, the maximum. Unblock some first from your profile.",
+      "no_room": "This room is closed.",
+      "unavailable": "The game server is not answering. Try again in a moment.",
+      "failed": "Sending failed. Check your connection and try again."
+    }
+  },
+  "report": {
+    "title": "Report {name}",
+    "reason": "Reason",
+    "reasons": {
+      "harassment": "Harassment or insults",
+      "hate": "Hateful or discriminatory speech",
+      "cheating": "Cheating or deliberately throwing the game",
+      "spam": "Spam or flooding",
+      "name": "Inappropriate name",
+      "other": "Other"
+    },
+    "reasonRequired": "Choose a reason.",
+    "details": "Details (optional)",
+    "detailsHint": "What happened, in a few words ({max} characters at most).",
+    "evidence": "With your report, the moderators receive the last {count} chat messages, the public game log and the players' names.",
+    "conduct": "Read the code of conduct",
+    "submit": "Send report",
+    "back": "Back",
+    "sent": "Report sent: moderators will look at it."
   }
 }

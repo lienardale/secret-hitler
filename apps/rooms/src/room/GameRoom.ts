@@ -2,10 +2,10 @@
  * One Durable Object per room code: the effectful shell around RoomCore.
  *
  * Message path: parse → RoomCore (rules) → write to SQLite → send each socket
- * its own projection. External calls (game results to the website, reports to
- * the lobby) never run in the message path: they happen in the alarm, which
- * also drives turn deadlines, reconnection grace, the start countdown and the
- * final purge.
+ * its own projection. External calls (game results and player reports to the
+ * website, reports to the lobby) never run in the message path or in an RPC:
+ * they happen in the alarm, which also drives turn deadlines, reconnection
+ * grace, the start countdown and the final purge.
  *
  * WebSockets use the hibernation API: the object can sleep between messages
  * and rebuild its state from SQLite and the sockets' attachments.
@@ -17,9 +17,18 @@ import {
   KEEPALIVE_PONG,
   MAX_CLIENT_MESSAGE_BYTES,
   clientMessageSchema,
+  identityKeySchema,
+  moderationActionSchema,
+  roomMemberRequestSchema,
+  roomReportRequestSchema,
   type CreateRoomRequest,
   type LobbyRoomReport,
+  type ModerationAction,
   type RoomInfo,
+  type RoomMember,
+  type RoomMemberRequest,
+  type RoomReportError,
+  type RoomReportRequest,
   type VerifiedTicket,
 } from "@sh/protocol";
 import { DurableObject } from "cloudflare:workers";
@@ -64,6 +73,11 @@ interface LobbySent {
   json: string;
   at: number;
 }
+
+export type ReportOutcome = { ok: true } | { ok: false; error: RoomReportError | "no_room" };
+export type MemberOutcome =
+  | { ok: true; member: RoomMember }
+  | { ok: false; error: "no_room" | "unknown_target" | "not_member" };
 
 export class GameRoom extends DurableObject<Env> {
   private readonly store: RoomStore;
@@ -125,6 +139,40 @@ export class GameRoom extends DurableObject<Env> {
 
   info(): RoomInfo | null {
     return this.core?.info() ?? null;
+  }
+
+  /**
+   * A member reports another (M5). The report is queued in the outbox and
+   * delivered by the alarm, which `commit` schedules right away.
+   */
+  async report(input: RoomReportRequest): Promise<ReportOutcome> {
+    const request = roomReportRequestSchema.parse(input);
+    const core = this.core;
+    if (!core) return { ok: false, error: "no_room" };
+    const now = Date.now();
+    const error = core.report(request, now);
+    if (error) return { ok: false, error };
+    await this.commit(now);
+    return { ok: true };
+  }
+
+  /** Who is behind a pid, answered only to a member of the room (M5). */
+  member(input: RoomMemberRequest): MemberOutcome {
+    const request = roomMemberRequestSchema.parse(input);
+    const result = this.core?.lookup(request) ?? "no_room";
+    return typeof result === "string" ? { ok: false, error: result } : { ok: true, member: result };
+  }
+
+  /** A moderator's ban or rename (M5). True when the account was a member here. */
+  async moderate(identity: string, input: ModerationAction): Promise<boolean> {
+    const key = identityKeySchema.parse(identity);
+    const action = moderationActionSchema.parse(input);
+    const core = this.core;
+    if (!core) return false;
+    const now = Date.now();
+    const applied = core.moderate(key, action, now);
+    await this.commit(now);
+    return applied;
   }
 
   // ── WebSockets ─────────────────────────────────────────────────────────

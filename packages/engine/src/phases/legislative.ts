@@ -1,6 +1,6 @@
 import { VETO_UNLOCK, powerBoard } from "../constants";
 import type { Ctx } from "../context";
-import { ensureDeck, sortPolicies } from "../deck";
+import { ensureDeck } from "../deck";
 import { engineError } from "../errors";
 import { startNextRound } from "../rotation";
 import type { EngineError, Phase, Policy } from "../types";
@@ -97,7 +97,8 @@ function enactByGovernment(ctx: Ctx, policy: Policy): void {
     startNextRound(ctx);
     return;
   }
-  const peek = power === "peek" ? sortPolicies(s.deck.slice(0, 3)) : null;
+  // The President sees the top three in pile order (the rules: "without changing the order").
+  const peek = power === "peek" ? s.deck.slice(0, 3) : null;
   s.phase = { kind: "executive", power, peek };
   events.push({ type: "powerGranted", president: s.president, power });
   if (peek) events.push({ type: "peekRevealed", president: s.president, policies: peek.slice() });

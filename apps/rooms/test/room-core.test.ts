@@ -2,9 +2,13 @@ import { legalActions, pendingActors, replay, type Action } from "@sh/engine";
 import {
   CLOSE,
   MAX_SPECTATORS,
+  REPORT_EVIDENCE_CHAT,
   gameResultPayloadSchema,
+  reportPayloadSchema,
   roomViewSchema,
   serverMessageSchema,
+  type ChatMessage,
+  type RoomReportRequest,
 } from "@sh/protocol";
 import { describe, expect, it } from "vitest";
 
@@ -305,8 +309,8 @@ describe("away players in public games", () => {
     core.drain();
     core.tick(t1 + ROOM_TIMING.abandonAfterMs);
     expect(core.roomView().result).toEqual({ kind: "abandoned" });
-    const payload = core.drain().outbox[0]?.payload;
-    expect(payload?.players.every((p) => !p.won)).toBe(true);
+    const payload = gameResultPayloadSchema.parse(core.drain().outbox[0]?.payload);
+    expect(payload.players.every((p) => !p.won)).toBe(true);
   });
 
   it("marks the player the room played for as having left in the result", () => {
@@ -414,15 +418,31 @@ describe("kicks", () => {
     expect(core.roomView().players[president]?.afk).toBe(true);
   });
 
-  it("marks a kicked player as having left in the result", () => {
+  it("never counts a kicked player as having left (no abandon cooldown)", () => {
     const { core, pids } = startedRoom(5);
     const host = pids[0] as string;
     const seat = core.room.game?.seats.findIndex((pid) => pid !== host) as number;
     expect(core.handle(host, { t: "kick", pid: pidAt(core, seat) }, T0)).toBeNull();
+    expect(core.roomView().players[seat]?.afk).toBe(true);
     core.drain();
     playToEnd(core);
     const payload = gameResultPayloadSchema.parse(core.drain().outbox[0]?.payload);
-    expect(payload.players.filter((p) => p.left).map((p) => p.seat)).toEqual([seat]);
+    expect(payload.players.every((p) => !p.left)).toBe(true);
+  });
+
+  it("lets the host kick in a public lobby, but not once the public game has started", () => {
+    const { core } = makeRoom({ visibility: "public", settings: { minPlayers: 5 } });
+    const pids = joinAll(core, 6, T0, user) as [string, ...string[]];
+    const [host] = pids;
+    expect(core.handle(host, { t: "kick", pid: pids[5] as string }, T0)).toBeNull();
+    expect(core.member(pids[5] as string)).toBeUndefined();
+    core.tick(T0 + ROOM_TIMING.countdownMs);
+    expect(core.room.status).toBe("playing");
+    const target = core.room.game?.seats.find((pid) => pid !== host) as string;
+    expect(core.handle(host, { t: "kick", pid: target }, T0 + ROOM_TIMING.countdownMs)).toBe(
+      "private_only",
+    );
+    expect(core.member(target)).toBeDefined();
   });
 
   it("tells the lobby which identities a public room refuses, the latest 100", () => {
@@ -591,5 +611,363 @@ describe("what clients receive", () => {
     expect(core.drain().lobby).toBe(false);
     core.handle(pidAt(core, 0), { t: "chat", text: "hi" }, T0 + ROOM_TIMING.countdownMs);
     expect(core.drain().lobby).toBe(false);
+  });
+});
+
+/** On the list of every filter version (the chat filter's real list keeps it). */
+const SLUR = "faggot";
+
+function systemMessages(chat: { message: ChatMessage }[]) {
+  return chat.flatMap(({ message }) => (message.kind === "system" ? [message] : []));
+}
+
+describe("chat filter", () => {
+  it("refuses slurs with chat_offensive, and counts them against the rate limit", () => {
+    const { core } = makeRoom();
+    const [a, b] = joinAll(core, 2) as [string, string];
+    core.drain();
+    for (let i = 0; i < 3; i++) {
+      expect(core.handle(a, { t: "chat", text: `you ${SLUR} ${i}` }, T0)).toBe("chat_offensive");
+    }
+    // The three refused messages used up the burst allowance.
+    expect(core.handle(a, { t: "chat", text: "hello" }, T0)).toBe("chat_too_fast");
+    const out = core.drain();
+    expect(out.chat).toHaveLength(0);
+    expect(out.notes).toHaveLength(0);
+    expect(core.handle(b, { t: "chat", text: "hello" }, T0)).toBeNull();
+  });
+
+  it("closes the socket of a member who keeps posting slurs, even slowly", () => {
+    const { core } = makeRoom();
+    const [a] = joinAll(core, 1) as [string];
+    core.drain();
+    // 2.1 s apart: every message passes the rate limits, but each one is a strike.
+    for (let i = 0; i < 7; i++) {
+      expect(core.handle(a, { t: "chat", text: SLUR }, T0 + i * 2100)).toBe("chat_offensive");
+    }
+    expect(core.drain().notes).toHaveLength(0);
+    expect(core.handle(a, { t: "chat", text: SLUR }, T0 + 7 * 2100)).toBe("chat_offensive");
+    expect(core.drain().notes).toEqual([{ kind: "close", pid: a, code: CLOSE.flood }]);
+  });
+});
+
+describe("blocks", () => {
+  it("hides a blocked identity's live messages from the member who blocked it only", () => {
+    const { core } = makeRoom();
+    const [a, b] = joinAll(core, 2) as [string, string];
+    const c = core.join(guest(3, { blocks: ["g:g2"] }), T0);
+    if (!c.ok) throw new Error("join refused");
+    core.drain();
+    expect(core.handle(b, { t: "chat", text: "hello" }, T0)).toBeNull();
+    const note = core.drain().notes.find((n) => n.kind === "chat");
+    if (note?.kind !== "chat") throw new Error("no chat note");
+    expect(core.chatVisibleTo(note.chat, c.pid)).toBe(false);
+    expect(core.chatVisibleTo(note.chat, a)).toBe(true);
+    expect(core.chatVisibleTo(note.chat, b)).toBe(true);
+    // The blocker's own messages still reach the blocked member.
+    expect(core.handle(c.pid, { t: "chat", text: "hi" }, T0)).toBeNull();
+    const back = core.drain().notes.find((n) => n.kind === "chat");
+    if (back?.kind !== "chat") throw new Error("no chat note");
+    expect(core.chatVisibleTo(back.chat, b)).toBe(true);
+  });
+});
+
+describe("reports", () => {
+  let reportN = 0;
+  function request(reporter: string, target: string): RoomReportRequest {
+    reportN += 1;
+    return {
+      reportId: `10000000-0000-4000-8000-${String(reportN).padStart(12, "0")}`,
+      reporter,
+      target,
+      reason: "harassment",
+      details: "rude",
+    };
+  }
+
+  it("checks the reporter and the target before queueing anything", () => {
+    const { core, pids } = startedRoom(5, {}, user);
+    const spectator = core.join(guest(9), T0);
+    if (!spectator.ok) throw new Error("join refused");
+    core.drain();
+    const [p1, p2] = pids as [string, string];
+    expect(core.report(request("u:nobody", p2), T0)).toBe("not_member");
+    expect(core.report(request("u:u1", "nope"), T0)).toBe("unknown_target");
+    expect(core.report(request("u:u1", p1), T0)).toBe("self");
+    expect(core.report(request("u:u1", spectator.pid), T0)).toBe("guest_target");
+    expect(core.drain().outbox).toHaveLength(0);
+
+    const ok = request("u:u1", p2);
+    expect(core.report(ok, T0)).toBeNull();
+    const out = core.drain();
+    expect(out.outbox).toHaveLength(1);
+    expect(out.outbox[0]).toMatchObject({ id: ok.reportId, kind: "report" });
+    // A report changes nothing in the room and tells nobody.
+    expect(out.notes).toHaveLength(0);
+    expect(out.dirty).toBe(false);
+  });
+
+  it("builds the evidence: members, the latest chat unfiltered, public game events only", () => {
+    const { core } = makeRoom({ host: user(1) });
+    const pids = joinAll(core, 5, T0, user);
+    // 110 lobby messages, 2.1 s apart, from every player in turn.
+    let now = T0;
+    for (let k = 0; k < 110; k++) {
+      now += 2100;
+      expect(core.handle(pids[k % 5] as string, { t: "chat", text: `m${k}` }, now)).toBeNull();
+    }
+    core.drain();
+    expect(core.handle(pids[0] as string, { t: "start" }, now)).toBeNull();
+    electGovernment(core, now);
+    // A spectator who blocked User 2 reports them.
+    const reporter = core.join(user(6, { blocks: ["u:u2"] }), now);
+    if (!reporter.ok) throw new Error("join refused");
+    const log = core.drain().moves.flatMap((m) => m.events);
+    expect(log.some((e) => e.type === "policiesDrawn")).toBe(true);
+
+    const target = pids[1] as string;
+    const req = request("u:u6", target);
+    expect(core.report(req, now)).toBeNull();
+    const item = core.drain().outbox[0];
+    const payload = reportPayloadSchema.parse(item?.payload);
+
+    expect(payload).toMatchObject({
+      reportId: req.reportId,
+      room: "BCDFG",
+      visibility: "private",
+      lang: "fr",
+      createdAt: now,
+      reason: "harassment",
+      details: "rude",
+      reporter: { pid: reporter.pid, kind: "user", sub: "u6", name: "User 6" },
+      target: { pid: target, kind: "user", sub: "u2", name: "User 2" },
+    });
+    const { evidence } = payload;
+    expect(evidence.status).toBe("playing");
+    expect(evidence.game).toEqual({ id: core.room.game?.id, number: 1 });
+
+    // Players in seat order, then spectators.
+    const seats = core.room.game?.seats ?? [];
+    expect(evidence.members.map((m) => m.pid)).toEqual([...seats, reporter.pid]);
+    expect(evidence.members.map((m) => m.seat)).toEqual([0, 1, 2, 3, 4, null]);
+    expect(evidence.members.filter((m) => m.host).map((m) => m.sub)).toEqual(["u1"]);
+    expect(evidence.members.every((m) => m.connected && m.kind === "user")).toBe(true);
+    expect(evidence.members.find((m) => m.pid === target)).toMatchObject({ sub: "u2" });
+
+    // The latest 100 messages, oldest first, system messages included, blocks ignored.
+    const all = core.welcomeFor(pids[0] as string, now)?.chat ?? [];
+    expect(all.length).toBeGreaterThan(REPORT_EVIDENCE_CHAT);
+    expect(evidence.chat).toEqual(all.slice(-REPORT_EVIDENCE_CHAT));
+    expect(evidence.chat.map((m) => (m.kind === "system" ? m.key : null)).slice(-2)).toEqual([
+      "gameStarted",
+      "playerJoined",
+    ]);
+    expect(evidence.chat.some((m) => m.kind === "player" && m.pid === target)).toBe(true);
+    const reporterSees = core.welcomeFor(reporter.pid, now)?.chat ?? [];
+    expect(reporterSees.some((m) => m.kind === "player" && m.pid === target)).toBe(false);
+
+    // What a spectator sees of the game: no hand, no role.
+    expect(evidence.events).toEqual(secretHitler.eventsFor(log, "spectator"));
+    expect(evidence.events.some((e) => e.type === "policiesDrawn")).toBe(false);
+    expect(JSON.stringify(payload)).not.toMatch(/"policies"|"roles"|"seed"|"deck"/);
+  });
+
+  it("reports from a lobby with no game, and queues the same id when asked twice", () => {
+    const { core } = makeRoom({ host: user(1) });
+    const [, p2] = joinAll(core, 2, T0, user) as [string, string];
+    core.drain();
+    const req = request("u:u1", p2);
+    expect(core.report(req, T0)).toBeNull();
+    expect(core.report(req, T0 + 1)).toBeNull();
+    const out = core.drain().outbox;
+    // Same id twice: the room's outbox table stores it once (ON CONFLICT DO NOTHING).
+    expect(out.map((o) => o.id)).toEqual([req.reportId, req.reportId]);
+    const payload = reportPayloadSchema.parse(out[0]?.payload);
+    expect(payload.evidence).toMatchObject({ status: "lobby", game: null, events: [] });
+    expect(payload.evidence.members.map((m) => m.seat)).toEqual([null, null]);
+  });
+});
+
+describe("moderation: ban", () => {
+  it("closes a seated player's sockets with 4451, plays their seat and refuses them after", () => {
+    const { core, pids } = startedRoom(5, {}, user);
+    core.drain();
+    const president = state(core).president;
+    const target = pidAt(core, president);
+    const n = pids.indexOf(target) + 1;
+    expect(core.moderate(`u:u${n}`, { kind: "ban" }, T0)).toBe(true);
+    const out = core.drain();
+    expect(out.notes).toContainEqual({ kind: "close", pid: target, code: CLOSE.banned });
+    expect(systemMessages(out.chat)).toContainEqual(
+      expect.objectContaining({ key: "playerRemoved", params: { name: `User ${n}` } }),
+    );
+    // Their nomination was played by the room; they keep the seat in the game record.
+    expect(state(core).phase.kind).toBe("vote");
+    expect(core.roomView().players[president]).toMatchObject({ afk: true, connected: false });
+    expect(core.room.banned).toEqual([`u:u${n}`]);
+    expect(core.join(user(n), T0)).toEqual({ ok: false, code: CLOSE.banned });
+
+    // Asked again (the account is still in the game record): applied, nothing repeated.
+    expect(core.moderate(`u:u${n}`, { kind: "ban" }, T0)).toBe(true);
+    const again = core.drain();
+    expect(again.notes).toHaveLength(0);
+    expect(again.chat).toHaveLength(0);
+  });
+
+  it("never counts a banned player as having left, unlike one away too long", () => {
+    const { core } = makeRoom({
+      visibility: "public",
+      settings: { minPlayers: 5, timers: "relaxed" },
+    });
+    joinAll(core, 5, T0, user);
+    const t1 = T0 + ROOM_TIMING.countdownMs;
+    core.tick(t1);
+    expect(core.room.status).toBe("playing");
+    const banned = pidAt(core, 1);
+    const away = pidAt(core, 3);
+    // Test pids are p1..p5 in join order, for users 1..5.
+    const bannedKey = `u:u${banned.slice(1)}`;
+    expect(core.moderate(bannedKey, { kind: "ban" }, t1)).toBe(true);
+    // The lobby keeps the banned account out of quick match; the seat stays in the game.
+    expect(core.lobbyReport()?.excluded).toEqual([bannedKey]);
+    expect(core.lobbyReport()?.members).toContain(bannedKey);
+    core.markGone(away, t1);
+    core.tick(t1 + ROOM_TIMING.reconnectGraceMs);
+    core.drain();
+    playToEnd(core, 7, t1 + ROOM_TIMING.reconnectGraceMs);
+    const payload = gameResultPayloadSchema.parse(core.drain().outbox[0]?.payload);
+    expect(payload.players.map((p) => p.left)).toEqual([false, false, false, true, false]);
+  });
+
+  it("removes a banned lobby member and tells the lobby to keep them out", () => {
+    const { core } = makeRoom({ visibility: "public" });
+    const [, , p3] = joinAll(core, 3, T0, user) as [string, string, string];
+    core.drain();
+    expect(core.moderate("u:u3", { kind: "ban" }, T0)).toBe(true);
+    const out = core.drain();
+    expect(out.notes).toContainEqual({ kind: "close", pid: p3, code: CLOSE.banned });
+    expect(out.lobby).toBe(true);
+    expect(core.member(p3)).toBeUndefined();
+    expect(core.roomView().players).toHaveLength(2);
+    expect(core.lobbyReport()).toMatchObject({ members: ["u:u1", "u:u2"], excluded: ["u:u3"] });
+    expect(core.join(user(3), T0)).toEqual({ ok: false, code: CLOSE.banned });
+  });
+
+  it("records a ban for an account that is not here, and answers 4451 rather than 4423", () => {
+    const { core } = makeRoom({ host: user(1) });
+    const [host, p2] = joinAll(core, 2, T0, user) as [string, string];
+    expect(core.handle(host, { t: "kick", pid: p2 }, T0)).toBeNull();
+    core.drain();
+    expect(core.moderate("u:u2", { kind: "ban" }, T0)).toBe(false);
+    expect(core.moderate("u:u9", { kind: "ban" }, T0)).toBe(false);
+    const out = core.drain();
+    expect(out.dirty).toBe(true);
+    expect(out.notes).toHaveLength(0);
+    expect(out.chat).toHaveLength(0);
+    expect(core.join(user(2), T0)).toEqual({ ok: false, code: CLOSE.banned });
+    expect(core.join(user(9), T0)).toEqual({ ok: false, code: CLOSE.banned });
+  });
+
+  it("hands the host role over at once when the host is banned", () => {
+    const { core } = makeRoom({ host: user(1) });
+    const [, p2] = joinAll(core, 3, T0, user) as [string, string, string];
+    core.drain();
+    expect(core.moderate("u:u1", { kind: "ban" }, T0)).toBe(true);
+    expect(core.roomView().hostPid).toBe(p2);
+    expect(systemMessages(core.drain().chat).map((m) => m.key)).toEqual([
+      "playerRemoved",
+      "hostChanged",
+    ]);
+
+    // Nobody else connected: the next member to join becomes host.
+    const alone = makeRoom({ host: user(1) });
+    joinAll(alone.core, 1, T0, user);
+    expect(alone.core.moderate("u:u1", { kind: "ban" }, T0)).toBe(true);
+    expect(alone.room.hostKey).toBeNull();
+    const next = alone.core.join(user(5), T0 + SECOND);
+    if (!next.ok) throw new Error("join refused");
+    expect(alone.core.roomView().hostPid).toBe(next.pid);
+  });
+});
+
+describe("moderation: rename", () => {
+  it("renames a member, unique within the room, with a system message", () => {
+    const { core } = makeRoom({ host: user(1) });
+    const [, , p3] = joinAll(core, 3, T0, user) as [string, string, string];
+    core.drain();
+    expect(core.moderate("u:u3", { kind: "rename", name: "User 1" }, T0)).toBe(true);
+    const out = core.drain();
+    expect(core.member(p3)?.name).toBe("User 1 2");
+    expect(core.roomView().players.map((p) => p.name)).toEqual(["User 1", "User 2", "User 1 2"]);
+    expect(out.notes.map((n) => n.kind)).toEqual(["room", "chat"]);
+    expect(systemMessages(out.chat)).toEqual([
+      expect.objectContaining({
+        key: "playerRenamed",
+        params: { old: "User 3", name: "User 1 2" },
+      }),
+    ]);
+  });
+
+  it("ignores the member's own current name, and does nothing for a non-member", () => {
+    const { core } = makeRoom({ host: user(1) });
+    const [, p2] = joinAll(core, 2, T0, user) as [string, string];
+    core.drain();
+    expect(core.moderate("u:u2", { kind: "rename", name: "USER 2" }, T0)).toBe(true);
+    expect(core.member(p2)?.name).toBe("USER 2");
+    expect(core.moderate("u:u2", { kind: "rename", name: "USER 2" }, T0)).toBe(true);
+    expect(systemMessages(core.drain().chat)).toHaveLength(1);
+    expect(core.moderate("u:u9", { kind: "rename", name: "Player 12345" }, T0)).toBe(false);
+    const out = core.drain();
+    expect(out.notes).toHaveLength(0);
+    expect(out.dirty).toBe(false);
+  });
+});
+
+describe("stopped games", () => {
+  function rolesSeen(core: Core, pid: string) {
+    return {
+      update: core.gameUpdateFor(pid, [])?.view.roles ?? null,
+      welcome: core.welcomeFor(pid, T0)?.game?.view.roles ?? null,
+    };
+  }
+
+  it("reveals every role to players, spectators and reconnects after the host stops a game", () => {
+    const { core, pids } = startedRoom(5);
+    const spectator = core.join(guest(6), T0);
+    if (!spectator.ok) throw new Error("join refused");
+    for (const pid of [...pids, spectator.pid]) {
+      expect(rolesSeen(core, pid)).toEqual({ update: null, welcome: null });
+    }
+    core.drain();
+    expect(core.handle(pids[0] as string, { t: "endGame" }, T0)).toBeNull();
+    // Connected clients get the final view without a move being played.
+    expect(core.drain().notes.map((n) => n.kind)).toContain("game");
+    for (const pid of [...pids, spectator.pid]) {
+      const seen = rolesSeen(core, pid);
+      expect(seen.update).toHaveLength(5);
+      expect(seen.welcome).toHaveLength(5);
+    }
+    const president = pidAt(core, state(core).president);
+    expect(core.welcomeFor(president, T0)?.game?.view.me?.legal).toEqual([]);
+  });
+
+  it("reveals every role after a public game is abandoned", () => {
+    const { core } = makeRoom({ visibility: "public", settings: { minPlayers: 5 } });
+    const pids = joinAll(core, 5, T0, user);
+    const t1 = T0 + ROOM_TIMING.countdownMs;
+    core.tick(t1);
+    const spectator = core.join(user(6), t1);
+    if (!spectator.ok) throw new Error("join refused");
+    expect(rolesSeen(core, spectator.pid).welcome).toBeNull();
+    for (const pid of pids.slice(0, 3)) core.markGone(pid, t1);
+    core.tick(t1 + ROOM_TIMING.abandonAfterMs);
+    expect(core.roomView().result).toEqual({ kind: "abandoned" });
+    // A player who left comes back after the end.
+    const back = core.join(user(1), t1 + ROOM_TIMING.abandonAfterMs + 1);
+    if (!back.ok) throw new Error("join refused");
+    for (const pid of [pids[4] as string, spectator.pid, back.pid]) {
+      expect(rolesSeen(core, pid).welcome).toHaveLength(5);
+      expect(rolesSeen(core, pid).update).toHaveLength(5);
+    }
   });
 });

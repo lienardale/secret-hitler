@@ -55,6 +55,27 @@ blocks, rename, deletion), `app/[locale]/jouer/` (public lobby + quick match),
 `app/api/internal/games` (results from the rooms outbox, `lib/games/`). Prisma schema and
 migrations in `apps/web/prisma/`, client in `lib/db/prisma.ts`.
 
+Moderation (M5): word filters in `packages/protocol/src/moderation/` (`filters.ts` = `containsSlur`
+for chat, `isOffensiveName` for names; lists in `words.ts`; matchers built lazily) and the
+website ↔ rooms schemas in `moderation-api.ts` (docs/protocol.md § Moderation). Rooms side: report
+evidence, bans and renames in `room-core.ts`. Website: `lib/moderation/` (`bans.ts` active bans,
+`visits.ts` rooms an account got tickets for, `ingest.ts` reports from the room outbox, `admin.ts`
+moderator actions, `access.ts` role checks), `app/api/internal/reports`, `app/[locale]/admin/`
+(`/admin/signalements`, `/admin/bannis`, MODERATOR/ADMIN only, 404 for others),
+`components/admin/`, the room's player menu (`components/room/PlayerMenu.tsx`, report/block actions
+in `app/[locale]/salle/[code]/actions.ts`), and `/conduite`. The contact address is
+`CONTACT_EMAIL` in `lib/contact.ts`. Bans apply to accounts only; chat is stored in Postgres only
+inside a report's evidence.
+
+Installable web app (PWA): `app/manifest.ts`, icons from one SVG source in `lib/pwa/icons.ts`
+(`app/icon.svg` and the PNG route `app/app-icons/[file]/route.tsx`: URLs end in `.png` so the
+locale proxy skips them), service worker `public/sw.js` registered by
+`components/pwa/ServiceWorker.tsx` (production only), `components/pwa/KeepScreenOn.tsx` (screen
+wake lock during a game). **The worker never caches HTML or `/api/*` responses** and ignores
+non-GET and cross-origin requests (the rooms Worker): pages are network-only with
+`/offline.html` as the offline fallback, and only hashed `/_next/static/*` files are cached. Bump
+`VERSION` in `sw.js` when its caching changes.
+
 ## Rules that matter
 
 - **The engine is pure.** `packages/engine/src` has no I/O, clock or `Math.random`
@@ -84,4 +105,11 @@ migrations in `apps/web/prisma/`, client in `lib/db/prisma.ts`.
 - **Forms.** Server actions return message keys, never throw expected failures, check the
   origin first, and send back what was typed (React resets forms after an action, `.debug/007`).
 - Package manager: npm (workspaces). TypeScript stays on 5.x (TS 7 breaks next build); ESLint 10.
+- **Rate limits** that guard abuse live in Postgres (`DB_RATE_LIMITS` in
+  `lib/security/db-rate-limit.ts`: sign-in/up, guest cookies 20/h per IP, room creation 10/h per
+  identity and per IP, reports 10/h, quick match…); only tickets and join-by-code lookups use the
+  per-instance memory limiter.
+- **Parallel integration runs** each need their own database: the tiers TRUNCATE every table.
+  Export `POSTGRES_URL` and `POSTGRES_URL_NON_POOLING` pointing at another local `*_test`
+  database (create it, then `npm -w @sh/web run db:migrate:test`).
 - Non-obvious findings go in `.debug/NNN-description-YYYY-MM-DD.md` with an index line.

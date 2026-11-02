@@ -10,6 +10,37 @@ import { initialRoomState, type RoomClientState } from "@/lib/room-client/state"
 
 import { renderWithIntl } from "./render";
 
+vi.mock("@/app/[locale]/salle/[code]/actions", () => ({
+  blockFromRoomAction: vi.fn(),
+  reportPlayerAction: vi.fn(),
+}));
+// next-intl's navigation needs Next's router (Node cannot resolve `next/navigation` here):
+// a plain anchor with the localized path stands in for its Link.
+vi.mock("@/lib/i18n/navigation", async () => {
+  const { useLocale } = await import("next-intl");
+  const { routing } = await import("@/lib/i18n/routing");
+  const paths = routing.pathnames as Record<string, string | Record<string, string>>;
+  function Link({
+    href,
+    children,
+    ...rest
+  }: { href: string | { pathname: string }; children?: React.ReactNode } & Record<
+    string,
+    unknown
+  >) {
+    const locale = useLocale();
+    const pathname = typeof href === "string" ? href : href.pathname;
+    const entry = paths[pathname];
+    const localized = typeof entry === "string" ? entry : (entry?.[locale] ?? pathname);
+    return (
+      <a href={`/${locale}${localized === "/" ? "" : localized}`} {...rest}>
+        {children}
+      </a>
+    );
+  }
+  return { Link };
+});
+
 const slot = (n: number, extra: Partial<PlayerSlot> = {}): PlayerSlot => ({
   pid: `p${n}`,
   name: `Player ${n}`,

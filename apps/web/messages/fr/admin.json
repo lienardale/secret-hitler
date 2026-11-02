@@ -1,0 +1,217 @@
+{
+  "meta": {
+    "title": "Modération",
+    "reportsTitle": "Signalements",
+    "reportTitle": "Signalement contre {name}",
+    "bansTitle": "Joueurs bannis"
+  },
+  "nav": {
+    "label": "Modération",
+    "reports": "Signalements",
+    "bans": "Bannis"
+  },
+  "reasons": {
+    "harassment": "Harcèlement",
+    "hate": "Propos haineux",
+    "cheating": "Triche",
+    "spam": "Spam ou flood",
+    "name": "Pseudo inapproprié",
+    "other": "Autre"
+  },
+  "status": {
+    "open": "Ouvert",
+    "dismissed": "Classé sans suite",
+    "actioned": "Traité"
+  },
+  "roles": {
+    "USER": "Joueur",
+    "MODERATOR": "Modérateur",
+    "ADMIN": "Administrateur"
+  },
+  "queue": {
+    "title": "Signalements",
+    "lead": "Les signalements ouverts d'abord, du plus ancien au plus récent.",
+    "filterLabel": "Filtrer les signalements",
+    "filterOpen": "Ouverts ({count})",
+    "filterAll": "Tous",
+    "listLabel": "Liste des signalements",
+    "empty": "Aucun signalement ouvert.",
+    "emptyAll": "Aucun signalement.",
+    "open": "Signalement contre {name}",
+    "reason": "Motif",
+    "reportedBy": "Signalé par",
+    "room": "Salle",
+    "received": "Reçu le",
+    "status": "État",
+    "openForTarget": "{count, plural, one {# signalement ouvert contre ce joueur} other {# signalements ouverts contre ce joueur}}",
+    "pagination": "Pages des signalements",
+    "previous": "Page précédente",
+    "next": "Page suivante",
+    "pageOf": "Page {page} sur {count}"
+  },
+  "report": {
+    "back": "Retour aux signalements",
+    "title": "Signalement contre {name}",
+    "notFound": "Ce signalement n'existe pas.",
+    "sectionsLabel": "Sur cette page",
+    "summary": "Le signalement",
+    "reason": "Motif",
+    "details": "Précisions de l'auteur",
+    "noDetails": "Aucune précision.",
+    "room": "Salle",
+    "createdAt": "Capture de la salle",
+    "receivedAt": "Reçu le",
+    "status": "État",
+    "resolvedBy": "{status} par {name}, le {date}",
+    "resolvedByUnknown": "{status} le {date}",
+    "people": "Les joueurs",
+    "reporter": "Auteur du signalement",
+    "target": "Joueur signalé",
+    "nameAtReport": "Nom dans la salle",
+    "currentName": "Nom actuel",
+    "accountDeleted": "Compte supprimé",
+    "noName": "Sans nom",
+    "role": "Rôle",
+    "ban": "Bannissement",
+    "activeBan": "Banni jusqu'au {date}",
+    "activeBanPermanent": "Banni définitivement",
+    "banReason": "Motif donné au joueur : {reason}",
+    "notBanned": "Pas de bannissement en cours.",
+    "otherReports": "Autres signalements contre ce joueur",
+    "noOtherReports": "Aucun autre signalement.",
+    "otherReport": "{reason}, signalé par {name}",
+    "history": "Historique de modération",
+    "noHistory": "Aucune action pour l'instant."
+  },
+  "evidence": {
+    "incomplete": "Une partie des preuves n'a pas pu être lue : ce qui suit est incomplet.",
+    "roomStatus": {
+      "lobby": "La salle attendait le début d'une partie.",
+      "playing": "Une partie était en cours.",
+      "ended": "La partie venait de se terminer."
+    },
+    "gameNumber": "Partie n° {number}",
+    "transcript": "Discussion",
+    "transcriptLead": "Les derniers messages au moment du signalement, du plus ancien au plus récent. Les lignes du joueur signalé sont marquées.",
+    "transcriptEmpty": "Aucun message.",
+    "targetTag": "Joueur signalé",
+    "reporterTag": "Auteur du signalement",
+    "system": "Message de la salle :",
+    "members": "Présents dans la salle",
+    "membersEmpty": "Personne n'est listé.",
+    "seat": "Place {n}",
+    "noSeat": "Sans place",
+    "host": "Hôte",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté",
+    "account": "Compte",
+    "guest": "Invité",
+    "gameLog": "Journal public de la partie",
+    "gameLogLead": "Ce que voyait un spectateur : aucune information cachée.",
+    "gameLogEmpty": "Aucune partie dans la salle."
+  },
+  "history": {
+    "kind": {
+      "ban": "Bannissement",
+      "unban": "Bannissement levé",
+      "rename": "Renommage forcé",
+      "dismiss": "Classé sans suite",
+      "note": "Note"
+    },
+    "by": "par {name}",
+    "byUnknown": "par un compte supprimé",
+    "renamed": "{from} → {to}",
+    "banUntil": "jusqu'au {date}",
+    "banPermanent": "définitif",
+    "onReport": "Voir le signalement"
+  },
+  "actions": {
+    "title": "Actions",
+    "protected": "Vous ne pouvez ni bannir ni renommer ce compte : c'est le vôtre, ou celui d'un membre de la modération.",
+    "targetDeleted": "Le compte signalé a été supprimé : il reste à classer le signalement ou à ajouter une note.",
+    "closed": "Ce signalement est fermé. Vous pouvez encore agir sur le compte.",
+    "note": "Note interne (facultative)",
+    "noteHint": "Visible par la modération seulement.",
+    "ban": {
+      "title": "Bannir le joueur",
+      "duration": "Durée",
+      "choose": "Choisir une durée",
+      "durations": {
+        "1d": "1 jour",
+        "7d": "7 jours",
+        "30d": "30 jours",
+        "permanent": "Définitif"
+      },
+      "reason": "Motif (montré au joueur)",
+      "reasonHint": "Le joueur lit ce motif sur son profil, avec la date de fin et l'adresse de contact. 500 caractères au plus.",
+      "submit": "Bannir"
+    },
+    "rename": {
+      "title": "Renommer de force",
+      "lead": "Le compte prend un nom neutre (« Player 12345 ») et peut en choisir un autre tout de suite.",
+      "submit": "Renommer de force"
+    },
+    "dismiss": {
+      "title": "Classer sans suite",
+      "lead": "Aucune action contre le joueur.",
+      "submit": "Classer sans suite"
+    },
+    "addNote": {
+      "title": "Ajouter une note",
+      "label": "Note",
+      "submit": "Ajouter la note"
+    }
+  },
+  "bans": {
+    "title": "Joueurs bannis",
+    "lead": "Les bannissements en cours, du plus récent au plus ancien.",
+    "listLabel": "Bannissements en cours",
+    "empty": "Aucun bannissement en cours.",
+    "noName": "Compte sans nom",
+    "reason": "Motif",
+    "by": "Par",
+    "byUnknown": "Un compte supprimé",
+    "since": "Depuis le",
+    "until": "Jusqu'au",
+    "permanent": "Définitif",
+    "fromReport": "Voir le signalement",
+    "unban": "Lever",
+    "unbanLabel": "Lever le bannissement de {name}",
+    "byName": {
+      "title": "Bannir par pseudo",
+      "lead": "Pour un signalement reçu par e-mail : le pseudo exact du joueur (majuscules et accents ignorés).",
+      "name": "Pseudo du joueur",
+      "submit": "Bannir"
+    }
+  },
+  "notices": {
+    "banned": "Le compte {name} est banni jusqu'au {date}.",
+    "bannedPermanent": "Le compte {name} est banni définitivement.",
+    "banLive": "{count, plural, =0 {Le joueur n'était dans aucune salle ouverte.} one {Il a été retiré d'une salle ouverte.} other {Il a été retiré de # salles ouvertes.}}",
+    "banUnreachable": "Le serveur des salles n'a pas répondu : le bannissement est enregistré et le joueur ne peut plus entrer dans une salle, mais ses connexions en cours n'ont pas été coupées.",
+    "renamed": "{from} s'appelle désormais {to}.",
+    "renameLive": "{count, plural, =0 {Le joueur n'était dans aucune salle ouverte.} one {Le nouveau nom s'affiche dans une salle ouverte.} other {Le nouveau nom s'affiche dans # salles ouvertes.}}",
+    "renameUnreachable": "Le serveur des salles n'a pas répondu : le nouveau nom s'affichera à sa prochaine entrée dans une salle.",
+    "dismissed": "Signalement classé sans suite.",
+    "noted": "Note ajoutée.",
+    "unbanned": "Bannissement de {name} levé."
+  },
+  "errors": {
+    "forbidden": "Action refusée.",
+    "signInRequired": "Votre session a expiré : reconnectez-vous.",
+    "reasonRequired": "Indiquez le motif : le joueur le lira.",
+    "reasonTooLong": "Le motif dépasse 500 caractères.",
+    "noteRequired": "La note est vide.",
+    "noteTooLong": "La note dépasse 1 000 caractères.",
+    "invalidDuration": "Choisissez une durée.",
+    "userNotFound": "Ce compte n'existe plus.",
+    "playerNotFound": "Aucun joueur ne porte ce pseudo.",
+    "reportNotFound": "Ce signalement n'existe pas ou ne concerne pas ce joueur.",
+    "reportClosed": "Ce signalement est déjà fermé.",
+    "banNotFound": "Ce bannissement n'existe pas.",
+    "banNotActive": "Ce bannissement est déjà levé ou terminé.",
+    "self": "Vous ne pouvez pas agir sur votre propre compte.",
+    "protectedTarget": "Ce compte fait partie de la modération : seul un administrateur peut agir sur un modérateur, et personne sur un administrateur.",
+    "noFreeName": "Aucun nom libre trouvé : réessayez."
+  }
+}

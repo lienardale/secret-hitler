@@ -47,6 +47,7 @@
   },
   "errors": {
     "sign_in_required": "Sign in to play public games.",
+    "banned": "Your account is suspended: no public games for now. The reason and the length are on your profile.",
     "verify_required": "Verify your e-mail address to play public games.",
     "cooldown": "You left two public games within 24 hours. Quick match is available again at {time}.",
     "rate_limited": "Too many attempts. Try again in a few minutes.",

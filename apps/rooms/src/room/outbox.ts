@@ -1,8 +1,9 @@
 /**
- * Delivery of game results to the website. Results are written to the room's
- * outbox table in the same transaction as the final move, then posted from the
- * alarm (never from the message path) and retried with backoff for 3 days.
- * The website upserts on `gameId`, so a repeated delivery is harmless.
+ * Delivery to the website: game results and player reports (M5). Items are
+ * written to the room's outbox table in the same transaction as the change
+ * that produced them, then posted from the alarm (never from the message path
+ * or an RPC) and retried with backoff for 3 days. The website is idempotent
+ * on `gameId` / `reportId`, so a repeated delivery is harmless.
  */
 import { SIGNATURE_HEADER, signRequest } from "@sh/protocol";
 
@@ -16,8 +17,9 @@ const REQUEST_TIMEOUT_MS = 10_000;
 /** The website refused the payload itself: sending it again cannot help. */
 const DROP_STATUSES: ReadonlySet<number> = new Set([400, 413, 422]);
 
-const PATHS: Record<OutboxItem["kind"], string> = {
+export const PATHS: Record<OutboxItem["kind"], string> = {
   gameResult: "/api/internal/games",
+  report: "/api/internal/reports",
 };
 
 /** Delay before retry number `attempts` (1, 2, …): 30 s, 1 min, 2 min… capped at 1 h. */

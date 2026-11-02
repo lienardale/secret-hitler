@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "title": "Code de conduite"
+  },
+  "page": {
+    "title": "Code de conduite",
+    "lead": "Mentir sur son rôle fait partie du jeu ; manquer de respect aux autres joueurs, non. Ces règles valent pour toutes les parties, publiques comme privées."
+  },
+  "expected": {
+    "title": "Ce qu'on attend de vous",
+    "respect": "Respectez les autres joueurs. Bluffer, accuser, se défendre : oui. S'en prendre à quelqu'un pour ce qu'il est : non.",
+    "hate": "Pas de propos haineux : racisme, antisémitisme, homophobie, transphobie, sexisme, moqueries sur un handicap. Le chat refuse d'office les injures de ce genre.",
+    "harassment": "Pas de harcèlement ni de menaces, pendant la partie comme après.",
+    "cheating": "Pas de triche : ne montrez pas votre rôle en dehors du jeu (capture d'écran, appel, messagerie) et ne vous concertez pas en dehors de la partie.",
+    "sabotage": "Jouez pour votre camp : ne sabotez pas exprès votre propre équipe.",
+    "spam": "Pas de spam : pas de messages répétés à la chaîne ni de publicité.",
+    "names": "Un nom correct : pas d'injure, pas de référence nazie, pas de nom qui imite la modération.",
+    "age": "Le site est réservé aux personnes de 15 ans ou plus."
+  },
+  "tools": {
+    "title": "Vos outils",
+    "mute": "<b>Masquer</b> un joueur cache ses messages pour vous seul, dans cette salle seulement. Il n'en sait rien.",
+    "block": "<b>Bloquer</b> un joueur (avec un compte) : vous ne voyez plus jamais ses messages, dans aucune salle, et la partie rapide ne vous réunit plus. Vos blocages se gèrent sur votre profil.",
+    "report": "<b>Signaler</b> un joueur depuis la salle : les modérateurs reçoivent les 100 derniers messages du chat, le journal public de la partie et le nom des joueurs. Sans signalement, le chat n'est gardé que tant que la salle existe.",
+    "reportWho": "Il faut un compte pour signaler, et le joueur signalé doit en avoir un. Dans une salle privée, l'hôte peut aussi retirer un joueur."
+  },
+  "moderators": {
+    "title": "Ce que peuvent faire les modérateurs",
+    "rename": "Changer un nom : le joueur reçoit un nom neutre (« Player 12345 ») et peut en choisir un autre aussitôt.",
+    "suspend": "Suspendre un compte, pour une durée donnée ou définitivement. Le motif et la date de fin s'affichent sur le profil du compte suspendu.",
+    "accounts": "Les sanctions visent les comptes. Les invités ne jouent que dans les salles privées, où l'hôte peut retirer un joueur."
+  },
+  "contact": {
+    "title": "Contester une décision, signaler un contenu illicite",
+    "appeal": "Pour contester une décision de modération, écrivez à <mail>{email}</mail> en donnant votre nom de joueur.",
+    "legal": "Pour signaler un contenu illicite (règlement européen sur les services numériques, ou DSA), écrivez à la même adresse : indiquez où il se trouve (code de la salle, nom du joueur, date), pourquoi il vous paraît illicite, et vos nom et adresse e-mail."
+  }
+}

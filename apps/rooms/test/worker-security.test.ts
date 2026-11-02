@@ -138,6 +138,61 @@ describe("signed internal endpoints", () => {
     expect(await response.json()).toHaveProperty("code");
   });
 
+  describe("moderation endpoints (M5)", () => {
+    const report = {
+      reportId: "10000000-0000-4000-8000-000000000001",
+      reporter: "u:u1",
+      target: "p1",
+      reason: "spam",
+      details: "",
+    };
+    const member = { requester: "u:u1", pid: "p1" };
+    const moderation = { identity: "u:u1", rooms: [], action: { kind: "ban" } };
+    const endpoints = [
+      ["/internal/rooms/BCDFG/report", report],
+      ["/internal/rooms/BCDFG/member", member],
+      ["/internal/moderation", moderation],
+    ] as const;
+
+    it("refuses unsigned and forged calls", async () => {
+      for (const [path, payload] of endpoints) {
+        const body = JSON.stringify(payload);
+        const unsigned = await exports.default.fetch(`https://rooms.test${path}`, {
+          method: "POST",
+          body,
+        });
+        expect(unsigned.status, path).toBe(401);
+        const forged = await signedFetch("POST", path, body, {
+          secret: "ci-dummy-some-other-secret-0123456789abcdef",
+        });
+        expect(forged.status, path).toBe(401);
+        const tampered = await signedFetch("POST", path, body, {
+          sendBody: body.replace("u:u1", "u:u2"),
+        });
+        expect(tampered.status, path).toBe(401);
+      }
+    });
+
+    it("refuses invalid bodies with 400", async () => {
+      const invalid: [string, unknown][] = [
+        ["/internal/rooms/BCDFG/report", { ...report, reportId: "not-a-uuid" }],
+        ["/internal/rooms/BCDFG/report", { ...report, reason: "boring" }],
+        ["/internal/rooms/BCDFG/report", { ...report, details: "x".repeat(501) }],
+        ["/internal/rooms/BCDFG/member", { requester: "u:u1" }],
+        ["/internal/moderation", { ...moderation, identity: "g:guest" }],
+        ["/internal/moderation", { ...moderation, action: { kind: "rename", name: " x" } }],
+        ["/internal/moderation", { ...moderation, rooms: ["nope"] }],
+      ];
+      for (const [path, payload] of invalid) {
+        const response = await signedFetch("POST", path, JSON.stringify(payload));
+        expect(response.status, `${path} ${JSON.stringify(payload)}`).toBe(400);
+      }
+      for (const [path] of endpoints) {
+        expect((await signedFetch("POST", path, "{nope")).status, path).toBe(400);
+      }
+    });
+  });
+
   it("signs exactly like Node (shared test vector)", async () => {
     expect(await signRequest(HMAC_VECTOR.secret, HMAC_VECTOR.parts, HMAC_VECTOR.now)).toBe(
       HMAC_VECTOR.header,

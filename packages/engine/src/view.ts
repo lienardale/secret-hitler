@@ -5,8 +5,9 @@
  * the public table (boards, tracker, who is President, vote flags…) plus, for
  * a seated player, what that player is allowed to know: their role, the roles
  * revealed to them at night, their own investigation results, and the policies
- * in their hand. Spectators get the public part only. Everything is revealed
- * once the game is over.
+ * in their hand. Spectators get the public part only. Every role is revealed
+ * once the game is over, or when the room stopped the game without a winner
+ * (`{ stopped: true }`).
  *
  * Never sent before the end: the deck order, other players' roles, the seed,
  * other players' hands or peeks, and individual votes before all are cast.
@@ -166,13 +167,26 @@ function meView(state: GameState, seat: Seat): MeView {
   };
 }
 
-export function viewFor(state: GameState, viewer: Viewer): Projected<PlayerView> {
+export interface ViewOptions {
+  /**
+   * The room stopped this game without a winner (abandoned, or ended by the
+   * host): every role is revealed and nobody has an action left.
+   */
+  stopped?: boolean;
+}
+
+export function viewFor(
+  state: GameState,
+  viewer: Viewer,
+  options: ViewOptions = {},
+): Projected<PlayerView> {
   if (viewer !== "spectator" && !isSeat(state, viewer)) {
     throw new RangeError(`viewFor: no seat ${String(viewer)}`);
   }
   const phase = state.phase;
   const chancellor = sittingChancellor(phase);
   const over = phase.kind === "over";
+  const stopped = options.stopped === true;
 
   const seats = state.alive.map((alive, seat): SeatView => ({
     seat,
@@ -201,8 +215,9 @@ export function viewFor(state: GameState, viewer: Viewer): Projected<PlayerView>
     vetoUnlocked: state.fascist >= VETO_UNLOCK,
     lastElected: { ...state.lastElected },
     lastVote: state.lastVote ? { ...state.lastVote, votes: state.lastVote.votes.slice() } : null,
-    roles: over ? state.roles.slice() : null,
+    roles: over || stopped ? state.roles.slice() : null,
     me: viewer === "spectator" ? null : meView(state, viewer),
   };
+  if (stopped && view.me) view.me.legal = [];
   return view as Projected<PlayerView>;
 }

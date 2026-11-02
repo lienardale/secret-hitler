@@ -62,7 +62,11 @@ deploy before the build, and the previous deployment keeps serving.
   authorised redirect URI `https://<site>/api/auth/callback/google`
   (`https://secret-hitler-staging.vercel.app/api/auth/callback/google` for staging). Google's name
   and picture are never stored; new Google accounts choose a player name on `/bienvenue`.
-- Admins: `npm -w @sh/web run admin:grant -- <email>` (role `ADMIN`; `--role MODERATOR` also works). The admin pages arrive with moderation (M5).
+- Admins: `npm -w @sh/web run admin:grant -- <email>` (role `ADMIN`; `--role MODERATOR` also works),
+  with `POSTGRES_URL_NON_POOLING` exported for the target database (for staging, pull it from
+  Vercel into a mode-600 file: `vercel env pull <file> --environment=production`, export, run,
+  delete the file). Moderators see a "Modération" link in the header: `/admin/signalements` (report
+  queue and detail) and `/admin/bannis` (bans). Every action is logged in `ModerationAction`.
 
 ## Order of a first deploy
 
@@ -86,6 +90,18 @@ deploy before the build, and the previous deployment keeps serving.
 - Five accounts sign up, quick-match, play a public game and find it in their profiles (then
   the test accounts are deleted; sign-ups are limited to 5 per hour per address):
   `PLAYWRIGHT_BASE_URL=https://secret-hitler-staging.vercel.app npx -w @sh/web playwright test staging-public-game.spec.ts --project=desktop-chromium`
+- Moderation (M5): two accounts signed up through the form share a room, one reports the other,
+  an admin bans them from the report; the banned player's socket closes and their next ticket is
+  refused (the test accounts are then deleted). Needs an ADMIN account on staging, its address and
+  password in `STAGING_ADMIN_EMAIL` / `STAGING_ADMIN_PASSWORD` or in
+  `apps/web/.env.staging-e2e.local` (gitignored, mode 600):
+  `PLAYWRIGHT_BASE_URL=https://secret-hitler-staging.vercel.app npx -w @sh/web playwright test staging-moderation.spec.ts --project=desktop-chromium`
+- Installable app: `PLAYWRIGHT_BASE_URL=… npx -w @sh/web playwright test pwa.spec.ts --project=desktop-chromium`
+  (manifest, icons, service worker, offline page, no CSP errors). A real install on a phone
+  (Android "Install app", iOS "Add to Home Screen") is checked by hand.
+- Rate limits hold across serverless instances (Postgres) and, behind Vercel, every test browser
+  shares the runner's address: room creation is limited to 10 per hour per address (`home.spec.ts`
+  creates 8 per run) and sign-ups to 5. Run the staging specs about once an hour.
 - `npx wrangler tail sh-rooms-staging` shows the Worker's logs (no state, hands or chat are logged).
 
 The first deploy registered the account's `workers.dev` subdomain as `sh-rooms` (changeable in the

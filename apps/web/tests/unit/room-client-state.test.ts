@@ -107,4 +107,33 @@ describe("room client state", () => {
       status: "closed",
     });
   });
+
+  it("closes for good on a ban (4451), live or at the ticket", () => {
+    const live = reduce(receive(initialRoomState, welcome), { type: "closed", code: 4451 });
+    expect(live).toMatchObject({ status: "closed", closeCode: 4451, cooldown: null });
+    expect(reduce(live, { type: "lost" }).status).toBe("closed");
+  });
+
+  it("records the abandon cooldown as a client-side close with its end", () => {
+    const until = Date.parse("2026-11-02T12:15:00Z");
+    expect(reduce(initialRoomState, { type: "cooldown", until })).toMatchObject({
+      status: "closed",
+      closeCode: null,
+      cooldown: { until },
+    });
+    expect(reduce(initialRoomState, { type: "cooldown", until: null }).cooldown).toEqual({
+      until: null,
+    });
+  });
+
+  it("a game message with no new events (the end of a game) keeps the log", () => {
+    const { state: game } = playRandomGame(5, [1, 2, 3, 4], seededRandom(1), { maxActions: 3 });
+    const view = viewFor(game, 0);
+    let state = receive(initialRoomState, {
+      ...welcome,
+      game: { turn: 1, view, log: [{ type: "voteCast", seat: 1 }] },
+    });
+    state = receive(state, { t: "game", turn: 2, view, events: [] });
+    expect(state.game).toMatchObject({ turn: 2, log: [{ type: "voteCast", seat: 1 }] });
+  });
 });

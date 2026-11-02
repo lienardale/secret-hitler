@@ -19,6 +19,12 @@ export interface RoomClientState {
   status: ConnectionStatus;
   /** Why the room closed for good (a CLOSE code), or a local reason. */
   closeCode: number | null;
+  /**
+   * The ticket route refused an account in the abandon cooldown (2 public
+   * games left within 24 h) a public room: when it may join again (ms since
+   * epoch, null if the route did not say). Client-only: no socket was opened.
+   */
+  cooldown: { until: number | null } | null;
   /** The ticket route said there is no guest: the page must ask for a name. */
   needsName: boolean;
   you: { pid: string; name: string } | null;
@@ -36,6 +42,7 @@ export interface RoomClientState {
 export const initialRoomState: RoomClientState = {
   status: "connecting",
   closeCode: null,
+  cooldown: null,
   needsName: false,
   you: null,
   room: null,
@@ -51,6 +58,7 @@ export type RoomClientEvent =
   | { type: "lost" }
   | { type: "closed"; code: number }
   | { type: "needsName" }
+  | { type: "cooldown"; until: number | null }
   | { type: "actionSent" }
   | { type: "message"; message: ServerMessage; receivedAt: number };
 
@@ -114,6 +122,14 @@ export function reduce(state: RoomClientState, event: RoomClientEvent): RoomClie
       return { ...state, status: "closed", closeCode: event.code, actionPending: false };
     case "needsName":
       return { ...state, status: "closed", needsName: true, actionPending: false };
+    case "cooldown":
+      return {
+        ...state,
+        status: "closed",
+        closeCode: null,
+        cooldown: { until: event.until },
+        actionPending: false,
+      };
     case "actionSent":
       return { ...state, actionPending: true };
     case "message":

@@ -9,11 +9,11 @@ import { CHAT_HISTORY } from "@sh/protocol";
 
 import type { MoveRow, OutboxItem, StoredChat } from "./room-state";
 
-export interface OutboxRow extends OutboxItem {
+export type OutboxRow = OutboxItem & {
   attempts: number;
   nextAt: number;
   createdAt: number;
-}
+};
 
 export class RoomStore {
   constructor(private readonly sql: SqlStorage) {
@@ -124,10 +124,12 @@ export class RoomStore {
     return cursor.rowsWritten > 0;
   }
 
+  /** Queues items; an id already queued is ignored (a report sent twice is delivered once). */
   addOutbox(items: readonly OutboxItem[], now: number): void {
     for (const item of items) {
       this.sql.exec(
-        "INSERT INTO outbox (id, kind, payload, attempts, next_at, created_at) VALUES (?, ?, ?, 0, ?, ?)",
+        "INSERT INTO outbox (id, kind, payload, attempts, next_at, created_at) VALUES (?, ?, ?, 0, ?, ?) " +
+          "ON CONFLICT (id) DO NOTHING",
         item.id,
         item.kind,
         JSON.stringify(item.payload),
@@ -148,14 +150,17 @@ export class RoomStore {
         created_at: number;
       }>("SELECT * FROM outbox WHERE next_at <= ? ORDER BY next_at LIMIT ?", now, limit)
       .toArray()
-      .map((row) => ({
-        id: row.id,
-        kind: row.kind as OutboxItem["kind"],
-        payload: JSON.parse(row.payload) as OutboxItem["payload"],
-        attempts: row.attempts,
-        nextAt: row.next_at,
-        createdAt: row.created_at,
-      }));
+      .map(
+        (row) =>
+          ({
+            id: row.id,
+            kind: row.kind,
+            payload: JSON.parse(row.payload) as unknown,
+            attempts: row.attempts,
+            nextAt: row.next_at,
+            createdAt: row.created_at,
+          }) as OutboxRow,
+      );
   }
 
   removeOutbox(id: string): void {

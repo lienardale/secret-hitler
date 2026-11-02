@@ -14,7 +14,8 @@ const monorepoRoot = path.resolve(process.cwd(), "../..");
 /**
  * Content-Security-Policy. `connect-src` names the rooms Worker (HTTP for the
  * health check, WS for rooms). React's development build needs 'unsafe-eval';
- * production never gets it.
+ * production never gets it. App icons (/icon.svg, /app-icons/*.png) are
+ * same-origin images, covered by `img-src 'self'`.
  */
 function contentSecurityPolicy(): string {
   const rooms = new URL(
@@ -30,6 +31,9 @@ function contentSecurityPolicy(): string {
     "img-src 'self' data:",
     "font-src 'self'",
     `connect-src 'self' ${rooms.origin} ${ws}`,
+    // Installable web app: app/manifest.ts and the service worker public/sw.js.
+    "manifest-src 'self'",
+    "worker-src 'self'",
     "frame-ancestors 'none'",
     "object-src 'none'",
     "base-uri 'self'",
@@ -39,6 +43,8 @@ function contentSecurityPolicy(): string {
 
 const config: NextConfig = {
   reactStrictMode: true,
+  // `next dev` writes an AGENTS.md when it detects an AI coding agent; this repo has CLAUDE.md.
+  agentRules: false,
   // Internal workspace packages ship TypeScript source, not built JS.
   transpilePackages: ["@sh/engine", "@sh/protocol"],
   turbopack: { root: monorepoRoot },
@@ -53,6 +59,15 @@ const config: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           { key: "Content-Security-Policy", value: contentSecurityPolicy() },
+        ],
+      },
+      {
+        // The service worker must never sit in an HTTP cache: a fixed worker has
+        // to reach every visitor at their next page load.
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
         ],
       },
     ];

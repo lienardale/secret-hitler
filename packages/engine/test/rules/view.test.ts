@@ -82,6 +82,18 @@ describe("viewFor", () => {
     expect(viewFor(state, 3).me?.legal).toEqual([]);
   });
 
+  it("reveals every role of a game the room stopped, and leaves nobody an action", () => {
+    const state = makeState();
+    expect(viewFor(state, "spectator").roles).toBeNull();
+    expect(viewFor(state, "spectator", { stopped: true }).roles).toEqual(state.roles);
+    const seat = viewFor(state, 3, { stopped: true });
+    expect(seat.roles).toEqual(state.roles);
+    expect(seat.me?.legal).toEqual([]);
+    expect(viewFor(state, 3).roles).toBeNull();
+    expect(viewFor(state, state.president).me?.legal.length).toBeGreaterThan(0);
+    expect(viewFor(state, state.president, { stopped: true }).me?.legal).toEqual([]);
+  });
+
   it("refuses an unknown viewer seat", () => {
     expect(() => viewFor(makeState(), 7)).toThrow(RangeError);
   });

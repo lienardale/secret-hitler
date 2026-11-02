@@ -3,6 +3,8 @@
  * - at most 3 messages in 2 s and 5 in 10 s;
  * - public rooms add a slow mode: 2 s between two messages;
  * - 8 refused messages within 30 s is flooding: the room closes the socket.
+ *   A message refused for its content (slur filter) counts as sent *and* as
+ *   refused (`strike`), so spamming slurs is never free.
  *
  * Kept in memory only: a room that hibernates forgets recent timestamps,
  * which at worst lets a few extra messages through.
@@ -33,9 +35,14 @@ export class ChatLimiter {
       return "ok";
     }
     this.sent.set(pid, sent);
+    return this.strike(pid, now) ? "flood" : "too_fast";
+  }
+
+  /** Records a refused message. True when the member is now flooding. */
+  strike(pid: string, now: number): boolean {
     const refused = [...(this.refused.get(pid) ?? []), now].filter((t) => now - t < FLOOD.windowMs);
     this.refused.set(pid, refused);
-    return refused.length >= FLOOD.strikes ? "flood" : "too_fast";
+    return refused.length >= FLOOD.strikes;
   }
 
   forget(pid: string): void {

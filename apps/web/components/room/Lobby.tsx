@@ -10,6 +10,7 @@ import { useRoomActions, useRoomState } from "@/lib/room-client/store";
 
 import { ChatPanel } from "./ChatPanel";
 import { InviteBox } from "./InviteBox";
+import { MutedTag, PlayerMenu } from "./PlayerMenu";
 
 const MIN_PLAYERS = 5;
 const MAX_PLAYERS = 10;
@@ -28,7 +29,7 @@ function SeatRow({
   const t = useTranslations("room");
   const { send } = useRoomActions();
   return (
-    <li className="flex items-center gap-3 rounded-md border border-rule bg-paper px-3 py-2">
+    <li className="flex items-center gap-3 rounded-md border border-rule bg-paper py-1 pl-3 pr-1">
       <span
         aria-hidden
         className={`size-2.5 shrink-0 rounded-full ${slot.connected ? "bg-liberal" : "border border-ink-muted"}`}
@@ -44,6 +45,7 @@ function SeatRow({
         {!slot.connected && (
           <span className="ml-2 text-sm text-ink-muted">{t("lobby.disconnected")}</span>
         )}
+        <MutedTag pid={slot.pid} />
       </span>
       {canKick && (
         <Button
@@ -58,6 +60,7 @@ function SeatRow({
           {t("lobby.kick")}
         </Button>
       )}
+      {isYou ? <span className="h-11" aria-hidden /> : <PlayerMenu member={slot} />}
     </li>
   );
 }
@@ -134,10 +137,21 @@ export function Lobby({ room, youPid }: { room: RoomView; youPid: string }) {
               </h3>
               <ul className="mt-2 flex flex-wrap gap-2">
                 {room.spectators.map((s) => (
-                  <li key={s.pid} className="rounded-full border border-rule px-3 py-1 text-sm">
-                    {s.name}
-                    {s.pid === youPid && (
-                      <span className="text-ink-muted"> ({t("lobby.you")})</span>
+                  <li
+                    key={s.pid}
+                    className="flex min-h-11 items-center rounded-full border border-rule pl-3 pr-1 text-sm"
+                  >
+                    <span className="py-1">
+                      {s.name}
+                      {s.pid === youPid && (
+                        <span className="text-ink-muted"> ({t("lobby.you")})</span>
+                      )}
+                    </span>
+                    <MutedTag pid={s.pid} />
+                    {s.pid === youPid ? (
+                      <span className="w-2" aria-hidden />
+                    ) : (
+                      <PlayerMenu member={s} />
                     )}
                   </li>
                 ))}

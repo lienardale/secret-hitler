@@ -8,6 +8,13 @@
  *      (not revealed to them at night, not investigated by them).
  *
  * Spectators know no role at all, so any swap must leave their view unchanged.
+ *
+ * The one sanctioned look at the pile is the Policy Peek: the President sees
+ * the top three in pile order. The peek is captured in the phase when the power
+ * is granted, so reshuffling the pile afterwards changes nobody's view; the
+ * peek matching the pile's order is checked in game.property.test.ts, and the
+ * peek reaching only the President in the test below (`peek` is null in every
+ * other view, and spectators never see one).
  */
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
@@ -59,7 +66,9 @@ describe("non-interference", () => {
               const reshuffled = shuffledDeck(state, rand);
 
               for (const viewer of viewers) {
-                const original = JSON.stringify(viewFor(state, viewer));
+                const view = viewFor(state, viewer);
+                if (view.me && view.me.seat !== state.president) expect(view.me.peek).toBeNull();
+                const original = JSON.stringify(view);
                 expect(
                   JSON.stringify(viewFor(reshuffled, viewer)),
                   `deck order leaked to ${viewer}`,

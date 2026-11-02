@@ -6,6 +6,16 @@
     "title": "Mon profil",
     "lead": "Votre compte, les joueurs que vous avez bloqués et vos parties."
   },
+  "suspension": {
+    "title": "Compte suspendu",
+    "until": "Votre compte est suspendu jusqu'au {date} (heure de Paris).",
+    "permanent": "Votre compte est suspendu définitivement.",
+    "decided": "Décision prise le {date}.",
+    "reasonLabel": "Motif donné par la modération",
+    "effects": "Pendant la suspension, ce compte ne peut ni rejoindre une salle, ni en créer, ni lancer une partie rapide. Le reste de votre profil reste accessible : historique, blocages et suppression du compte.",
+    "appeal": "Pour contester cette décision, écrivez à <mail>{email}</mail> en indiquant votre nom de joueur.",
+    "conduct": "Relire le code de conduite"
+  },
   "account": {
     "title": "Compte",
     "displayName": "Nom de joueur",
@@ -95,6 +105,7 @@
     "blockSelf": "Vous ne pouvez pas vous bloquer vous-même.",
     "tooManyBlocks": "Vous avez bloqué 500 joueurs, c'est le maximum. Débloquez-en d'abord.",
     "wrongPassword": "Mot de passe incorrect.",
-    "wrongName": "Ce n'est pas votre nom de joueur."
+    "wrongName": "Ce n'est pas votre nom de joueur.",
+    "name_offensive": "Ce nom n'est pas accepté, choisissez-en un autre."
   }
 }

@@ -17,6 +17,11 @@
     "play": "Jouer",
     "signIn": "Connexion",
     "signOut": "Se déconnecter",
-    "finishAccount": "Terminer mon compte"
+    "finishAccount": "Terminer mon compte",
+    "conduct": "Code de conduite",
+    "admin": "Modération"
+  },
+  "errors": {
+    "banned": "Votre compte est suspendu : il ne peut pas créer de salle pour l'instant. Le motif et la durée sont sur votre profil."
   }
 }

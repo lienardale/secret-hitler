@@ -13,6 +13,7 @@ export {
   type SeatView,
   type PhaseView,
   type Viewer,
+  type ViewOptions,
 } from "./view";
 export {
   eventsFor,
