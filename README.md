@@ -31,9 +31,20 @@ npm run ci:local   # the same checks CI runs
 Run the apps:
 
 ```bash
+npm run dev:setup  # once: local ticket keys and secrets (gitignored)
 npm run dev:rooms  # game server on http://localhost:8787
 npm run dev:web    # website on http://localhost:3000
 ```
+
+Watch bots play a whole game on the local game server (in a second terminal):
+
+```bash
+npm run bots -- --players 7 --timers fast
+npm run bots -- --players 7 --kill-one   # cuts one bot's connection mid-game
+```
+
+How browsers talk to rooms (tickets, messages, close codes) is described in
+[docs/protocol.md](docs/protocol.md).
 
 Play thousands of random games against the rules engine's invariants:
 

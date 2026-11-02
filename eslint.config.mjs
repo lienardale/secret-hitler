@@ -52,6 +52,23 @@ export default defineConfig([
     },
   },
   {
+    // Hidden information: only these modules write to WebSockets, and the room
+    // one only sends per-player projections built by the game module.
+    name: "rooms/send-through-connections",
+    files: ["apps/rooms/src/**/*.ts"],
+    ignores: ["apps/rooms/src/room/connections.ts", "apps/rooms/src/lobby/Lobby.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "CallExpression[callee.property.name='send']:not([callee.object.property.name='conns'])",
+          message: "Send room messages through src/room/connections.ts.",
+        },
+      ],
+    },
+  },
+  {
     files: ["**/*.mjs", "**/*.js"],
     ...tseslint.configs.disableTypeChecked,
   },

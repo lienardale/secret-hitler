@@ -2,11 +2,28 @@
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "sh-rooms",
   "main": "src/index.ts",
+  // ≥ 2026-04-07: the runtime answers WebSocket close frames itself.
   "compatibility_date": "2026-10-01",
   "observability": { "enabled": true },
   "durable_objects": {
-    "bindings": [{ "name": "GAME_ROOM", "class_name": "GameRoom" }],
+    "bindings": [
+      { "name": "GAME_ROOM", "class_name": "GameRoom" },
+      { "name": "LOBBY", "class_name": "Lobby" },
+    ],
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GameRoom"] }],
-  "vars": { "ENVIRONMENT": "development" },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["GameRoom"] },
+    { "tag": "v2", "new_sqlite_classes": ["Lobby"] },
+  ],
+  // Secrets (set with `wrangler secret put`, or in .dev.vars for `wrangler dev`):
+  //   TICKET_PUBLIC_JWK    Ed25519 public key that checks room tickets
+  //   WEB_TO_ROOMS_SECRET  HMAC secret for website → rooms calls
+  //   ROOMS_TO_WEB_SECRET  HMAC secret for rooms → website calls
+  "vars": {
+    "ENVIRONMENT": "development",
+    // Browser origins allowed to open WebSockets (comma-separated).
+    "ALLOWED_ORIGINS": "http://localhost:3000,http://localhost:3100",
+    // Website base URL for game results; empty disables delivery (dev without the website).
+    "WEB_API_URL": "",
+  },
 }
