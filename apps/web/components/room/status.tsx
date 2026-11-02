@@ -33,9 +33,21 @@ export function ClosedNotice({ code }: { code: number | null }) {
       <h1 className="font-display text-3xl">{t("closed.title")}</h1>
       <p className="mt-3">{t(key as "closed.other")}</p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <Link href="/" className={buttonClass("primary")}>
-          {t("closed.home")}
-        </Link>
+        {code === 4403 ? (
+          <Link
+            href={{
+              pathname: "/connexion",
+              query: typeof window === "undefined" ? {} : { callbackUrl: window.location.pathname },
+            }}
+            className={buttonClass("primary")}
+          >
+            {t("closed.signIn")}
+          </Link>
+        ) : (
+          <Link href="/" className={buttonClass("primary")}>
+            {t("closed.home")}
+          </Link>
+        )}
         {code !== 4423 && code !== 4404 && code !== 4410 && (
           <button
             type="button"

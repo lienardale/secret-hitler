@@ -2,18 +2,22 @@
 
 /**
  * Home and room-gate actions: choose a guest name, create a private room,
- * join a room by code. Expected failures are returned as message keys
+ * join a room by code. A signed-in account plays under its display name and
+ * needs no guest cookie. Expected failures are returned as message keys
  * (room.errors.*), never thrown; a success that changes page redirects.
  */
 import { headers } from "next/headers";
 
 import {
   checkDisplayName,
+  identityKey,
   normalizeDisplayName,
   normalizeRoomCode,
+  type CreateRoomRequest,
   type DisplayNameProblem,
 } from "@sh/protocol";
 
+import { getCurrentUser, isOnboarded } from "@/lib/auth/current-user";
 import { newGuestId, type Guest } from "@/lib/guest/cookie";
 import { readGuest, writeGuest } from "@/lib/guest/session";
 import { redirect } from "@/lib/i18n/navigation";
@@ -71,20 +75,25 @@ export async function createRoomAction(_prev: FormState, formData: FormData): Pr
   const locale = formData.get("locale");
   if (!isLocale(locale)) return { ok: false, error: "forbidden" };
   const ip = clientIp(h);
-  const result = await guestFromForm(formData, ip);
-  if ("error" in result) return { ok: false, error: result.error };
-  const { guest } = result;
-  if (!roomCreationLimit.take(`g:${guest.gid}`).ok || !roomCreationLimit.take(`ip:${ip}`).ok) {
+  const user = await getCurrentUser();
+  let host: CreateRoomRequest["host"];
+  if (isOnboarded(user)) {
+    host = { kind: "user", sub: user.id, name: user.displayName };
+  } else {
+    const result = await guestFromForm(formData, ip);
+    if ("error" in result) return { ok: false, error: result.error };
+    host = { kind: "guest", sub: result.guest.gid, name: result.guest.name };
+  }
+  if (
+    !roomCreationLimit.take(identityKey(host.kind, host.sub)).ok ||
+    !roomCreationLimit.take(`ip:${ip}`).ok
+  ) {
     return { ok: false, error: "rate_limited" };
   }
 
   let code: string;
   try {
-    code = await createRoom({
-      visibility: "private",
-      lang: locale,
-      host: { kind: "guest", sub: guest.gid, name: guest.name },
-    });
+    code = await createRoom({ visibility: "private", lang: locale, host });
   } catch (error) {
     if (error instanceof RoomsUnavailableError) return { ok: false, error: "rooms_unavailable" };
     throw error;

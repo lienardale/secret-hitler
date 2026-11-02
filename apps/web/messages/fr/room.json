@@ -10,7 +10,6 @@
     "joinLead": "Entrez le code de 5 lettres qu'on vous a donné.",
     "codeLabel": "Code de la salle",
     "joinButton": "Rejoindre",
-    "publicSoon": "Parties publiques avec des inconnus : bientôt.",
     "playingAs": "Vous jouez sous le nom {name}."
   },
   "name": {
@@ -37,7 +36,11 @@
   },
   "publicGate": {
     "title": "Partie publique",
-    "lead": "Les parties publiques demandent un compte. Les comptes arrivent bientôt."
+    "lead": "Les parties publiques demandent un compte : c'est ce qui permet de bloquer et de signaler les joueurs.",
+    "signIn": "Se connecter",
+    "signUp": "Créer un compte",
+    "verifyTitle": "Adresse e-mail à vérifier",
+    "verifyLead": "Vérifiez votre adresse e-mail pour jouer en public. Le lien est dans l'e-mail reçu à l'inscription."
   },
   "unavailable": {
     "title": "Le serveur de jeu ne répond pas",
@@ -60,7 +63,8 @@
     "c4429": "Trop de messages d'un coup : la salle a fermé votre connexion.",
     "other": "La connexion à la salle a été fermée.",
     "home": "Retour à l'accueil",
-    "reload": "Recharger la page"
+    "reload": "Recharger la page",
+    "signIn": "Se connecter"
   },
   "lobby": {
     "heading": "Salle {code}",
@@ -94,7 +98,11 @@
       "relaxed": "Détendu",
       "standard": "Standard",
       "fast": "Rapide"
-    }
+    },
+    "publicStartsIn": "La partie commence dans {seconds, plural, one {# seconde} other {# secondes}}.",
+    "publicWaiting": "La partie démarre seule dès que {min} joueurs sont assis et connectés{missing, plural, =0 {.} one { (encore #).} other { (encore #).}}",
+    "minPlayers": "Joueurs pour démarrer",
+    "minPlayersHelp": "Le compte à rebours de 30 secondes démarre dès que ce nombre de joueurs est assis (5 secondes à 10 joueurs)."
   },
   "chat": {
     "title": "Discussion",

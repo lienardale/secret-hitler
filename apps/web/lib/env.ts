@@ -19,24 +19,59 @@ const httpUrl = z.url().refine((value) => /^https?:\/\//i.test(value), {
 
 const secret = z.string().min(32, "must be at least 32 characters");
 
-const schema = z.object({
-  /** Rooms Worker, as the website's server reaches it (signed calls). */
-  ROOMS_URL: httpUrl,
-  /** Rooms Worker, as browsers reach it (WebSockets). Defaults to ROOMS_URL. */
-  ROOMS_PUBLIC_URL: z.preprocess(blankToUndefined, httpUrl.optional()),
-  /** Ed25519 private JWK that signs room tickets. */
-  TICKET_PRIVATE_JWK: z.string().refine((value) => value.includes('"d"'), {
-    message: "must be a private JWK (run npm run dev:setup locally)",
-  }),
-  WEB_TO_ROOMS_SECRET: secret,
-  /** Signs the guest cookie (HS256). */
-  GUEST_SECRET: secret,
-  /** Serves /dev/* test pages. Never set on a deployment. */
-  ENABLE_TEST_PAGES: z.preprocess(
-    (value) => typeof value === "string" && /^(1|true|yes)$/i.test(value.trim()),
-    z.boolean(),
-  ),
-});
+const flag = z.preprocess(
+  (value) => typeof value === "string" && /^(1|true|yes)$/i.test(value.trim()),
+  z.boolean(),
+);
+
+const schema = z
+  .object({
+    /** Rooms Worker, as the website's server reaches it (signed calls). */
+    ROOMS_URL: httpUrl,
+    /** Rooms Worker, as browsers reach it (WebSockets). Defaults to ROOMS_URL. */
+    ROOMS_PUBLIC_URL: z.preprocess(blankToUndefined, httpUrl.optional()),
+    /** Ed25519 private JWK that signs room tickets. */
+    TICKET_PRIVATE_JWK: z.string().refine((value) => value.includes('"d"'), {
+      message: "must be a private JWK (run npm run dev:setup locally)",
+    }),
+    WEB_TO_ROOMS_SECRET: secret,
+    /** Checks the rooms Worker's calls (game results), HMAC. */
+    ROOMS_TO_WEB_SECRET: secret,
+    /** Signs the guest cookie (HS256). */
+    GUEST_SECRET: secret,
+    /** Auth.js: encrypts session cookies; also salts rate-limit keys. */
+    AUTH_SECRET: secret,
+    /** Google sign-in: both or neither (the button only shows when set). */
+    AUTH_GOOGLE_ID: z.preprocess(blankToUndefined, z.string().optional()),
+    AUTH_GOOGLE_SECRET: z.preprocess(blankToUndefined, z.string().optional()),
+    /** `log` (dev sink: server log, plus MAIL_SINK_FILE if set) or `resend`. */
+    MAIL_TRANSPORT: z.preprocess(blankToUndefined, z.enum(["log", "resend"]).default("log")),
+    RESEND_API_KEY: z.preprocess(blankToUndefined, z.string().optional()),
+    /** Sender, e.g. `Secret Hitler <noreply@example.org>` (a domain verified on Resend). */
+    MAIL_FROM: z.preprocess(blankToUndefined, z.string().optional()),
+    /** Dev and e2e: the log transport also appends each mail here as a JSON line. */
+    MAIL_SINK_FILE: z.preprocess(blankToUndefined, z.string().optional()),
+    /** Public play (quick match, public rooms) needs a verified e-mail address. */
+    REQUIRE_EMAIL_VERIFICATION: flag,
+    /** Serves /dev/* test pages. Never set on a deployment. */
+    ENABLE_TEST_PAGES: flag,
+  })
+  .superRefine((env, ctx) => {
+    if (Boolean(env.AUTH_GOOGLE_ID) !== Boolean(env.AUTH_GOOGLE_SECRET)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["AUTH_GOOGLE_SECRET"],
+        message: "set both AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET, or neither",
+      });
+    }
+    if (env.MAIL_TRANSPORT === "resend" && (!env.RESEND_API_KEY || !env.MAIL_FROM)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["RESEND_API_KEY"],
+        message: "MAIL_TRANSPORT=resend needs RESEND_API_KEY and MAIL_FROM",
+      });
+    }
+  });
 
 export type Env = z.infer<typeof schema> & { ROOMS_PUBLIC_URL: string };
 

@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "Mon profil"
+  },
+  "page": {
+    "title": "Mon profil",
+    "lead": "Votre compte, les joueurs que vous avez bloqués et vos parties."
+  },
+  "account": {
+    "title": "Compte",
+    "displayName": "Nom de joueur",
+    "newName": "Nouveau nom",
+    "renameHint": "2 à 20 caractères. Un changement tous les 30 jours au plus.",
+    "renameSubmit": "Changer de nom",
+    "renameLocked": "Prochain changement de nom possible le {date}.",
+    "renamed": "C'est fait : votre nom de joueur est maintenant {name}.",
+    "email": "Adresse e-mail",
+    "emailPrivate": "Visible par vous seul.",
+    "verified": "Adresse vérifiée.",
+    "unverified": "Adresse pas encore vérifiée."
+  },
+  "blocks": {
+    "title": "Joueurs bloqués",
+    "lead": "Les messages d'un joueur bloqué vous sont masqués, et la partie rapide ne vous met jamais dans la même partie, quel que soit celui de vous deux qui a bloqué l'autre.",
+    "byName": "Bloquer un joueur par son nom",
+    "nameLabel": "Nom du joueur",
+    "nameHint": "Le nom exact, majuscules et accents sans importance.",
+    "submit": "Bloquer",
+    "blocked": "Joueur bloqué : {name}.",
+    "alreadyBlocked": "Déjà bloqué : {name}.",
+    "listLabel": "Joueurs que vous avez bloqués",
+    "empty": "Vous n'avez bloqué personne.",
+    "since": "depuis le {date}",
+    "noName": "Joueur sans nom",
+    "unblock": "Débloquer",
+    "unblockLabel": "Débloquer {name}"
+  },
+  "history": {
+    "title": "Historique des parties",
+    "empty": "Aucune partie pour l'instant. Chaque partie terminée apparaîtra ici.",
+    "public": "Partie publique",
+    "private": "Partie privée",
+    "room": "Salle {room}",
+    "number": "partie n° {number}",
+    "finished": "{team, select, liberal {Victoire des libéraux} other {Victoire des fascistes}}",
+    "abandoned": "Partie abandonnée",
+    "reason": {
+      "liberalPolicies": "5 décrets libéraux adoptés",
+      "hitlerExecuted": "Hitler exécuté",
+      "fascistPolicies": "6 décrets fascistes adoptés",
+      "hitlerElected": "Hitler élu chancelier"
+    },
+    "you": "Votre rôle : <strong>{role}</strong>",
+    "won": "Gagné",
+    "lost": "Perdu",
+    "noResult": "Sans résultat",
+    "executed": "exécuté",
+    "left": "Vous aviez quitté la partie.",
+    "players": "Les autres joueurs",
+    "deletedPlayer": "Joueur supprimé",
+    "guest": "invité",
+    "block": "Bloquer",
+    "blockLabel": "Bloquer {name}",
+    "blockedTag": "Bloqué",
+    "older": "Parties plus anciennes",
+    "newest": "Parties les plus récentes"
+  },
+  "roles": {
+    "liberal": "Libéral",
+    "fascist": "Fasciste",
+    "hitler": "Hitler"
+  },
+  "delete": {
+    "title": "Supprimer mon compte",
+    "lead": "Votre compte, votre adresse e-mail et vos blocages sont effacés. Vos parties restent dans l'historique des autres joueurs, sous le nom « Joueur supprimé ». C'est définitif.",
+    "open": "Supprimer mon compte…",
+    "password": "Votre mot de passe",
+    "passwordHint": "Pour confirmer que c'est bien vous.",
+    "name": "Tapez votre nom de joueur pour confirmer : {name}",
+    "submit": "Supprimer définitivement",
+    "cancel": "Annuler"
+  },
+  "errors": {
+    "forbidden": "Requête refusée. Rechargez la page.",
+    "signInRequired": "Connectez-vous pour continuer.",
+    "rateLimited": "Trop de tentatives. Réessayez dans {minutes, plural, one {# minute} other {# minutes}}.",
+    "name_length": "Le nom doit faire entre 2 et 20 caractères.",
+    "name_characters": "Lettres, chiffres, espaces, tirets, points et apostrophes seulement (pas au début ni à la fin).",
+    "name_reserved": "Ce nom est réservé, choisissez-en un autre.",
+    "nameTaken": "Ce nom est déjà pris.",
+    "sameName": "C'est déjà votre nom.",
+    "renameTooSoon": "Un seul changement de nom tous les 30 jours. Prochain changement possible le {date}.",
+    "accountNotFound": "Compte introuvable. Rechargez la page.",
+    "playerNotFound": "Aucun joueur ne porte ce nom.",
+    "blockSelf": "Vous ne pouvez pas vous bloquer vous-même.",
+    "tooManyBlocks": "Vous avez bloqué 500 joueurs, c'est le maximum. Débloquez-en d'abord.",
+    "wrongPassword": "Mot de passe incorrect.",
+    "wrongName": "Ce n'est pas votre nom de joueur."
+  }
+}

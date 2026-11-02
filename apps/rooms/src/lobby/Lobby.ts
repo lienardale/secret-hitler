@@ -274,7 +274,7 @@ export class Lobby extends DurableObject<Env> {
   }
 }
 
-/** Copies only the viewer-visible fields: `members` must never reach viewers. */
+/** Copies only the viewer-visible fields: `members` and `excluded` must never reach viewers. */
 function toEntry(report: LobbyRoomReport): LobbyEntry {
   return {
     code: report.code,
@@ -292,9 +292,13 @@ function entryKey(report: LobbyRoomReport): string {
   return JSON.stringify(toEntry(report));
 }
 
-/** Stable text for a report (fixed key order, sorted members) to detect real changes. */
+/** Stable text for a report (fixed key order, sorted keys) to detect real changes. */
 function serializeReport(report: LobbyRoomReport): string {
-  return JSON.stringify({ ...toEntry(report), members: [...report.members].sort() });
+  return JSON.stringify({
+    ...toEntry(report),
+    members: [...report.members].sort(),
+    excluded: [...report.excluded].sort(),
+  });
 }
 
 function parseStoredReport(text: string): LobbyRoomReport | null {

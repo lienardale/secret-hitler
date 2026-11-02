@@ -308,6 +308,33 @@ describe("away players in public games", () => {
     const payload = core.drain().outbox[0]?.payload;
     expect(payload?.players.every((p) => !p.won)).toBe(true);
   });
+
+  it("marks the player the room played for as having left in the result", () => {
+    const { core, t1 } = publicGame();
+    const seat = 2;
+    core.markGone(pidAt(core, seat), t1);
+    const t2 = t1 + ROOM_TIMING.reconnectGraceMs;
+    core.tick(t2);
+    expect(core.roomView().players[seat]?.afk).toBe(true);
+    core.drain();
+
+    playToEnd(core, 7, t2);
+    expect(core.roomView().result?.kind).toBe("finished");
+    const payload = gameResultPayloadSchema.parse(core.drain().outbox[0]?.payload);
+    expect(payload.players.map((p) => p.left)).toEqual([false, false, true, false, false]);
+  });
+
+  it("does not count a player who came back before the end as having left", () => {
+    const { core, t1 } = publicGame();
+    const pid = pidAt(core, 1);
+    core.markGone(pid, t1);
+    const t2 = t1 + ROOM_TIMING.reconnectGraceMs;
+    core.tick(t2);
+    core.join(user(Number(pid.slice(1))), t2 + 1);
+    playToEnd(core, 7, t2 + 1);
+    const payload = gameResultPayloadSchema.parse(core.drain().outbox[0]?.payload);
+    expect(payload.players.every((p) => !p.left)).toBe(true);
+  });
 });
 
 describe("private game controls", () => {
@@ -385,6 +412,37 @@ describe("kicks", () => {
     expect(core.handle(host, { t: "kick", pid: target }, T0)).toBeNull();
     expect(state(core).phase.kind).toBe("vote");
     expect(core.roomView().players[president]?.afk).toBe(true);
+  });
+
+  it("marks a kicked player as having left in the result", () => {
+    const { core, pids } = startedRoom(5);
+    const host = pids[0] as string;
+    const seat = core.room.game?.seats.findIndex((pid) => pid !== host) as number;
+    expect(core.handle(host, { t: "kick", pid: pidAt(core, seat) }, T0)).toBeNull();
+    core.drain();
+    playToEnd(core);
+    const payload = gameResultPayloadSchema.parse(core.drain().outbox[0]?.payload);
+    expect(payload.players.filter((p) => p.left).map((p) => p.seat)).toEqual([seat]);
+  });
+
+  it("tells the lobby which identities a public room refuses, the latest 100", () => {
+    const { core } = makeRoom({ visibility: "public" });
+    const [host] = joinAll(core, 1, T0, user) as [string];
+    core.drain();
+    for (let n = 2; n <= 106; n++) {
+      const joined = core.join(user(n), T0);
+      if (!joined.ok) throw new Error(`join ${n} refused`);
+      expect(core.handle(host, { t: "kick", pid: joined.pid }, T0)).toBeNull();
+      if (n === 2) {
+        expect(core.lobbyReport()?.excluded).toEqual(["u:u2"]);
+        expect(core.drain().lobby).toBe(true);
+      }
+    }
+    const excluded = core.lobbyReport()?.excluded ?? [];
+    expect(excluded).toHaveLength(100);
+    expect(excluded[0]).toBe("u:u7");
+    expect(excluded.at(-1)).toBe("u:u106");
+    expect(core.lobbyReport()?.members).toEqual(["u:u1"]);
   });
 });
 
@@ -517,6 +575,7 @@ describe("what clients receive", () => {
       code: "BCDFG",
       players: 2,
       members: ["u:u1", "u:u2"],
+      excluded: [],
     });
     expect(core.drain().lobby).toBe(true);
     expect(core.drain().lobby).toBe(false);

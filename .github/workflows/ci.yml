@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        step: [lint, typecheck, test-engine, test-protocol, test-rooms, test-web, audit, build]
+        step: [lint, typecheck, test-engine, test-protocol, test-rooms, audit, build]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -47,10 +47,51 @@ jobs:
       - run: npm ci --no-audit --no-fund --prefer-offline
       - run: bash scripts/ci/${{ matrix.step }}.sh
 
+  # The website's tests need Postgres (integration tier, e2e): a service container.
+  test-web:
+    name: test-web
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: sh
+          POSTGRES_PASSWORD: sh
+          POSTGRES_DB: sh_test
+          POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sh -d sh_test" --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      POSTGRES_URL: postgresql://sh:sh@localhost:5432/sh_test
+      POSTGRES_URL_NON_POOLING: postgresql://sh:sh@localhost:5432/sh_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-audit --no-fund --prefer-offline
+      - run: bash scripts/ci/test-web.sh
+
   e2e:
     name: e2e
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: sh
+          POSTGRES_PASSWORD: sh
+          POSTGRES_DB: sh_test
+          POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sh -d sh_test" --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      POSTGRES_URL: postgresql://sh:sh@localhost:5432/sh_test
+      POSTGRES_URL_NON_POOLING: postgresql://sh:sh@localhost:5432/sh_test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0

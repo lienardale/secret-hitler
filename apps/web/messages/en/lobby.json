@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "Public games"
+  },
+  "home": {
+    "title": "Public games",
+    "lead": "Play with other people, in French or in English. You need an account.",
+    "cta": "See public games"
+  },
+  "page": {
+    "title": "Public games",
+    "lead": "Games start on their own once there are enough players. Standard timers: a player away for too long is played automatically.",
+    "listTitle": "Open rooms",
+    "empty": "No public game right now. Start a quick match: one will open.",
+    "connecting": "Loading rooms…",
+    "offline": "List unavailable, trying again…"
+  },
+  "quick": {
+    "title": "Quick match",
+    "lead": "We put you in the fullest waiting room in your language, or open a new one.",
+    "button": "Quick match",
+    "signIn": "Sign in to play public games.",
+    "signInButton": "Sign in",
+    "signUpButton": "Create an account",
+    "verify": "Verify your e-mail address to play public games."
+  },
+  "room": {
+    "players": "{players} / {max} players",
+    "min": "starts at {min}",
+    "waiting": "Waiting",
+    "startsIn": "Starts in {seconds} s",
+    "playing": "In progress",
+    "join": "Join",
+    "watch": "Watch",
+    "joinLabel": "Join room {code}",
+    "watchLabel": "Watch the game in room {code}",
+    "lang": {
+      "fr": "French",
+      "en": "English"
+    },
+    "timers": {
+      "off": "No timers",
+      "relaxed": "Relaxed timers",
+      "standard": "Standard timers",
+      "fast": "Fast timers"
+    }
+  },
+  "errors": {
+    "sign_in_required": "Sign in to play public games.",
+    "verify_required": "Verify your e-mail address to play public games.",
+    "cooldown": "You left two public games within 24 hours. Quick match is available again at {time}.",
+    "rate_limited": "Too many attempts. Try again in a few minutes.",
+    "rooms_unavailable": "The game server is not answering. Try again in a moment.",
+    "forbidden": "Request refused. Reload the page."
+  }
+}

@@ -5,9 +5,11 @@
 import {
   SIGNATURE_HEADER,
   createRoomResponseSchema,
+  quickMatchResponseSchema,
   roomInfoSchema,
   signRequest,
   type CreateRoomRequest,
+  type QuickMatchRequest,
   type RoomInfo,
 } from "@sh/protocol";
 
@@ -55,4 +57,19 @@ export async function roomInfo(code: string, env = getEnv()): Promise<RoomInfo |
   if (response.status === 404) return null;
   if (!response.ok) throw new RoomsUnavailableError(`info answered ${response.status}`);
   return roomInfoSchema.parse(await response.json());
+}
+
+/** The public room quick match picked, or null (the caller then creates one). */
+export async function quickMatch(
+  request: QuickMatchRequest,
+  env = getEnv(),
+): Promise<string | null> {
+  const response = await signedFetch(
+    env,
+    "POST",
+    "/internal/lobby/quickmatch",
+    JSON.stringify(request),
+  );
+  if (!response.ok) throw new RoomsUnavailableError(`quick match answered ${response.status}`);
+  return quickMatchResponseSchema.parse(await response.json()).code;
 }

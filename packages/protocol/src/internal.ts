@@ -57,6 +57,12 @@ export const gameResultPayloadSchema = z.strictObject({
         alive: z.boolean(),
         /** False for everyone when the game was abandoned. */
         won: z.boolean(),
+        /**
+         * The room was playing for this player when the game ended: away past
+         * the grace period, or kicked. Counts as an abandon on the website.
+         * Defaults to false for rooms that predate the field.
+         */
+        left: z.boolean().default(false),
       }),
     )
     .min(5)

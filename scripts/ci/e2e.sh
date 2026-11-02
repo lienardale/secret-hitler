@@ -8,6 +8,8 @@ cd "$PROJECT_ROOT"
 log_step "e2e: local keys and secrets"
 npm run dev:setup
 
+ensure_test_database
+
 log_step "e2e: next build (web)"
 npm -w @sh/web run build
 

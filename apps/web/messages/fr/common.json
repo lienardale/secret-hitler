@@ -11,5 +11,12 @@
     "credit": "Secret Hitler a été créé par Mike Boxleiter, Tommy Maranges et Mac Schubert. © Goat, Wolf & Cabbage.",
     "license": "Adaptation non officielle sous licence CC BY-NC-SA 4.0.",
     "switchLocale": "English"
+  },
+  "nav": {
+    "label": "Navigation principale",
+    "play": "Jouer",
+    "signIn": "Connexion",
+    "signOut": "Se déconnecter",
+    "finishAccount": "Terminer mon compte"
   }
 }

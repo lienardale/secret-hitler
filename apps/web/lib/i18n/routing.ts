@@ -19,6 +19,12 @@ export const routing = defineRouting({
   pathnames: {
     "/": "/",
     "/salle/[code]": { fr: "/salle/[code]", en: "/room/[code]" },
+    "/jouer": { fr: "/jouer", en: "/play" },
+    "/connexion": { fr: "/connexion", en: "/sign-in" },
+    "/inscription": { fr: "/inscription", en: "/sign-up" },
+    "/bienvenue": { fr: "/bienvenue", en: "/welcome" },
+    "/verifier-email": { fr: "/verifier-email", en: "/verify-email" },
+    "/profil": { fr: "/profil", en: "/profile" },
     // Test page (404 unless ENABLE_TEST_PAGES=1): the game table on local fixtures.
     "/dev/table": "/dev/table",
   },

@@ -696,6 +696,8 @@ export class RoomCore<S, A, V, E> {
           role: this.game.roleOf(game.state, seat),
           alive: this.game.isAlive(game.state, seat),
           won: result.kind === "finished" && winners.includes(seat),
+          // Away past the grace period or kicked: the website counts it as an abandon.
+          left: game.auto[seat] ?? false,
         };
       }),
       log: {
@@ -986,6 +988,8 @@ export class RoomCore<S, A, V, E> {
       timers: room.settings.timers,
       startsAt: room.startsAt,
       members: room.members.map((m) => m.key).slice(0, 40),
+      // Quick match must never send a kicked player back here (the room closes them with 4423).
+      excluded: room.kicked.slice(-100),
     };
   }
 

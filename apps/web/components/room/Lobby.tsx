@@ -4,8 +4,9 @@ import { useId } from "react";
 import { useTranslations } from "next-intl";
 import { TIMER_PRESETS, type PlayerSlot, type RoomView, type TimerPreset } from "@sh/protocol";
 
+import { useRemainingSeconds } from "@/components/game/clock";
 import { Button } from "@/components/ui/Button";
-import { useRoomActions } from "@/lib/room-client/store";
+import { useRoomActions, useRoomState } from "@/lib/room-client/store";
 
 import { ChatPanel } from "./ChatPanel";
 import { InviteBox } from "./InviteBox";
@@ -71,9 +72,21 @@ export function Lobby({ room, youPid }: { room: RoomView; youPid: string }) {
   const allConnected = room.players.every((p) => p.connected);
   const missing = Math.max(0, MIN_PLAYERS - count);
   const canStart = isHost && room.visibility === "private" && missing === 0 && allConnected;
+  const isPublic = room.visibility === "public";
+  const clockOffset = useRoomState((s) => s.clockOffset);
+  const startsIn = useRemainingSeconds(isPublic ? room.startsAt : null, clockOffset);
 
-  const startHint =
-    missing > 0
+  // Public rooms start on their own: a countdown once `minPlayers` are seated and connected.
+  const publicHint =
+    startsIn !== null
+      ? t("lobby.publicStartsIn", { seconds: startsIn })
+      : t("lobby.publicWaiting", {
+          min: room.settings.minPlayers,
+          missing: Math.max(0, room.settings.minPlayers - count),
+        });
+  const startHint = isPublic
+    ? publicHint
+    : missing > 0
       ? t("lobby.needPlayers", { missing })
       : !allConnected
         ? t("lobby.waitingDisconnected")
@@ -157,7 +170,12 @@ export function Lobby({ room, youPid }: { room: RoomView; youPid: string }) {
             )}
           </div>
           {startHint && (
-            <p id={`${id}-hint`} className="mt-2 text-ink-muted">
+            <p
+              id={`${id}-hint`}
+              data-testid="start-hint"
+              aria-live={isPublic ? "polite" : undefined}
+              className={`mt-2 ${startsIn !== null ? "font-display text-xl text-ink" : "text-ink-muted"}`}
+            >
               {startHint}
             </p>
           )}
@@ -191,6 +209,31 @@ export function Lobby({ room, youPid }: { room: RoomView; youPid: string }) {
               ))}
             </select>
             <p className="mt-2 text-sm text-ink-muted">{t("lobby.timersHelp")}</p>
+            {isPublic && (
+              <>
+                <label htmlFor={`${id}-min`} className="mt-4 block font-display text-lg">
+                  {t("lobby.minPlayers")}
+                </label>
+                <select
+                  id={`${id}-min`}
+                  value={room.settings.minPlayers}
+                  onChange={(event) =>
+                    send({ t: "settings", minPlayers: Number(event.target.value) })
+                  }
+                  className="mt-1 rounded-md border-2 border-rule bg-paper px-3 py-2"
+                >
+                  {Array.from(
+                    { length: MAX_PLAYERS - MIN_PLAYERS + 1 },
+                    (_, i) => MIN_PLAYERS + i,
+                  ).map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-2 text-sm text-ink-muted">{t("lobby.minPlayersHelp")}</p>
+              </>
+            )}
           </section>
         )}
       </div>

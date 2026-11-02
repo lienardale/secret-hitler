@@ -6,6 +6,7 @@ Two pieces, deployed separately:
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
 | Website (`apps/web`)       | Vercel, project `secret-hitler-staging` (team `lienardales-projects`), root directory `apps/web`, Node 24, functions in `cdg1` | https://secret-hitler-staging.vercel.app      |
 | Game server (`apps/rooms`) | Cloudflare Workers + Durable Objects, `wrangler.jsonc` env `staging` → Worker `sh-rooms-staging`                               | https://sh-rooms-staging.sh-rooms.workers.dev |
+| Database                   | Neon Postgres (free plan, `fra1`), resource `sh-staging` added from the Vercel Marketplace and connected to the Vercel project | (no public URL)                               |
 
 Production (M6) will be a separate Vercel project and a `production` Wrangler env, on a domain.
 
@@ -25,6 +26,11 @@ Generated once per environment, never committed, never printed:
 | `WEB_TO_ROOMS_SECRET` | yes                      | yes                    |
 | `ROOMS_TO_WEB_SECRET` | yes                      | yes                    |
 | `GUEST_SECRET`        | yes                      | no                     |
+| `AUTH_SECRET`         | yes (session cookies)    | no                     |
+
+The database variables (`POSTGRES_URL`, `POSTGRES_URL_NON_POOLING`, `DATABASE_URL`…) are
+injected by the Neon integration; nothing to copy by hand. The website reads `POSTGRES_URL`
+(pooled) at run time and migrations use `POSTGRES_URL_NON_POOLING` (direct).
 
 `npm run dev:setup -- --print` prints a fresh set. Write each value to its own file (mode 600)
 and pipe it, so it never lands in shell history or logs:
@@ -36,6 +42,28 @@ npx wrangler secret put TICKET_PUBLIC_JWK --env staging < TICKET_PUBLIC_JWK  # f
 
 Rotating the ticket key pair or an HMAC secret means updating both sides, then redeploying both.
 
+## Database migrations
+
+The Vercel project's build command is `npm run vercel-build` (`apps/web/scripts/vercel-build.sh`):
+on the project's **production** target it runs `prisma migrate deploy`, then `next build`.
+Preview builds never migrate (they share the same database). A migration that fails stops the
+deploy before the build, and the previous deployment keeps serving.
+
+## Accounts: e-mail and Google
+
+- **E-mail verification** is built and tested (`MAIL_TRANSPORT=log`, the default, writes mails to
+  the server log instead of sending them). Staging has no domain yet, so `REQUIRE_EMAIL_VERIFICATION`
+  is **not** set there: public play does not wait for a verified address. To turn real mail on
+  (M6, once the domain exists): verify the domain on Resend, then set `MAIL_TRANSPORT=resend`,
+  `RESEND_API_KEY` (sensitive), `MAIL_FROM` (`Secret Hitler <noreply@<domain>>`) and
+  `REQUIRE_EMAIL_VERIFICATION=1`, and redeploy.
+- **Google sign-in** turns on when both `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are set (the
+  button appears by itself). In Google Cloud Console: OAuth client of type "Web application",
+  authorised redirect URI `https://<site>/api/auth/callback/google`
+  (`https://secret-hitler-staging.vercel.app/api/auth/callback/google` for staging). Google's name
+  and picture are never stored; new Google accounts choose a player name on `/bienvenue`.
+- Admins: `npm -w @sh/web run admin:grant -- <email>` (role `ADMIN`; `--role MODERATOR` also works). The admin pages arrive with moderation (M5).
+
 ## Order of a first deploy
 
 1. **Game server**: `npm -w @sh/rooms run deploy:staging`, then the three Wrangler secrets.
@@ -45,6 +73,9 @@ Rotating the ticket key pair or an HMAC secret means updating both sides, then r
 3. **Website**: from the repo root, `vercel deploy --prod`.
 4. **Allowed origin**: `ALLOWED_ORIGINS` in `wrangler.jsonc` (env `staging`) must be the site's
    exact origin; redeploy the game server if it changed.
+5. **Game results**: `WEB_API_URL` in `wrangler.jsonc` (env `staging`) is the website's origin;
+   rooms post finished games to `/api/internal/games` (HMAC with `ROOMS_TO_WEB_SECRET`) and retry
+   for 3 days, so either side may be deployed first.
 
 ## Checks after a deploy
 
@@ -52,6 +83,9 @@ Rotating the ticket key pair or an HMAC secret means updating both sides, then r
 - Five browsers play a whole game against the deployed site:
   `PLAYWRIGHT_BASE_URL=https://secret-hitler-staging.vercel.app npx -w @sh/web playwright test private-game.spec.ts -g "five guests" --project=desktop-chromium`
   (and `home.spec.ts -g "home \(|invite link"` for the entry pages).
+- Five accounts sign up, quick-match, play a public game and find it in their profiles (then
+  the test accounts are deleted; sign-ups are limited to 5 per hour per address):
+  `PLAYWRIGHT_BASE_URL=https://secret-hitler-staging.vercel.app npx -w @sh/web playwright test staging-public-game.spec.ts --project=desktop-chromium`
 - `npx wrangler tail sh-rooms-staging` shows the Worker's logs (no state, hands or chat are logged).
 
 The first deploy registered the account's `workers.dev` subdomain as `sh-rooms` (changeable in the

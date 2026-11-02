@@ -20,7 +20,14 @@ function FormError({ id, state }: { id: string; state: FormState }) {
   );
 }
 
-export function CreateRoomForm({ guestName }: { guestName: string | null }) {
+/** `accountName`: a signed-in account plays under its display name (no name field). */
+export function CreateRoomForm({
+  guestName,
+  accountName = null,
+}: {
+  guestName: string | null;
+  accountName?: string | null;
+}) {
   const t = useTranslations("room");
   const locale = useLocale();
   const id = useId();
@@ -32,23 +39,27 @@ export function CreateRoomForm({ guestName }: { guestName: string | null }) {
       <p className="mt-2 text-ink-muted">{t("home.createLead")}</p>
       <form action={action} className="mt-5 space-y-3">
         <input type="hidden" name="locale" value={locale} />
-        <label htmlFor={`${id}-name`} className="block font-display text-lg">
-          {t("name.label")}
-        </label>
-        <input
-          id={`${id}-name`}
-          name="name"
-          required
-          minLength={2}
-          maxLength={DISPLAY_NAME_MAX}
-          defaultValue={guestName ?? ""}
-          autoComplete="nickname"
-          aria-describedby={failed ? `${id}-error` : `${id}-hint`}
-          className={inputClass}
-        />
-        <p id={`${id}-hint`} className="text-sm text-ink-muted">
-          {t("name.hint")}
-        </p>
+        {accountName === null && (
+          <>
+            <label htmlFor={`${id}-name`} className="block font-display text-lg">
+              {t("name.label")}
+            </label>
+            <input
+              id={`${id}-name`}
+              name="name"
+              required
+              minLength={2}
+              maxLength={DISPLAY_NAME_MAX}
+              defaultValue={guestName ?? ""}
+              autoComplete="nickname"
+              aria-describedby={failed ? `${id}-error` : `${id}-hint`}
+              className={inputClass}
+            />
+            <p id={`${id}-hint`} className="text-sm text-ink-muted">
+              {t("name.hint")}
+            </p>
+          </>
+        )}
         <FormError id={`${id}-error`} state={state} />
         <Button type="submit" disabled={pending} className="w-full">
           {t("home.createButton")}

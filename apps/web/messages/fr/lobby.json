@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "Parties publiques"
+  },
+  "home": {
+    "title": "Parties publiques",
+    "lead": "Jouez avec d'autres joueurs, en français ou en anglais. Il faut un compte.",
+    "cta": "Voir les parties publiques"
+  },
+  "page": {
+    "title": "Parties publiques",
+    "lead": "Les parties démarrent seules dès qu'il y a assez de joueurs. Minuteurs standard : un joueur absent trop longtemps est joué automatiquement.",
+    "listTitle": "Salles ouvertes",
+    "empty": "Aucune partie publique pour l'instant. Lancez une partie rapide : on en ouvre une.",
+    "connecting": "Chargement des salles…",
+    "offline": "Liste indisponible, nouvelle tentative…"
+  },
+  "quick": {
+    "title": "Partie rapide",
+    "lead": "On vous place dans la salle en attente la plus remplie de votre langue, ou on en ouvre une.",
+    "button": "Partie rapide",
+    "signIn": "Connectez-vous pour jouer en public.",
+    "signInButton": "Se connecter",
+    "signUpButton": "Créer un compte",
+    "verify": "Vérifiez votre adresse e-mail pour jouer en public."
+  },
+  "room": {
+    "players": "{players} / {max} joueurs",
+    "min": "démarre à {min}",
+    "waiting": "En attente",
+    "startsIn": "Démarre dans {seconds} s",
+    "playing": "En cours",
+    "join": "Rejoindre",
+    "watch": "Regarder",
+    "joinLabel": "Rejoindre la salle {code}",
+    "watchLabel": "Regarder la partie de la salle {code}",
+    "lang": {
+      "fr": "Français",
+      "en": "Anglais"
+    },
+    "timers": {
+      "off": "Sans minuteur",
+      "relaxed": "Minuteurs détendus",
+      "standard": "Minuteurs standard",
+      "fast": "Minuteurs rapides"
+    }
+  },
+  "errors": {
+    "sign_in_required": "Connectez-vous pour jouer en public.",
+    "verify_required": "Vérifiez votre adresse e-mail pour jouer en public.",
+    "cooldown": "Vous avez quitté deux parties publiques en 24 heures. Partie rapide à nouveau possible à {time}.",
+    "rate_limited": "Trop de tentatives. Réessayez dans quelques minutes.",
+    "rooms_unavailable": "Le serveur de jeu ne répond pas. Réessayez dans un instant.",
+    "forbidden": "Requête refusée. Rechargez la page."
+  }
+}
