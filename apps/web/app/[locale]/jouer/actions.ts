@@ -4,11 +4,11 @@
  * Quick match: put a signed-in player in the fullest waiting public room of
  * their language, or open one (docs/plan.md § Lobby DO).
  *
- * Order: same origin → onboarded account → verified e-mail (when required) →
- * abandon cooldown (2 public abandons in 24 h → 15 min) → rate limit → the
- * Lobby's pick, avoiding players blocked in EITHER direction → create a room
- * when it answers null → redirect. Expected failures are returned as
- * `lobby.errors.*` keys.
+ * Order: same origin → onboarded account → not suspended (an active ban) →
+ * verified e-mail (when required) → abandon cooldown (2 public abandons in
+ * 24 h → 15 min) → rate limit → the Lobby's pick, avoiding players blocked in
+ * EITHER direction → create a room when it answers null → redirect. Expected
+ * failures are returned as `lobby.errors.*` keys.
  */
 import { headers } from "next/headers";
 import { identityKey } from "@sh/protocol";
@@ -19,6 +19,7 @@ import { getEnv } from "@/lib/env";
 import { quickMatchCooldownUntil } from "@/lib/games/cooldown";
 import { redirect } from "@/lib/i18n/navigation";
 import { isLocale } from "@/lib/i18n/routing";
+import { activeBan } from "@/lib/moderation/bans";
 import { avoidKeys } from "@/lib/players/blocks";
 import { RoomsUnavailableError, createRoom, quickMatch } from "@/lib/rooms/api";
 import { createDbRateLimiter, DB_RATE_LIMITS, rateLimitKey } from "@/lib/security/db-rate-limit";
@@ -26,6 +27,7 @@ import { isSameOrigin } from "@/lib/security/origin";
 
 export type QuickMatchError =
   | "sign_in_required"
+  | "banned"
   | "verify_required"
   | "cooldown"
   | "rate_limited"
@@ -44,6 +46,7 @@ export async function quickMatchAction(
 
   const user = await getCurrentUser();
   if (!isOnboarded(user)) return { ok: false, error: "sign_in_required" };
+  if (await activeBan(prisma, user.id)) return { ok: false, error: "banned" };
   if (getEnv().REQUIRE_EMAIL_VERIFICATION && !user.emailVerified) {
     return { ok: false, error: "verify_required" };
   }

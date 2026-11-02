@@ -2,14 +2,18 @@
 import { z } from "zod";
 
 import { ROOM_CODE_PATTERN } from "./codes";
-import { checkDisplayName, normalizeDisplayName } from "./names";
+import { checkDisplayNameShape, normalizeDisplayName } from "./names";
 
 export const roomCodeSchema = z.string().regex(ROOM_CODE_PATTERN);
 
-/** A display name that is already normalized and valid. */
+/**
+ * A display name that is already normalized and well formed. Shape only
+ * (not reserved names or word lists): an account whose name a newer list
+ * would refuse must still be able to join its rooms.
+ */
 export const displayNameSchema = z
   .string()
-  .refine((name) => name === normalizeDisplayName(name) && checkDisplayName(name) === null, {
+  .refine((name) => name === normalizeDisplayName(name) && checkDisplayNameShape(name) === null, {
     message: "invalid display name",
   });
 

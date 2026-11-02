@@ -13,6 +13,7 @@ run `npx license-checker --summary` for a summary. Notable runtime dependencies:
 | next-auth, @auth/*     | ISC               |
 | prisma, @prisma/*      | Apache-2.0        |
 | pg, bcryptjs           | MIT               |
+| obscenity              | MIT               |
 
 ## Vendored data
 
@@ -20,3 +21,11 @@ run `npx license-checker --summary` for a summary. Notable runtime dependencies:
 [SecLists](https://github.com/danielmiessler/SecLists)
 (`Passwords/Common-Credentials/10k-most-common.txt`), © Daniel Miessler and contributors,
 MIT License. It is used only to refuse those passwords at sign-up.
+
+## Word filters
+
+`obscenity` (© Joseph Liu, MIT License) filters chat and display names
+(`packages/protocol/src/moderation/`). Its English word list comes from the
+[cuss](https://github.com/words/cuss) project (© Titus Wormer, MIT License) and its
+confusable-character table from [confusables](https://github.com/gc/confusables) (MIT License).
+The French lists in `packages/protocol/src/moderation/words.ts` are our own.

@@ -2,12 +2,12 @@
 
 /** Connection banner, closed-room notice and the short notice for refused messages. */
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import type { ErrorCode } from "@sh/protocol";
 
 import { buttonClass } from "@/components/ui/Button";
 import { Link } from "@/lib/i18n/navigation";
-import type { ConnectionStatus } from "@/lib/room-client/state";
+import type { ConnectionStatus, RoomClientState } from "@/lib/room-client/state";
 
 export function ConnectionBanner({ status }: { status: ConnectionStatus }) {
   const t = useTranslations("room");
@@ -22,18 +22,65 @@ export function ConnectionBanner({ status }: { status: ConnectionStatus }) {
   );
 }
 
-const KNOWN_CLOSE = new Set([4400, 4403, 4404, 4409, 4410, 4423, 4426, 4429]);
+const KNOWN_CLOSE = new Set([4400, 4403, 4404, 4409, 4410, 4423, 4426, 4429, 4451]);
+/** Closes after which reloading the page cannot help. */
+const FINAL_CLOSE = new Set([4404, 4410, 4423, 4451]);
 
-export function ClosedNotice({ code }: { code: number | null }) {
+/**
+ * Why the visitor is not (or no longer) in the room. `cooldown` is the ticket
+ * route's refusal of an account that left two public games within 24 h; it
+ * comes with no close code.
+ */
+export function ClosedNotice({
+  code,
+  cooldown = null,
+}: {
+  code: number | null;
+  cooldown?: RoomClientState["cooldown"];
+}) {
   const t = useTranslations("room");
+  const format = useFormatter();
+  if (cooldown) {
+    return (
+      <section className="mx-auto max-w-md rounded-lg border-2 border-ink bg-paper-raised p-6 text-center">
+        <h1 className="font-display text-3xl">{t("closed.title")}</h1>
+        <p className="mt-3">
+          {cooldown.until === null
+            ? t("closed.cooldownSoon")
+            : t("closed.cooldown", {
+                time: format.dateTime(new Date(cooldown.until), {
+                  hour: "numeric",
+                  minute: "2-digit",
+                }),
+              })}
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Link href="/jouer" className={buttonClass("primary")}>
+            {t("closed.publicGames")}
+          </Link>
+        </div>
+      </section>
+    );
+  }
   const key =
     code !== null && KNOWN_CLOSE.has(code) ? (`closed.c${code}` as const) : "closed.other";
   return (
     <section className="mx-auto max-w-md rounded-lg border-2 border-ink bg-paper-raised p-6 text-center">
       <h1 className="font-display text-3xl">{t("closed.title")}</h1>
       <p className="mt-3">{t(key as "closed.other")}</p>
+      {code === 4451 && <p className="mt-2 text-ink-muted">{t("closed.c4451Help")}</p>}
       <div className="mt-6 flex flex-wrap justify-center gap-3">
-        {code === 4403 ? (
+        {code === 4451 ? (
+          // A suspended account: the statement of reasons is on the profile page.
+          <>
+            <Link href="/profil" className={buttonClass("primary")}>
+              {t("closed.profile")}
+            </Link>
+            <Link href="/" className={buttonClass("secondary")}>
+              {t("closed.home")}
+            </Link>
+          </>
+        ) : code === 4403 ? (
           <Link
             href={{
               pathname: "/connexion",
@@ -48,7 +95,7 @@ export function ClosedNotice({ code }: { code: number | null }) {
             {t("closed.home")}
           </Link>
         )}
-        {code !== 4423 && code !== 4404 && code !== 4410 && (
+        {(code === null || !FINAL_CLOSE.has(code)) && (
           <button
             type="button"
             className={buttonClass("secondary")}

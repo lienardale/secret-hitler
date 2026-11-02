@@ -183,10 +183,6 @@ describe("alarm", () => {
 
   it("delivers the result to the website, retrying until it is accepted", async () => {
     const { host, stub } = await startedGame();
-    host.send({ t: "endGame" });
-    await host.until((c) => c.room?.result?.kind === "abandoned", "abandoned");
-    expect(await outboxSize(stub)).toBe(1);
-
     // Captured inside the mock: a request body made by the room cannot be read from the test.
     const requests: { url: string; signature: string | null; body: string }[] = [];
     const capture = (input: RequestInfo | URL, init?: RequestInit) => {
@@ -196,12 +192,19 @@ describe("alarm", () => {
         body: typeof init?.body === "string" ? init.body : "",
       });
     };
+    // Mocked before the game ends: the room sets its alarm ~50 ms after the last move, and on
+    // a busy machine that alarm can fire on its own before the test gets to run it.
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation((input, init) => {
       capture(input, init);
       return Promise.resolve(new Response("busy", { status: 503 }));
     });
-    expect(await runDurableObjectAlarm(stub)).toBe(true);
-    expect(requests).toHaveLength(1);
+    host.send({ t: "endGame" });
+    await host.until((c) => c.room?.result?.kind === "abandoned", "abandoned");
+    expect(await outboxSize(stub)).toBe(1);
+
+    await runDurableObjectAlarm(stub);
+    const games = () => requests.filter((r) => r.url.endsWith("/api/internal/games"));
+    expect(games().length).toBeGreaterThanOrEqual(1);
     expect(await outboxSize(stub)).toBe(1);
 
     fetchSpy.mockImplementation((input, init) => {
@@ -212,7 +215,7 @@ describe("alarm", () => {
     expect(await runDurableObjectAlarm(stub)).toBe(true);
     expect(await outboxSize(stub)).toBe(0);
 
-    const delivered = requests[1];
+    const delivered = games().at(-1);
     expect(delivered?.url).toBe("https://web.test/api/internal/games");
     const body = delivered?.body ?? "";
     const ok = await verifyRequest(

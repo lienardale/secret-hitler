@@ -316,6 +316,30 @@ describe("Lobby: quick match", () => {
   });
 });
 
+describe("Lobby: moderation lookup", () => {
+  it("lists the rooms an identity is in, or was just matched to", async () => {
+    const lobby = freshLobby();
+    await lobby.report(room("BCDFG", { members: ["u:a", "u:b"] }));
+    await lobby.report(room("HJKLM", { members: ["u:b"], players: 1 }));
+    await lobby.report(room("NPQRS", { members: ["u:c"], status: "playing", players: 5 }));
+    expect((await lobby.roomsWith("u:b")).sort()).toEqual(["BCDFG", "HJKLM"]);
+    expect(await lobby.roomsWith("u:c")).toEqual(["NPQRS"]);
+    // Excluded is not membership.
+    expect(await lobby.roomsWith("u:secret-kicked")).toEqual([]);
+
+    // Quick match sent u:new to the fullest open room; it has not reported them yet.
+    expect(await lobby.quickMatch({ identity: "u:new", lang: "fr", blocks: [] })).toEqual({
+      code: "BCDFG",
+    });
+    expect(await lobby.roomsWith("u:new")).toEqual(["BCDFG"]);
+  });
+
+  it("rejects an invalid identity", async () => {
+    const lobby = freshLobby();
+    expect(await rpcError(lobby.roomsWith("nobody"))).toBeInstanceOf(Error);
+  });
+});
+
 describe("Lobby: viewers", () => {
   it("refuses plain HTTP with 426", async () => {
     const res = await freshLobby().fetch("https://rooms.test/lobby");

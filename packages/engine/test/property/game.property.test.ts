@@ -82,6 +82,10 @@ describe("random games", () => {
           onStep: (state) => {
             largest = Math.max(largest, JSON.stringify(state).length);
             if (state.phase.kind === "over") return;
+            // A Policy Peek shows the top three in pile order ("without changing the order").
+            if (state.phase.kind === "executive" && state.phase.peek !== null) {
+              expect(state.phase.peek).toEqual(state.deck.slice(0, 3));
+            }
             // Completed ballots (lastVote) are public; open ballots, cards and roles are not.
             const view = viewFor(state, "spectator");
             expect(JSON.stringify(view)).not.toMatch(

@@ -4,10 +4,13 @@
  *   GET  /health
  *   GET  /v1/rooms/:code/ws?t=<ticket>   WebSocket into a room (Origin + ticket checked here)
  *   GET  /v1/lobby/ws                    WebSocket for the public room list (Origin checked)
- *   POST /internal/rooms                 create a room          ┐
- *   GET  /internal/rooms/:code           a room's public info    │ signed by the website
- *   POST /internal/lobby/quickmatch      pick a public room      │ (HMAC, ±5 min)
- *   GET  /internal/lobby                 list public rooms       ┘
+ *   POST /internal/rooms                 create a room              ┐
+ *   GET  /internal/rooms/:code           a room's public info        │
+ *   POST /internal/rooms/:code/report    a player reports a member   │ signed by the website
+ *   POST /internal/rooms/:code/member    who is behind a pid         │ (HMAC, ±5 min)
+ *   POST /internal/moderation            ban / rename in live rooms  │
+ *   POST /internal/lobby/quickmatch      pick a public room          │
+ *   GET  /internal/lobby                 list public rooms           ┘
  */
 import {
   CLOSE,
@@ -16,7 +19,11 @@ import {
   generateRoomCode,
   isRoomCode,
   isSupportedProtocol,
+  moderationRequestSchema,
   quickMatchRequestSchema,
+  roomMemberRequestSchema,
+  roomReportRequestSchema,
+  type ModerationResponse,
 } from "@sh/protocol";
 
 import { checkTicket, originAllowed, readSignedRequest } from "./auth";
@@ -28,7 +35,14 @@ export { Lobby } from "./lobby/Lobby";
 
 const ROOM_WS = /^\/v1\/rooms\/([^/]+)\/ws$/;
 const ROOM_INFO = /^\/internal\/rooms\/([^/]+)$/;
+const ROOM_REPORT = /^\/internal\/rooms\/([^/]+)\/report$/;
+const ROOM_MEMBER = /^\/internal\/rooms\/([^/]+)\/member$/;
 const CREATE_ATTEMPTS = 8;
+/** Rooms a moderation request may touch (the website's list plus the lobby's). */
+const MODERATION_MAX_ROOMS = 100;
+
+const invalid = (): Response => Response.json({ error: "invalid request" }, { status: 400 });
+const noRoom = (): Response => Response.json({ error: "no_room" }, { status: 404 });
 
 /** Accepts the WebSocket only to close it with a code the client can read. */
 function closeWith(code: number, reason: string): Response {
@@ -71,6 +85,55 @@ async function createRoom(body: string, env: Env): Promise<Response> {
   return Response.json({ error: "no free room code" }, { status: 503 });
 }
 
+/** 202 once queued (the room's alarm delivers it), 404 no_room, 422 with a RoomReportError. */
+async function reportToRoom(body: string, env: Env, code: string): Promise<Response> {
+  const parsed = roomReportRequestSchema.safeParse(JSON.parse(body));
+  if (!parsed.success) return invalid();
+  if (!isRoomCode(code)) return noRoom();
+  const outcome = await env.GAME_ROOM.getByName(code).report(parsed.data);
+  if (outcome.ok) return Response.json({ ok: true }, { status: 202 });
+  if (outcome.error === "no_room") return noRoom();
+  return Response.json({ error: outcome.error }, { status: 422 });
+}
+
+/** 200 RoomMember, 404 no_room / unknown_target, 422 not_member. */
+async function roomMember(body: string, env: Env, code: string): Promise<Response> {
+  const parsed = roomMemberRequestSchema.safeParse(JSON.parse(body));
+  if (!parsed.success) return invalid();
+  if (!isRoomCode(code)) return noRoom();
+  const outcome = await env.GAME_ROOM.getByName(code).member(parsed.data);
+  if (outcome.ok) return Response.json(outcome.member);
+  const status = outcome.error === "not_member" ? 422 : 404;
+  return Response.json({ error: outcome.error }, { status });
+}
+
+/**
+ * Applies a ban or rename to the rooms the website lists plus the public rooms
+ * the lobby knows the account is in. A room that is gone or fails just does
+ * not count; 200 `{ applied }` lists the rooms where the account was a member.
+ */
+async function moderate(body: string, env: Env): Promise<Response> {
+  const parsed = moderationRequestSchema.safeParse(JSON.parse(body));
+  if (!parsed.success) return invalid();
+  const { identity, rooms, action } = parsed.data;
+  let listed: string[] = [];
+  try {
+    listed = await env.LOBBY.getByName(LOBBY_NAME).roomsWith(identity);
+  } catch (error) {
+    // Best effort: the website's own list still gets the action.
+    console.error("moderation: lobby lookup failed", error);
+  }
+  const codes = [...new Set([...rooms, ...listed])].slice(0, MODERATION_MAX_ROOMS);
+  const results = await Promise.allSettled(
+    codes.map((code) => env.GAME_ROOM.getByName(code).moderate(identity, action)),
+  );
+  const applied = codes.filter((_, i) => {
+    const result = results[i];
+    return result?.status === "fulfilled" && result.value;
+  });
+  return Response.json({ applied } satisfies ModerationResponse);
+}
+
 async function internal(request: Request, env: Env, path: string): Promise<Response> {
   const body = await readSignedRequest(request, env);
   if (body === null) return new Response("Unauthorized", { status: 401 });
@@ -78,11 +141,22 @@ async function internal(request: Request, env: Env, path: string): Promise<Respo
     if (request.method === "POST" && path === "/internal/rooms") return await createRoom(body, env);
     if (request.method === "POST" && path === "/internal/lobby/quickmatch") {
       const parsed = quickMatchRequestSchema.safeParse(JSON.parse(body));
-      if (!parsed.success) return Response.json({ error: "invalid request" }, { status: 400 });
+      if (!parsed.success) return invalid();
       return Response.json(await env.LOBBY.getByName(LOBBY_NAME).quickMatch(parsed.data));
     }
     if (request.method === "GET" && path === "/internal/lobby") {
       return Response.json(await env.LOBBY.getByName(LOBBY_NAME).list());
+    }
+    if (request.method === "POST" && path === "/internal/moderation") {
+      return await moderate(body, env);
+    }
+    const report = ROOM_REPORT.exec(path);
+    if (request.method === "POST" && report) {
+      return await reportToRoom(body, env, report[1] as string);
+    }
+    const member = ROOM_MEMBER.exec(path);
+    if (request.method === "POST" && member) {
+      return await roomMember(body, env, member[1] as string);
     }
     const info = ROOM_INFO.exec(path);
     if (request.method === "GET" && info) {

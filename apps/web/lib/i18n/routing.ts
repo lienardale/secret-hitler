@@ -25,6 +25,11 @@ export const routing = defineRouting({
     "/bienvenue": { fr: "/bienvenue", en: "/welcome" },
     "/verifier-email": { fr: "/verifier-email", en: "/verify-email" },
     "/profil": { fr: "/profil", en: "/profile" },
+    "/conduite": { fr: "/conduite", en: "/conduct" },
+    // Moderators and admins only (MODERATOR / ADMIN role).
+    "/admin/signalements": { fr: "/admin/signalements", en: "/admin/reports" },
+    "/admin/signalements/[id]": { fr: "/admin/signalements/[id]", en: "/admin/reports/[id]" },
+    "/admin/bannis": { fr: "/admin/bannis", en: "/admin/bans" },
     // Test page (404 unless ENABLE_TEST_PAGES=1): the game table on local fixtures.
     "/dev/table": "/dev/table",
   },

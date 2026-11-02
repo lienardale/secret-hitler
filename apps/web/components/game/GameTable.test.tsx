@@ -1,5 +1,5 @@
 import { buildFixture, FIXTURE_NAMES, FAKE_NAMES, type FixtureName } from "@/lib/game-fixtures";
-import type { Action, Seat } from "@sh/engine";
+import { viewFor, type Action, type Seat } from "@sh/engine";
 import { act, fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -332,6 +332,29 @@ describe("GameTable — game over", () => {
           roles[seat] ?? "liberal"
         ];
         expect(item).toHaveTextContent(label);
+      });
+      expect(screen.queryByTestId("action-panel")).toBeNull();
+    },
+  );
+
+  it.each([0, "spectator"] as const)(
+    "a game the room stopped shows every role to %s, and no controls",
+    (viewer) => {
+      const fixture = buildFixture("vote", { players: 7, seed: 3 });
+      setup(fixture, viewer, { view: viewFor(fixture.game.state, viewer, { stopped: true }) });
+      const over = screen.getByTestId("game-over");
+      expect(over).toHaveAttribute("data-stopped");
+      expect(over).not.toHaveAttribute("data-winner");
+      expect(within(over).getByRole("heading", { level: 2 })).toHaveTextContent(
+        "Game stopped with no winner",
+      );
+      const items = within(over).getAllByRole("listitem");
+      expect(items).toHaveLength(7);
+      items.forEach((item, seat) => {
+        const role = fixture.game.state.roles[seat] ?? "liberal";
+        expect(item).toHaveTextContent(
+          { liberal: "Liberal", fascist: "Fascist", hitler: "Hitler" }[role],
+        );
       });
       expect(screen.queryByTestId("action-panel")).toBeNull();
     },

@@ -68,13 +68,14 @@ test("an invite link for a room that does not exist shows the not-found page", a
 
 test("the ticket route refuses cross-site requests and visitors without a name", async ({
   request,
+  baseURL,
 }) => {
   const foreign = await request.post("/api/rooms/BCDFG/ticket", {
     headers: { origin: "https://evil.example" },
   });
   expect(foreign.status()).toBe(403);
   const anonymous = await request.post("/api/rooms/BCDFG/ticket", {
-    headers: { origin: "http://localhost:3100" },
+    headers: { origin: new URL(baseURL as string).origin },
   });
   expect(anonymous.status()).toBe(401);
 });

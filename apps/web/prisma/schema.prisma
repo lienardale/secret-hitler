@@ -60,6 +60,33 @@ enum PlayerKind {
   guest
 }
 
+/// `REPORT_REASONS` in @sh/protocol.
+enum ReportReason {
+  harassment
+  hate
+  cheating
+  spam
+  name
+  other
+}
+
+enum ReportStatus {
+  /// Waiting for a moderator.
+  open
+  /// Closed without action.
+  dismissed
+  /// Closed with an action (ban, rename).
+  actioned
+}
+
+enum ModerationKind {
+  ban
+  unban
+  rename
+  dismiss
+  note
+}
+
 // ------------------------------------------------------ auth / identity ----
 
 model User {
@@ -96,6 +123,16 @@ model User {
   blocks      Block[]      @relation("blocker")
   blockedBy   Block[]      @relation("blocked")
   games       GamePlayer[]
+
+  reportsMade     Report[]           @relation("reporter")
+  reportsReceived Report[]           @relation("reportTarget")
+  reportsResolved Report[]           @relation("reportResolver")
+  bans            Ban[]              @relation("banned")
+  bansIssued      Ban[]              @relation("banIssuer")
+  bansRevoked     Ban[]              @relation("banRevoker")
+  moderationDone  ModerationAction[] @relation("moderator")
+  moderationOnMe  ModerationAction[] @relation("moderationTarget")
+  roomVisits      RoomVisit[]
 }
 
 /// Exact @auth/prisma-adapter shape (OAuth accounts: Google).
@@ -216,4 +253,105 @@ model GameLog {
   data   Json
 
   game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------------------------------------- moderation ----
+
+/// A player reported another. Created only when the room's evidence arrives
+/// (`POST /api/internal/reports`, idempotent on `id` = the report id the
+/// website chose). The evidence (chat transcript, public events, identities)
+/// is the only place chat is ever stored in Postgres.
+model Report {
+  id           String       @id @db.Uuid
+  room         String       @db.Char(5)
+  /// NULL once the account is deleted (the names below stay for the record).
+  reporterId   String?      @db.Uuid
+  reporterName String       @db.VarChar(40)
+  targetId     String?      @db.Uuid
+  targetName   String       @db.VarChar(40)
+  reason       ReportReason
+  details      String       @default("") @db.VarChar(500)
+  /// `ReportEvidence` from @sh/protocol, as the room sent it.
+  evidence     Json
+  status       ReportStatus @default(open)
+  /// When the room took the snapshot.
+  createdAt    DateTime
+  receivedAt   DateTime     @default(now())
+  resolvedAt   DateTime?
+  resolvedById String?      @db.Uuid
+
+  reporter   User?              @relation("reporter", fields: [reporterId], references: [id], onDelete: SetNull)
+  target     User?              @relation("reportTarget", fields: [targetId], references: [id], onDelete: SetNull)
+  resolvedBy User?              @relation("reportResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+  bans       Ban[]
+  actions    ModerationAction[]
+
+  @@index([status, receivedAt])
+  @@index([targetId])
+  @@index([reporterId, receivedAt])
+}
+
+/// An account suspension. Active while `revokedAt` is NULL and `expiresAt` is
+/// NULL (permanent) or in the future. Deleted with the account.
+model Ban {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @db.Uuid
+  /// Shown to the banned player (statement of reasons).
+  reason      String    @db.VarChar(500)
+  createdById String?   @db.Uuid
+  /// The report that led to it, if any.
+  reportId    String?   @db.Uuid
+  createdAt   DateTime  @default(now())
+  /// NULL: permanent.
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+  revokedById String?   @db.Uuid
+
+  user      User               @relation("banned", fields: [userId], references: [id], onDelete: Cascade)
+  createdBy User?              @relation("banIssuer", fields: [createdById], references: [id], onDelete: SetNull)
+  revokedBy User?              @relation("banRevoker", fields: [revokedById], references: [id], onDelete: SetNull)
+  report    Report?            @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  actions   ModerationAction[]
+
+  @@index([userId, revokedAt])
+}
+
+/// Every moderator action, append-only. Kept when either account is deleted
+/// (ids set to NULL, the target's name at the time stays).
+model ModerationAction {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind        ModerationKind
+  moderatorId String?        @db.Uuid
+  targetId    String?        @db.Uuid
+  targetName  String?        @db.VarChar(40)
+  reportId    String?        @db.Uuid
+  banId       String?        @db.Uuid
+  /// The moderator's note (free text, moderators only).
+  note        String         @default("") @db.VarChar(1000)
+  /// Kind-specific facts, e.g. `{ "from": "old", "to": "new" }` or `{ "expiresAt": "…" }`.
+  details     Json?
+  createdAt   DateTime       @default(now())
+
+  moderator User?   @relation("moderator", fields: [moderatorId], references: [id], onDelete: SetNull)
+  target    User?   @relation("moderationTarget", fields: [targetId], references: [id], onDelete: SetNull)
+  report    Report? @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  ban       Ban?    @relation(fields: [banId], references: [id], onDelete: SetNull)
+
+  @@index([targetId, createdAt])
+  @@index([reportId])
+  @@index([createdAt])
+}
+
+/// Rooms an account got a ticket for (upserted by the ticket route), so a ban
+/// can close the account's live sockets in those rooms. Rows older than a week
+/// are useless and pruned.
+model RoomVisit {
+  userId String   @db.Uuid
+  room   String   @db.Char(5)
+  lastAt DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, room])
+  @@index([lastAt])
 }

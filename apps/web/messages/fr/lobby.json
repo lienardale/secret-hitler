@@ -47,6 +47,7 @@
   },
   "errors": {
     "sign_in_required": "Connectez-vous pour jouer en public.",
+    "banned": "Votre compte est suspendu : pas de partie publique pour l'instant. Le motif et la durée sont sur votre profil.",
     "verify_required": "Vérifiez votre adresse e-mail pour jouer en public.",
     "cooldown": "Vous avez quitté deux parties publiques en 24 heures. Partie rapide à nouveau possible à {time}.",
     "rate_limited": "Trop de tentatives. Réessayez dans quelques minutes.",

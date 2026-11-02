@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { CHAT_MAX_LENGTH, type ChatMessage } from "@sh/protocol";
 
 import { Button } from "@/components/ui/Button";
-import { useRoomActions, useRoomState } from "@/lib/room-client/store";
+import { useMuted, useRoomActions, useRoomState } from "@/lib/room-client/store";
 
 import { chatBlockReason } from "./chat-rules";
 
@@ -36,8 +36,16 @@ export function ChatPanel({ className = "" }: { className?: string }) {
   const room = useRoomState((s) => s.room);
   const view = useRoomState((s) => s.game?.view ?? null);
   const { send } = useRoomActions();
+  const { muted } = useMuted();
   const [text, setText] = useState("");
   const listRef = useRef<HTMLOListElement>(null);
+
+  // Muted members (this browser's choice): their messages are not shown, history or live.
+  const shown = useMemo(
+    () => (muted.size === 0 ? chat : chat.filter((m) => m.kind !== "player" || !muted.has(m.pid))),
+    [chat, muted],
+  );
+  const hidden = chat.length - shown.length;
 
   // Keep the newest message in view, unless the reader scrolled up.
   useEffect(() => {
@@ -45,7 +53,7 @@ export function ChatPanel({ className = "" }: { className?: string }) {
     if (!list) return;
     const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
     if (nearBottom) list.scrollTop = list.scrollHeight;
-  }, [chat]);
+  }, [shown]);
 
   const blocked = chatBlockReason(room?.status ?? "lobby", view);
 
@@ -64,16 +72,24 @@ export function ChatPanel({ className = "" }: { className?: string }) {
       <h2 id={`${id}-title`} className="border-b border-rule px-4 py-2 font-display text-xl">
         {t("chat.title")}
       </h2>
+      {hidden > 0 && (
+        <p
+          data-testid="chat-hidden"
+          className="border-b border-rule px-4 py-1 text-sm text-ink-muted"
+        >
+          {t("chat.hidden", { count: hidden })}
+        </p>
+      )}
       <ol
         ref={listRef}
         aria-live="polite"
         aria-relevant="additions"
         className="min-h-24 flex-1 space-y-1.5 overflow-y-auto px-4 py-3"
       >
-        {chat.length === 0 ? (
+        {shown.length === 0 ? (
           <li className="text-sm text-ink-muted">{t("chat.empty")}</li>
         ) : (
-          chat.map((message) => (
+          shown.map((message) => (
             <MessageLine key={message.id} message={message} youPid={you?.pid} />
           ))
         )}

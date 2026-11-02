@@ -4,7 +4,7 @@ import { getFormatter, getTranslations, setRequestLocale } from "next-intl/serve
 import { notFound } from "next/navigation";
 
 import { ResendVerificationButton } from "@/components/auth/AuthForms";
-import { DATE_ONLY } from "@/components/profile/format";
+import { DATE_ONLY, DATE_TIME } from "@/components/profile/format";
 import { GameHistory } from "@/components/profile/GameHistory";
 import {
   BlockByNameForm,
@@ -16,10 +16,12 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { buttonClass } from "@/components/ui/Button";
 import { requireOnboardedUser } from "@/lib/auth/current-user";
 import { nextRenameAt } from "@/lib/auth/display-name";
+import { CONTACT_EMAIL } from "@/lib/contact";
 import { prisma } from "@/lib/db/prisma";
 import { userGameHistory } from "@/lib/games/history";
 import { getPathname, Link } from "@/lib/i18n/navigation";
-import { routing } from "@/lib/i18n/routing";
+import { routing, type Locale } from "@/lib/i18n/routing";
+import { activeBan, type ActiveBan } from "@/lib/moderation/bans";
 import { listBlocked } from "@/lib/players/manage";
 
 /** Games per history page. */
@@ -65,6 +67,59 @@ function Section({
   );
 }
 
+/**
+ * A suspended account's statement of reasons: how long, why (the moderator's
+ * reason), and how to appeal. The account stays signed in to read it; every
+ * gate (tickets, quick match, room creation) refuses it meanwhile.
+ */
+async function SuspensionNotice({ ban, locale }: { ban: ActiveBan; locale: Locale }) {
+  const [t, format] = await Promise.all([
+    getTranslations({ locale, namespace: "profile" }),
+    getFormatter({ locale }),
+  ]);
+  return (
+    <section
+      aria-labelledby="profile-suspension"
+      className="space-y-3 rounded-lg border-2 border-fascist bg-paper-raised p-5 shadow-sm"
+      data-testid="suspension-notice"
+    >
+      <h2 id="profile-suspension" className="font-display text-3xl text-fascist">
+        {t("suspension.title")}
+      </h2>
+      <p className="text-lg font-semibold">
+        {ban.expiresAt
+          ? t("suspension.until", { date: format.dateTime(ban.expiresAt, DATE_TIME) })
+          : t("suspension.permanent")}{" "}
+        <span className="text-base font-normal text-ink-muted">
+          {t("suspension.decided", { date: format.dateTime(ban.createdAt, DATE_ONLY) })}
+        </span>
+      </p>
+      <div>
+        <h3 className="font-display text-lg">{t("suspension.reasonLabel")}</h3>
+        <blockquote className="border-l-4 border-rule pl-3 break-words whitespace-pre-line">
+          {ban.reason}
+        </blockquote>
+      </div>
+      <p>{t("suspension.effects")}</p>
+      <p>
+        {t.rich("suspension.appeal", {
+          email: CONTACT_EMAIL,
+          mail: (chunks) => (
+            <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold break-all underline">
+              {chunks}
+            </a>
+          ),
+        })}
+      </p>
+      <p>
+        <Link href="/conduite" className="underline">
+          {t("suspension.conduct")}
+        </Link>
+      </p>
+    </section>
+  );
+}
+
 /** The signed-in player's own page: account, blocked players, game history, deletion. */
 export default async function ProfilePage({ params, searchParams }: PageProps<"/[locale]/profil">) {
   const { locale } = await params;
@@ -73,11 +128,12 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   const user = await requireOnboardedUser(locale, getPathname({ locale, href: "/profil" }));
   const before = parseBefore((await searchParams).before);
 
-  const [t, format, blocked, page] = await Promise.all([
+  const [t, format, blocked, page, ban] = await Promise.all([
     getTranslations({ locale, namespace: "profile" }),
     getFormatter({ locale }),
     listBlocked(prisma, user.id),
     userGameHistory(user.id, { limit: PAGE_SIZE + 1, before }),
+    activeBan(prisma, user.id),
   ]);
   const games = page.slice(0, PAGE_SIZE);
   const last = games.at(-1);
@@ -93,6 +149,8 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
           <h1 className="font-display text-5xl tracking-wide">{t("page.title")}</h1>
           <p className="mt-2 text-lg text-ink-muted">{t("page.lead")}</p>
         </header>
+
+        {ban && <SuspensionNotice ban={ban} locale={locale} />}
 
         <Section id="profile-account" title={t("account.title")}>
           <dl className="space-y-4">

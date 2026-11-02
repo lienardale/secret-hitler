@@ -104,7 +104,7 @@ export const secretHitler: GameModule<GameState, Action, Projected<PlayerView>, 
       : { ok: false, code: result.error.code };
   },
 
-  view: (state, viewer) => viewFor(state, viewer),
+  view: (state, viewer, options) => viewFor(state, viewer, options),
   eventsFor: (events, viewer) => eventsFor(events, viewer),
   pendingActors: (state) => pendingActors(state),
   defaultAction: (state, seat, rand) => defaultAction(state, seat, rand),

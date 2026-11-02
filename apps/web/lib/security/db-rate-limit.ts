@@ -1,7 +1,8 @@
 /**
  * Rate limits on the `RateLimit` table (velo-atelier's limiter): they hold
  * across serverless instances, unlike `memoryRateLimiter`. Used where abuse
- * matters (sign-in, sign-up, e-mails, quick match).
+ * matters (sign-in, sign-up, e-mails, quick match, guest cookies, room
+ * creation, reports).
  *
  * Fixed window with a reset: a key's first hit stamps `windowStart`, hits
  * inside `windowMs` increment `count`, the first hit after the window reopens
@@ -18,6 +19,8 @@ import { createHash } from "node:crypto";
 
 import { isNotFoundError, isUniqueViolation } from "@/lib/db/errors";
 import type { PrismaClient } from "@/lib/generated/prisma/client";
+
+import { LOCAL_CLIENT } from "./client-ip";
 
 export interface RateLimitOptions {
   /** Hits allowed inside one window: the `max`-th passes, the next does not. */
@@ -131,6 +134,22 @@ export const allowAllRateLimiter: DbRateLimiter = {
   reset: async () => undefined,
 };
 
+/**
+ * The limiter for a per-address bucket: none for the `local` sentinel (no
+ * proxy header at all: tests calling actions directly) outside production,
+ * the database one otherwise. Note that `next dev` and `next start` set
+ * `x-forwarded-for` to the socket address themselves, so a local browser
+ * counts as 127.0.0.1 / ::1 there (the e2e helper `newPlayer` gives each browser
+ * its own `x-real-ip`).
+ */
+export function ipRateLimiter(
+  db: RateLimitStore,
+  ip: string,
+  isProduction: boolean = process.env.NODE_ENV === "production",
+): DbRateLimiter {
+  return ip === LOCAL_CLIENT && !isProduction ? allowAllRateLimiter : createDbRateLimiter(db);
+}
+
 /** The database-backed buckets, in one place so tests can assert them. */
 export const DB_RATE_LIMITS = {
   /** Per address: a scripted credential-stuffing run stops here. */
@@ -148,6 +167,16 @@ export const DB_RATE_LIMITS = {
   deleteAccountPerUser: { max: 5, windowMs: 15 * 60_000 },
   /** Display-name lookups to block someone, per account. */
   blockLookupPerUser: { max: 30, windowMs: 60 * 60_000 },
+  /** Reports sent from a room, per account (docs/plan.md § Moderation: 10 per hour). */
+  reportPerUser: { max: 10, windowMs: 60 * 60_000 },
+  /** Blocks made from a room (player menu), per account. */
+  roomBlockPerUser: { max: 30, windowMs: 60 * 60_000 },
+  /** New guest cookies, per address (docs/plan.md § Moderation: 20 per hour). */
+  guestCookiePerIp: { max: 20, windowMs: 60 * 60_000 },
+  /** Private rooms created, per identity (guest or account; docs/plan.md: 10 per hour). */
+  roomCreationPerIdentity: { max: 10, windowMs: 60 * 60_000 },
+  /** Private rooms created, per address. */
+  roomCreationPerIp: { max: 10, windowMs: 60 * 60_000 },
 } as const satisfies Record<string, RateLimitOptions>;
 
 /** How long a request that tripped a soft bucket is held. */

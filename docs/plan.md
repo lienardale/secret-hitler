@@ -202,8 +202,36 @@ Lifecycle: lobby (max 10 seats + 20 spectators, host = creator) → start (≥ 5
 | **M2** Protocol + rooms + bots | Protocol schemas/HMAC/names; Worker router + auth; GameRoom (reducer, storage, scheduler, timers, grace, basic chat, outbox stub, purge); ∥ Lobby DO + matchmaking; ∥ dev ticket + WS bots; workerd tests (security, alarms, eviction resume, outbox retry) | `wrangler dev` + `bots --players 7 --timers fast` finishes a game; a killed bot rejoins its seat |
 | **M3** Private games with guests | Web foundations; guest cookie, create room, ticket route, `/r/[code]`; ∥ room client; ∥ game components on `/dev/table`; room screens, role reveal, end + rematch, basic chat; ∥ SVG assets; e2e (5 guest browsers; 1 browser + 6 bots); staging deploy | 5 phones finish a game from a shared link on staging; e2e green in CI |
 | **M4** Accounts + public play | Prisma schema/migration/seed; ∥ Auth.js + Resend verification, onboarding, profile (blocks, history, delete); ∥ `/api/internal/games` + real outbox; ∥ public mode (lobby UI, quick match, start rule, AFK/abandon, cooldown) | a public game by 5 accounts on staging shows in each profile history |
-| **M5** Chat + moderation | ∥ chat rules, mute/block, system messages; ∥ report flow; ∥ admin queue, bans, rename, Worker kick/close; ∥ name filter, rate limits, conduct page | e2e: report → admin → ban → banned user's ticket refused |
+| **M5** Chat + moderation | ∥ chat rules, mute/block, system messages; ∥ report flow; ∥ admin queue, bans, rename, Worker kick/close; ∥ name filter, rate limits, conduct page. Added during M5: peek keeps pile order, no host kick in a running public game (kicks never count as abandons), abandoned games reveal roles, cooldown at the ticket route, installable PWA + screen wake lock | e2e: report → admin → ban → banned user's ticket refused |
 | **M6** Polish + launch | Rules/credits/legal pages FR/EN, axe sweep, turn notifications; domain on Cloudflare DNS (Worker custom domain `rooms.<domain>`, web on Vercel), Neon prod, secrets, usage alerts, runbook; friends beta → tune AFK → make repo public → launch | production game played by friends; checks below pass |
+
+### M6 backlog (from comparing with secret-hitler.online, 2026-11-02)
+
+From a comparison with ShrimpCryptid/Secret-Hitler-Online. No code yet; pick from it during M6.
+
+- An investigation result panel for the President (today only a private log line, easy to miss).
+- Warnings in the vote and nomination panels: "If Hitler is elected now, the fascists win" once
+  3+ fascist policies are down; "If this vote fails, the top policy is played" with the tracker at 2.
+- A staged vote reveal (per-seat delay, reduced motion respected) and a "Ja 4 – Nein 3 · rejected"
+  strip in the phase banner.
+- Non-blocking reveal animations for enacted policies, the tracker moving and executions.
+- Counters: team composition ("4 Liberals / 1 Fascist / Hitler") and policies still in play
+  ("6 L, 11 F" minus enacted).
+- Role tips and win conditions at game start (pulse the role card until first revealed), "you can
+  lie" on investigate, "don't reveal your role" for executed players.
+- A "waiting for…" marker on every seat the game waits on, in every phase (today only votes).
+- A FAQ on the rules page: Hitler knows the fascists only at 5–6 players (say it on the role
+  reveal too); votes are public by design; veto then chaos draws from the reshuffled pile.
+- Decide whether the private event-log lines (drawn hand, peek, investigation result:
+  `components/game/log-text.ts`, `EventLog.tsx`) go behind the same hold-to-reveal as the role card.
+- A tab-title prefix plus vibration when a decision starts, push notifications, and
+  `launch_handler` / link capturing for the installed app (the manifest, icons, offline page and
+  screen wake lock shipped in M5).
+- Auto-assigned initials next to each name, so players can tell 10 seats apart.
+- An external uptime check in the runbook.
+
+Decided not to adopt: bots in public play (maybe a solo practice mode one day), portrait avatars
+(licence unclear), secret votes, a private fascist chat, expansions.
 
 Execution: one sub-agent per task in a git worktree, velo-style (file ownership per task, integration step per milestone). Node commands need `source "$HOME/.nvm/nvm.sh" && nvm use 24 >/dev/null &&`. Docker is usually stopped: check `docker info` first.
 

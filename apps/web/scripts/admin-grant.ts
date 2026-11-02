@@ -24,18 +24,29 @@ async function main(): Promise<void> {
   }
   const { prisma, disconnectPrisma } = await import("../lib/db/prisma");
   try {
-    const user = await prisma.user.update({
+    // Looked up first: an update of a missing row would make our Prisma listener log a P2025.
+    const found = await prisma.user.findUnique({
       where: { email: email.trim().toLowerCase() },
+      select: { id: true },
+    });
+    if (!found) {
+      console.error("no account with this e-mail address");
+      process.exitCode = 1;
+      return;
+    }
+    const user = await prisma.user.update({
+      where: { id: found.id },
       data: { role },
       select: { id: true, role: true },
     });
     console.log(`account ${user.id} is now ${user.role}`);
-  } catch {
-    console.error("no account with this e-mail address");
-    process.exitCode = 1;
   } finally {
     await disconnectPrisma();
   }
 }
 
-await main();
+// No top-level await: apps/web is not an ES module package, so tsx compiles this as CommonJS.
+main().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.name : "admin:grant failed");
+  process.exitCode = 1;
+});

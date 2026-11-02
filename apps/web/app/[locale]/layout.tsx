@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { ServiceWorker } from "@/components/pwa/ServiceWorker";
 import { routing } from "@/lib/i18n/routing";
+import { APPLE_TOUCH_ICON, PNG_FAVICON, appIconUrl } from "@/lib/pwa/icons";
 
 import "@/styles/globals.css";
 
@@ -41,7 +43,25 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
   return {
     title: { default: t("site.name"), template: `%s · ${t("site.name")}` },
     description: t("site.description"),
+    applicationName: t("site.name"),
+    // Installable web app (app/manifest.ts, public/sw.js). Icons are listed here
+    // because the PNGs are not file-convention icons (see app/app-icons/[file]/route.tsx).
+    manifest: "/manifest.webmanifest",
+    icons: {
+      icon: [
+        { url: "/icon.svg", type: "image/svg+xml" },
+        { url: appIconUrl(PNG_FAVICON), type: "image/png", sizes: sizes(PNG_FAVICON) },
+      ],
+      apple: [
+        { url: appIconUrl(APPLE_TOUCH_ICON), type: "image/png", sizes: sizes(APPLE_TOUCH_ICON) },
+      ],
+    },
+    appleWebApp: { capable: true, title: t("site.name"), statusBarStyle: "default" },
   };
+}
+
+function sizes(icon: { size: number }): string {
+  return `${icon.size}x${icon.size}`;
 }
 
 /** Root layout of every page (there is no app/layout.tsx). */
@@ -54,6 +74,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={locale} className={`${display.variable} ${body.variable}`}>
       <body className="min-h-dvh bg-paper text-ink antialiased">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <ServiceWorker />
       </body>
     </html>
   );

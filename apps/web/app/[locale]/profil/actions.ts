@@ -33,6 +33,7 @@ export type ProfileError =
   | "name_length"
   | "name_characters"
   | "name_reserved"
+  | "name_offensive"
   | "nameTaken"
   | "sameName"
   | "renameTooSoon"

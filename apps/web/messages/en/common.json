@@ -17,6 +17,11 @@
     "play": "Play",
     "signIn": "Sign in",
     "signOut": "Sign out",
-    "finishAccount": "Finish my account"
+    "finishAccount": "Finish my account",
+    "conduct": "Code of conduct",
+    "admin": "Moderation"
+  },
+  "errors": {
+    "banned": "Your account is suspended: it cannot create rooms for now. The reason and the length are on your profile."
   }
 }

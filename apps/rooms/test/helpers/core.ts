@@ -76,10 +76,14 @@ export function joinAll(core: Core, count: number, now = T0, make = guest): stri
   });
 }
 
-/** A private room with `count` guests joined and the game started by the host (pids[0]). */
-export function startedRoom(count = 5, options: Parameters<typeof makeRoom>[0] = {}) {
-  const made = makeRoom(options);
-  const pids = joinAll(made.core, count);
+/** A private room with `count` guests (or users) joined and the game started by the host (pids[0]). */
+export function startedRoom(
+  count = 5,
+  options: Parameters<typeof makeRoom>[0] = {},
+  make: (n: number) => JoinIdentity = guest,
+) {
+  const made = makeRoom({ host: make(1), ...options });
+  const pids = joinAll(made.core, count, T0, make);
   const error = made.core.handle(pids[0] as string, { t: "start" }, T0);
   if (error) throw new Error(`start refused: ${error}`);
   return { ...made, pids };

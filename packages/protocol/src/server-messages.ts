@@ -27,6 +27,8 @@ export const ROOM_ERROR_CODES = [
   "chat_not_allowed",
   "chat_too_fast",
   "chat_invalid",
+  /** The message contains a word the room refuses (slur list, FR + EN). */
+  "chat_offensive",
 ] as const;
 
 export type RoomErrorCode = (typeof ROOM_ERROR_CODES)[number];

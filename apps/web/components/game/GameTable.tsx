@@ -53,6 +53,9 @@ export function GameTable({
   const names = useSeatNames(players, me?.seat ?? null);
   const phase = view.phase;
   const over = phase.kind === "over";
+  // The room stopped the game without a winner: the view reveals every role (engine `stopped`).
+  const stopped = !over && view.roles !== null;
+  const ended = over || stopped;
 
   return (
     <section
@@ -64,9 +67,11 @@ export function GameTable({
     >
       <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start xl:gap-6">
         <div className="min-w-0 space-y-4">
-          <PhaseBanner view={view} names={names} deadline={deadline} clockOffset={clockOffset} />
-          {over ? <GameOver view={view} names={names} /> : null}
-          {me && !over ? (
+          {stopped ? null : (
+            <PhaseBanner view={view} names={names} deadline={deadline} clockOffset={clockOffset} />
+          )}
+          {ended ? <GameOver view={view} names={names} /> : null}
+          {me && !ended ? (
             <div className="grid items-start gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
               <ActionPanel
                 view={view}

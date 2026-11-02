@@ -13,3 +13,5 @@ Add a line to the index below when you add a note.
 - [005](005-auth-session-cookie-writes-2026-11-02.md) — Why the website never calls Auth.js's `auth()` (cookie writes race sign-out)
 - [006](006-prisma-cli-pitfalls-2026-11-02.md) — Prisma's update banner in generated SQL; `migrate reset` refuses agents
 - [007](007-react-form-reset-after-action-2026-11-02.md) — React 19 resets forms after an action: refused forms came back empty
+- [008](008-partysocket-fake-close-1000-2026-11-02.md) — partysocket turns its own failures into a close with code 1000: retry it
+- [009](009-obscenity-in-workerd-and-word-boundaries-2026-11-02.md) — obscenity in workerd tests (deps optimizer), ASCII word boundaries, doubled letters

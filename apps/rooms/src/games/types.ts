@@ -11,6 +11,10 @@ export type GameViewer = number | "spectator";
 /** 128-bit seed from the platform's crypto RNG. */
 export type GameSeed = readonly [number, number, number, number];
 
+export interface GameViewOptions {
+  stopped?: boolean;
+}
+
 export type ApplyOutcome<S, E> = { ok: true; state: S; events: E[] } | { ok: false; code: string };
 
 export interface GameModule<S, A, V, E> {
@@ -24,8 +28,12 @@ export interface GameModule<S, A, V, E> {
   parseAction(raw: unknown): A | null;
   setup(playerCount: number, seed: GameSeed): { state: S; events: E[] };
   apply(state: S, seat: number, action: A): ApplyOutcome<S, E>;
-  /** What one viewer may see. The only game data ever sent to a client. */
-  view(state: S, viewer: GameViewer): V;
+  /**
+   * What one viewer may see. The only game data ever sent to a client.
+   * `stopped`: the room ended the game early (abandoned), so every role is
+   * revealed and nobody may act.
+   */
+  view(state: S, viewer: GameViewer, options?: GameViewOptions): V;
   eventsFor(events: readonly E[], viewer: GameViewer): E[];
   /** Seats that must act now. */
   pendingActors(state: S): number[];

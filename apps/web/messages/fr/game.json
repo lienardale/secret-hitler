@@ -265,6 +265,7 @@
     },
     "youWon": "Vous avez gagné.",
     "youLost": "Vous avez perdu.",
-    "roles": "Tous les rôles"
+    "roles": "Tous les rôles",
+    "stopped": "Partie arrêtée sans vainqueur"
   }
 }

@@ -6,6 +6,16 @@
     "title": "My profile",
     "lead": "Your account, the players you blocked and your games."
   },
+  "suspension": {
+    "title": "Account suspended",
+    "until": "Your account is suspended until {date} (Paris time).",
+    "permanent": "Your account is suspended permanently.",
+    "decided": "Decision taken on {date}.",
+    "reasonLabel": "Reason given by the moderators",
+    "effects": "While the suspension lasts, this account cannot join or create a room, or use quick match. The rest of your profile stays available: history, blocks and account deletion.",
+    "appeal": "To appeal this decision, write to <mail>{email}</mail> and give your player name.",
+    "conduct": "Read the code of conduct"
+  },
   "account": {
     "title": "Account",
     "displayName": "Player name",
@@ -95,6 +105,7 @@
     "blockSelf": "You cannot block yourself.",
     "tooManyBlocks": "You blocked 500 players, the maximum. Unblock some first.",
     "wrongPassword": "Wrong password.",
-    "wrongName": "That is not your player name."
+    "wrongName": "That is not your player name.",
+    "name_offensive": "This name is not accepted, please choose another one."
   }
 }

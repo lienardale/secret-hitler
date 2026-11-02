@@ -21,6 +21,8 @@ export const CLOSE = {
   protocolMismatch: 4426,
   /** Too many chat messages or actions in a short time. */
   flood: 4429,
+  /** A moderator suspended this account: don't retry, show the suspension notice. */
+  banned: 4451,
 } as const;
 
 export type CloseCode = (typeof CLOSE)[keyof typeof CLOSE];

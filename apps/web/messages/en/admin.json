@@ -1,0 +1,217 @@
+{
+  "meta": {
+    "title": "Moderation",
+    "reportsTitle": "Reports",
+    "reportTitle": "Report on {name}",
+    "bansTitle": "Banned players"
+  },
+  "nav": {
+    "label": "Moderation",
+    "reports": "Reports",
+    "bans": "Bans"
+  },
+  "reasons": {
+    "harassment": "Harassment",
+    "hate": "Hate speech",
+    "cheating": "Cheating",
+    "spam": "Spam or flooding",
+    "name": "Inappropriate name",
+    "other": "Other"
+  },
+  "status": {
+    "open": "Open",
+    "dismissed": "Dismissed",
+    "actioned": "Actioned"
+  },
+  "roles": {
+    "USER": "Player",
+    "MODERATOR": "Moderator",
+    "ADMIN": "Administrator"
+  },
+  "queue": {
+    "title": "Reports",
+    "lead": "Open reports first, oldest first.",
+    "filterLabel": "Filter reports",
+    "filterOpen": "Open ({count})",
+    "filterAll": "All",
+    "listLabel": "Report list",
+    "empty": "No open reports.",
+    "emptyAll": "No reports.",
+    "open": "Report on {name}",
+    "reason": "Reason",
+    "reportedBy": "Reported by",
+    "room": "Room",
+    "received": "Received",
+    "status": "Status",
+    "openForTarget": "{count, plural, one {# open report on this player} other {# open reports on this player}}",
+    "pagination": "Report pages",
+    "previous": "Previous page",
+    "next": "Next page",
+    "pageOf": "Page {page} of {count}"
+  },
+  "report": {
+    "back": "Back to the reports",
+    "title": "Report on {name}",
+    "notFound": "This report does not exist.",
+    "sectionsLabel": "On this page",
+    "summary": "The report",
+    "reason": "Reason",
+    "details": "Reporter's details",
+    "noDetails": "No details.",
+    "room": "Room",
+    "createdAt": "Room snapshot",
+    "receivedAt": "Received",
+    "status": "Status",
+    "resolvedBy": "{status} by {name}, {date}",
+    "resolvedByUnknown": "{status}, {date}",
+    "people": "The players",
+    "reporter": "Reporter",
+    "target": "Reported player",
+    "nameAtReport": "Name in the room",
+    "currentName": "Current name",
+    "accountDeleted": "Account deleted",
+    "noName": "No name",
+    "role": "Role",
+    "ban": "Ban",
+    "activeBan": "Banned until {date}",
+    "activeBanPermanent": "Banned permanently",
+    "banReason": "Reason given to the player: {reason}",
+    "notBanned": "No active ban.",
+    "otherReports": "Other reports on this player",
+    "noOtherReports": "No other reports.",
+    "otherReport": "{reason}, reported by {name}",
+    "history": "Moderation history",
+    "noHistory": "No action yet."
+  },
+  "evidence": {
+    "incomplete": "Part of the evidence could not be read: what follows is incomplete.",
+    "roomStatus": {
+      "lobby": "The room was waiting for a game to start.",
+      "playing": "A game was in progress.",
+      "ended": "A game had just ended."
+    },
+    "gameNumber": "Game {number}",
+    "transcript": "Chat",
+    "transcriptLead": "The latest messages when the report was made, oldest first. The reported player's lines are marked.",
+    "transcriptEmpty": "No messages.",
+    "targetTag": "Reported player",
+    "reporterTag": "Reporter",
+    "system": "Room message:",
+    "members": "In the room",
+    "membersEmpty": "Nobody is listed.",
+    "seat": "Seat {n}",
+    "noSeat": "No seat",
+    "host": "Host",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "account": "Account",
+    "guest": "Guest",
+    "gameLog": "Public game log",
+    "gameLogLead": "What a spectator saw: no hidden information.",
+    "gameLogEmpty": "No game in the room."
+  },
+  "history": {
+    "kind": {
+      "ban": "Ban",
+      "unban": "Ban lifted",
+      "rename": "Forced rename",
+      "dismiss": "Dismissed",
+      "note": "Note"
+    },
+    "by": "by {name}",
+    "byUnknown": "by a deleted account",
+    "renamed": "{from} → {to}",
+    "banUntil": "until {date}",
+    "banPermanent": "permanent",
+    "onReport": "See the report"
+  },
+  "actions": {
+    "title": "Actions",
+    "protected": "You cannot ban or rename this account: it is yours, or a member of the moderation team.",
+    "targetDeleted": "The reported account was deleted: you can still dismiss the report or add a note.",
+    "closed": "This report is closed. You can still act on the account.",
+    "note": "Internal note (optional)",
+    "noteHint": "Only moderators see it.",
+    "ban": {
+      "title": "Ban the player",
+      "duration": "Duration",
+      "choose": "Choose a duration",
+      "durations": {
+        "1d": "1 day",
+        "7d": "7 days",
+        "30d": "30 days",
+        "permanent": "Permanent"
+      },
+      "reason": "Reason (shown to the player)",
+      "reasonHint": "The player reads this reason on their profile, with the end date and the contact address. 500 characters at most.",
+      "submit": "Ban"
+    },
+    "rename": {
+      "title": "Force a rename",
+      "lead": "The account gets a neutral name (\"Player 12345\") and may choose another one at once.",
+      "submit": "Force a rename"
+    },
+    "dismiss": {
+      "title": "Dismiss",
+      "lead": "No action against the player.",
+      "submit": "Dismiss the report"
+    },
+    "addNote": {
+      "title": "Add a note",
+      "label": "Note",
+      "submit": "Add the note"
+    }
+  },
+  "bans": {
+    "title": "Banned players",
+    "lead": "Active bans, newest first.",
+    "listLabel": "Active bans",
+    "empty": "No active bans.",
+    "noName": "Account with no name",
+    "reason": "Reason",
+    "by": "By",
+    "byUnknown": "A deleted account",
+    "since": "Since",
+    "until": "Until",
+    "permanent": "Permanent",
+    "fromReport": "See the report",
+    "unban": "Lift",
+    "unbanLabel": "Lift {name}'s ban",
+    "byName": {
+      "title": "Ban by display name",
+      "lead": "For a report received by e-mail: the player's exact display name (case and accents ignored).",
+      "name": "Player's display name",
+      "submit": "Ban"
+    }
+  },
+  "notices": {
+    "banned": "The account {name} is banned until {date}.",
+    "bannedPermanent": "The account {name} is banned permanently.",
+    "banLive": "{count, plural, =0 {The player was in no open room.} one {They were removed from one open room.} other {They were removed from # open rooms.}}",
+    "banUnreachable": "The rooms server did not answer: the ban is recorded and the player cannot enter a room any more, but their current connections were not closed.",
+    "renamed": "{from} is now called {to}.",
+    "renameLive": "{count, plural, =0 {The player was in no open room.} one {The new name shows in one open room.} other {The new name shows in # open rooms.}}",
+    "renameUnreachable": "The rooms server did not answer: the new name will show the next time they enter a room.",
+    "dismissed": "Report dismissed.",
+    "noted": "Note added.",
+    "unbanned": "{name}'s ban was lifted."
+  },
+  "errors": {
+    "forbidden": "Action refused.",
+    "signInRequired": "Your session expired: sign in again.",
+    "reasonRequired": "Give a reason: the player will read it.",
+    "reasonTooLong": "The reason is longer than 500 characters.",
+    "noteRequired": "The note is empty.",
+    "noteTooLong": "The note is longer than 1,000 characters.",
+    "invalidDuration": "Choose a duration.",
+    "userNotFound": "This account no longer exists.",
+    "playerNotFound": "No player has this display name.",
+    "reportNotFound": "This report does not exist or is not about this player.",
+    "reportClosed": "This report is already closed.",
+    "banNotFound": "This ban does not exist.",
+    "banNotActive": "This ban was already lifted or is over.",
+    "self": "You cannot act on your own account.",
+    "protectedTarget": "This account belongs to the moderation team: only an administrator can act on a moderator, and nobody on an administrator.",
+    "noFreeName": "No free name found: try again."
+  }
+}

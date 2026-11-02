@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "title": "Code of conduct"
+  },
+  "page": {
+    "title": "Code of conduct",
+    "lead": "Lying about your role is part of the game; disrespecting other players is not. These rules apply to every game, public or private."
+  },
+  "expected": {
+    "title": "What we expect from you",
+    "respect": "Respect the other players. Bluffing, accusing, defending yourself: yes. Attacking someone for who they are: no.",
+    "hate": "No hate speech: racism, antisemitism, homophobia, transphobia, sexism, mocking a disability. The chat refuses slurs of this kind outright.",
+    "harassment": "No harassment or threats, during the game or after it.",
+    "cheating": "No cheating: don't show your role outside the game (screenshot, call, messaging app) and don't coordinate outside the game.",
+    "sabotage": "Play for your side: don't deliberately sabotage your own team.",
+    "spam": "No spam: no repeated messages and no advertising.",
+    "names": "A decent name: no insults, no Nazi references, no name that imitates the moderators.",
+    "age": "The site is for people aged 15 or older."
+  },
+  "tools": {
+    "title": "Your tools",
+    "mute": "<b>Mute</b> a player to hide their messages for you only, in this room only. They are not told.",
+    "block": "<b>Block</b> a player (with an account): you never see their messages again, in any room, and quick match keeps you apart. Manage your blocks on your profile.",
+    "report": "<b>Report</b> a player from the room: the moderators receive the last 100 chat messages, the public game log and the players' names. Without a report, the chat is kept only while the room exists.",
+    "reportWho": "You need an account to report, and so does the player you report. In a private room, the host can also remove a player."
+  },
+  "moderators": {
+    "title": "What the moderators can do",
+    "rename": "Change a name: the player gets a neutral name (\"Player 12345\") and may choose another one right away.",
+    "suspend": "Suspend an account, for a set time or permanently. The reason and the end date are shown on the suspended account's profile.",
+    "accounts": "Sanctions apply to accounts. Guests play only in private rooms, where the host can remove a player."
+  },
+  "contact": {
+    "title": "Appeal a decision, report illegal content",
+    "appeal": "To appeal a moderation decision, write to <mail>{email}</mail> with your player name.",
+    "legal": "To report illegal content (EU Digital Services Act, or DSA), write to the same address: say where it is (room code, player name, date), why you believe it is illegal, and give your name and e-mail address."
+  }
+}

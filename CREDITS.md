@@ -33,7 +33,8 @@ The CC license asks adaptations to say what they changed. Compared with the phys
 - **Away players.** In public games, a player disconnected for 90 seconds is played
   automatically (same default actions) until they come back. In private games the host can
   play the turn of a player who has been disconnected for a minute, or stop the game.
-- **Abandoned games.** A public game ends without a winner if too many players disconnect.
+- **Abandoned games.** A public game ends without a winner if too many players disconnect (a
+  private game's host can also stop it); every role is then revealed, as at the end of a game.
 - **Spectators.** People who arrive after the start watch the game; they cannot chat until it ends.
 - **French translation.** Rules summaries and the interface are available in French and English.
 

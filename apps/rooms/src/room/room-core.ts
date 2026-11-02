@@ -1,6 +1,7 @@
 /**
  * The rules of a room around the game: joining, seats, host, start, turns
- * and timers, away players, chat, kicks, rematch and when to close.
+ * and timers, away players, chat, kicks, rematch and when to close, plus the
+ * moderation hooks (M5): chat slur filter, reports, bans and forced renames.
  *
  * Pure: no I/O and no clock. The GameRoom Durable Object passes the time to
  * every call, persists what `drain()` returns and sends the messages. That
@@ -12,9 +13,12 @@ import {
   DISPLAY_NAME_MAX,
   MAX_SPECTATORS,
   PROTOCOL_VERSION,
+  REPORT_EVIDENCE_CHAT,
+  containsSlur,
   identityKey,
   nameKey,
   normalizeChatText,
+  reportPayloadSchema,
   type ChatMessage,
   type ClientMessage,
   type CloseCode,
@@ -24,12 +28,20 @@ import {
   type GameResultPayload,
   type IdentityKind,
   type LobbyRoomReport,
+  type ModerationAction,
+  type ReportEvidence,
+  type ReportParty,
+  type ReportPayload,
   type RoomInfo,
+  type RoomMember,
+  type RoomMemberRequest,
+  type RoomReportError,
+  type RoomReportRequest,
   type RoomView,
   type SystemMessageKey,
 } from "@sh/protocol";
 
-import type { GameModule, GameSeed, GameViewer } from "../games/types";
+import type { GameModule, GameSeed, GameViewOptions, GameViewer } from "../games/types";
 import { ChatLimiter, PUBLIC_SLOW_MODE_MS } from "./chat";
 import type {
   GameRecord,
@@ -69,6 +81,9 @@ export const ROOM_TIMING = {
 export const DEFAULT_MIN_PLAYERS = 7;
 /** Safety net for automatic play: a whole game takes far fewer moves. */
 const MAX_AUTO_MOVES = 2_000;
+/** A report carries at most this many game events (the latest) and room members. */
+const REPORT_EVIDENCE_EVENTS = 1000;
+const REPORT_EVIDENCE_MEMBERS = 60;
 
 export interface RoomDeps {
   /** Uniform in [0, 1): seat shuffling and default actions. */
@@ -163,6 +178,7 @@ export function createRoomState<S>(
     members: [],
     seated: [],
     kicked: [],
+    banned: [],
     status: "lobby",
     startsAt: null,
     game: null,
@@ -277,6 +293,8 @@ export class RoomCore<S, A, V, E> {
   join(identity: JoinIdentity, now: number): JoinResult {
     const room = this.room;
     const key = identityKey(identity.kind, identity.sub);
+    // A ban wins over a kick: the client then shows the suspension notice, not "kicked by the host".
+    if (room.banned?.includes(key)) return { ok: false, code: CLOSE.banned };
     if (room.kicked.includes(key)) return { ok: false, code: CLOSE.kicked };
     if (room.visibility === "public" && identity.kind === "guest") {
       return { ok: false, code: CLOSE.accountRequired };
@@ -367,8 +385,11 @@ export class RoomCore<S, A, V, E> {
     }
   }
 
-  private uniqueName(name: string): string {
-    const taken = new Set(this.room.members.map((m) => nameKey(m.name)));
+  /** `name`, or `name 2`, `name 3`… if another member (not `except`) already has it. */
+  private uniqueName(name: string, except?: string): string {
+    const taken = new Set(
+      this.room.members.filter((m) => m.pid !== except).map((m) => nameKey(m.name)),
+    );
     if (!taken.has(nameKey(name))) return name;
     for (let n = 2; ; n++) {
       const suffix = ` ${n}`;
@@ -460,27 +481,42 @@ export class RoomCore<S, A, V, E> {
   }
 
   private kick(host: Member, targetPid: string, now: number): ErrorCode | null {
+    const room = this.room;
     if (!this.isHost(host)) return "not_host";
+    // Public games: once started, only moderators remove players (a ban), never the host.
+    if (room.visibility === "public" && room.status !== "lobby") return "private_only";
     const target = this.member(targetPid);
     if (!target) return "unknown_member";
     if (target.pid === host.pid) return "invalid_message";
-    const room = this.room;
     room.kicked.push(target.key);
-    this.notes.push({ kind: "close", pid: target.pid, code: CLOSE.kicked });
-    this.online.delete(target.pid);
-    const seat = this.seatOf(target.pid);
-    if (seat >= 0) {
-      // A kicked player keeps their seat in the game record; the room plays for them.
-      target.goneSince = now;
-      if (room.status === "playing" && room.game) room.game.auto[seat] = true;
-    } else {
-      this.removeMember(target.pid);
-    }
+    this.removeFromRoom(target, CLOSE.kicked, now);
     this.system("playerKicked", { name: target.name }, now);
     this.updatePresence(now);
     this.touch();
     if (room.status === "playing") this.autoPlay(now);
     return null;
+  }
+
+  /**
+   * Closes a kicked or banned member's sockets. A seated player keeps their
+   * seat in the game record and the room plays for them, marked `removed` so
+   * the result never counts it as an abandon; anyone else leaves the room.
+   */
+  private removeFromRoom(target: Member, code: CloseCode, now: number): void {
+    const room = this.room;
+    this.notes.push({ kind: "close", pid: target.pid, code });
+    this.online.delete(target.pid);
+    const seat = this.seatOf(target.pid);
+    if (seat < 0) {
+      this.removeMember(target.pid);
+      return;
+    }
+    target.goneSince = now;
+    const game = room.game;
+    if (room.status === "playing" && game) {
+      game.auto[seat] = true;
+      (game.removed ??= game.seats.map(() => false))[seat] = true;
+    }
   }
 
   private forceTurn(host: Member, targetPid: string, now: number): ErrorCode | null {
@@ -519,12 +555,20 @@ export class RoomCore<S, A, V, E> {
     const text = normalizeChatText(raw);
     if (text === null) return "chat_invalid";
     const slowMode = this.room.visibility === "public" ? PUBLIC_SLOW_MODE_MS : 0;
+    // The limiter comes first, so a message refused for a slur still uses up the allowance.
     const verdict = this.limiter.check(member.pid, now, slowMode);
     if (verdict === "flood") {
       this.notes.push({ kind: "close", pid: member.pid, code: CLOSE.flood });
       return "chat_too_fast";
     }
     if (verdict === "too_fast") return "chat_too_fast";
+    if (containsSlur(text)) {
+      // …and counts as a refused message too: 8 within 30 s close the socket like a flood.
+      if (this.limiter.strike(member.pid, now)) {
+        this.notes.push({ kind: "close", pid: member.pid, code: CLOSE.flood });
+      }
+      return "chat_offensive";
+    }
     this.addChat(
       { kind: "player", id: this.nextChatId(), at: now, pid: member.pid, name: member.name, text },
       member.key,
@@ -554,6 +598,134 @@ export class RoomCore<S, A, V, E> {
     return stored.authorKey === null || !member?.blocks.includes(stored.authorKey);
   }
 
+  // ── Moderation (M5) ────────────────────────────────────────────────────
+
+  /**
+   * A member reports another one. The room builds the evidence itself (the
+   * website only names who and why) and queues it for the website; the alarm
+   * delivers it. Returns an error, or null once queued. Calling it again with
+   * the same `reportId` queues the same id, which the outbox stores once.
+   */
+  report(request: RoomReportRequest, now: number): RoomReportError | null {
+    const reporter = this.memberByKey(request.reporter);
+    if (!reporter) return "not_member";
+    const target = this.member(request.target);
+    if (!target) return "unknown_target";
+    if (target.pid === reporter.pid) return "self";
+    if (target.kind !== "user") return "guest_target";
+    const payload: ReportPayload = {
+      reportId: request.reportId,
+      room: this.room.code,
+      visibility: this.room.visibility,
+      lang: this.room.lang,
+      createdAt: now,
+      reason: request.reason,
+      details: request.details,
+      reporter: this.party(reporter),
+      target: this.party(target),
+      evidence: this.evidence(),
+    };
+    // Never queue what the website would refuse (400, then dropped): a bug here fails the call.
+    reportPayloadSchema.parse(payload);
+    this.outbox.push({ id: request.reportId, kind: "report", payload });
+    return null;
+  }
+
+  private party(member: Member): ReportParty {
+    return { pid: member.pid, kind: member.kind, sub: member.sub, name: member.name };
+  }
+
+  /** What the moderators see: who is here, the latest chat and the public game events. */
+  private evidence(): ReportEvidence {
+    const room = this.room;
+    const game = room.status === "lobby" ? null : room.game;
+    const players = this.playerPids();
+    const others = room.members.filter((m) => !players.includes(m.pid)).map((m) => m.pid);
+    const members = [...players, ...others].flatMap((pid) => {
+      const member = this.member(pid);
+      if (!member) return [];
+      const seat = this.seatOf(pid);
+      return [
+        {
+          ...this.party(member),
+          seat: seat >= 0 ? seat : null,
+          host: this.isHost(member),
+          connected: this.online.has(pid),
+        },
+      ];
+    });
+    return {
+      status: room.status,
+      game: game ? { id: game.id, number: game.number } : null,
+      members: members.slice(0, REPORT_EVIDENCE_MEMBERS),
+      // Unfiltered: blocks only hide messages from the member who blocked.
+      chat: this.chat.slice(-REPORT_EVIDENCE_CHAT).map((c) => c.message),
+      // Spectator events only: never a hand, a peek or an investigation result.
+      events: (game
+        ? this.game.eventsFor(this.log, "spectator").slice(-REPORT_EVIDENCE_EVENTS)
+        : []) as unknown as ReportEvidence["events"],
+    };
+  }
+
+  /** Who is behind a pid, for a member who wants to block them. */
+  lookup(request: RoomMemberRequest): RoomMember | "not_member" | "unknown_target" {
+    if (!this.memberByKey(request.requester)) return "not_member";
+    const target = this.member(request.pid);
+    if (!target) return "unknown_target";
+    return { kind: target.kind, sub: target.sub, name: target.name };
+  }
+
+  /** A moderator's action on an account. True when the account is a member of this room. */
+  moderate(identity: string, action: ModerationAction, now: number): boolean {
+    switch (action.kind) {
+      case "ban":
+        return this.ban(identity, now);
+      case "rename":
+        return this.rename(identity, action.name, now);
+    }
+  }
+
+  /**
+   * Closes the account's sockets (4451) and refuses it here from now on. Like
+   * a host kick, a seated player keeps their seat in the game record and the
+   * room plays for them; a lobby member or spectator is removed.
+   */
+  private ban(key: string, now: number): boolean {
+    const room = this.room;
+    const banned = (room.banned ??= []);
+    const already = banned.includes(key);
+    // Recorded even for a non-member, so a ticket issued just before the ban is still refused.
+    if (!already) {
+      banned.push(key);
+      this.dirty = true;
+    }
+    const target = this.memberByKey(key);
+    if (!target) return false;
+    // Already handled (a member who stays in the game record): apply once.
+    if (already) return true;
+    this.removeFromRoom(target, CLOSE.banned, now);
+    this.system("playerRemoved", { name: target.name }, now);
+    // A banned host hands over at once; with nobody connected, the next to join becomes host.
+    if (room.hostKey === key && !this.passHost(now)) room.hostKey = null;
+    this.updatePresence(now);
+    this.touch();
+    if (room.status === "playing") this.autoPlay(now);
+    return true;
+  }
+
+  /** Shows the account under a new name (made unique in the room). */
+  private rename(key: string, name: string, now: number): boolean {
+    const member = this.memberByKey(key);
+    if (!member) return false;
+    const old = member.name;
+    member.name = this.uniqueName(name, member.pid);
+    if (member.name !== old) {
+      this.system("playerRenamed", { old, name: member.name }, now);
+      this.touch();
+    }
+    return true;
+  }
+
   // ── Game flow ──────────────────────────────────────────────────────────
 
   private deadline(state: S, now: number): number | null {
@@ -579,6 +751,7 @@ export class RoomCore<S, A, V, E> {
       phaseKey: this.game.phaseKey(state),
       deadline: this.deadline(state, now),
       auto: seats.map(() => false),
+      removed: seats.map(() => false),
       underHalfSince: null,
     };
     room.game = game;
@@ -669,6 +842,8 @@ export class RoomCore<S, A, V, E> {
     });
     this.system(result.kind === "finished" ? "gameEnded" : "gameAbandoned", {}, now);
     this.touch();
+    // Everyone gets the final view, which reveals the roles (an abandon has no last move).
+    this.notes.push({ kind: "game", events: [] });
   }
 
   private resultPayload(
@@ -696,8 +871,9 @@ export class RoomCore<S, A, V, E> {
           role: this.game.roleOf(game.state, seat),
           alive: this.game.isAlive(game.state, seat),
           won: result.kind === "finished" && winners.includes(seat),
-          // Away past the grace period or kicked: the website counts it as an abandon.
-          left: game.auto[seat] ?? false,
+          // Away past the grace period: the website counts it as an abandon. A seat the
+          // room plays because the host kicked or a moderator banned its player does not.
+          left: (game.auto[seat] ?? false) && !(game.removed?.[seat] ?? false),
         };
       }),
       log: {
@@ -774,6 +950,15 @@ export class RoomCore<S, A, V, E> {
   private handOverHost(now: number): void {
     const room = this.room;
     if (room.hostAwaySince === null || now - room.hostAwaySince < ROOM_TIMING.hostGraceMs) return;
+    this.passHost(now);
+  }
+
+  /**
+   * Gives the host role to a connected member (players first, then by
+   * arrival). False if nobody is connected.
+   */
+  private passHost(now: number): boolean {
+    const room = this.room;
     const players = new Set(this.playerPids());
     const next = room.members
       .filter((m) => this.online.has(m.pid))
@@ -781,11 +966,12 @@ export class RoomCore<S, A, V, E> {
         (a, b) =>
           Number(players.has(b.pid)) - Number(players.has(a.pid)) || a.joinedAt - b.joinedAt,
       )[0];
-    if (!next) return;
+    if (!next) return false;
     room.hostKey = next.key;
     room.hostAwaySince = null;
     this.system("hostChanged", { name: next.name }, now);
     this.touch();
+    return true;
   }
 
   private tickGame(now: number): void {
@@ -940,6 +1126,11 @@ export class RoomCore<S, A, V, E> {
     };
   }
 
+  /** Once the room ended the game, every role is shown (an abandoned game reveals them too). */
+  private viewOptions(): GameViewOptions | undefined {
+    return this.room.status === "ended" ? { stopped: true } : undefined;
+  }
+
   welcomeFor(pid: string, now: number): Welcome<V, E> | null {
     const member = this.member(pid);
     if (!member) return null;
@@ -953,7 +1144,7 @@ export class RoomCore<S, A, V, E> {
       game: game
         ? {
             turn: game.turn,
-            view: this.game.view(game.state, viewer),
+            view: this.game.view(game.state, viewer, this.viewOptions()),
             log: this.game.eventsFor(this.log, viewer),
           }
         : null,
@@ -969,7 +1160,7 @@ export class RoomCore<S, A, V, E> {
     return {
       t: "game",
       turn: game.turn,
-      view: this.game.view(game.state, viewer),
+      view: this.game.view(game.state, viewer, this.viewOptions()),
       events: this.game.eventsFor(events, viewer),
     };
   }
@@ -978,6 +1169,7 @@ export class RoomCore<S, A, V, E> {
   lobbyReport(): LobbyRoomReport | null {
     const room = this.room;
     if (room.visibility !== "public" || room.status === "ended") return null;
+    const banned = room.banned ?? [];
     return {
       code: room.code,
       lang: room.lang,
@@ -988,8 +1180,9 @@ export class RoomCore<S, A, V, E> {
       timers: room.settings.timers,
       startsAt: room.startsAt,
       members: room.members.map((m) => m.key).slice(0, 40),
-      // Quick match must never send a kicked player back here (the room closes them with 4423).
-      excluded: room.kicked.slice(-100),
+      // Quick match must never send a kicked (4423) or banned (4451) player back here.
+      // Bans go last so they are the ones kept when the list is cut to 100.
+      excluded: [...room.kicked.filter((key) => !banned.includes(key)), ...banned].slice(-100),
     };
   }
 
