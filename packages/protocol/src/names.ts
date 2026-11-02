@@ -3,10 +3,7 @@
  * Worker (names carried in tickets). The offensive-word filter arrives with
  * moderation (M5); this file covers shape and reserved names.
  */
-import { z } from "zod";
-
-export const DISPLAY_NAME_MIN = 2;
-export const DISPLAY_NAME_MAX = 20;
+import { DISPLAY_NAME_MAX, DISPLAY_NAME_MIN } from "./constants";
 
 /** Letters and digits from any script, plus space, `_`, `.`, `'` and `-` inside the name. */
 const NAME_PATTERN = /^[\p{L}\p{N}](?:[\p{L}\p{N} _.'-]*[\p{L}\p{N}])?$/u;
@@ -50,10 +47,3 @@ export function checkDisplayName(raw: string): DisplayNameProblem | null {
   if (isReservedName(name)) return "reserved";
   return null;
 }
-
-/** A display name that is already normalized and valid. */
-export const displayNameSchema = z
-  .string()
-  .refine((name) => name === normalizeDisplayName(name) && checkDisplayName(name) === null, {
-    message: "invalid display name",
-  });

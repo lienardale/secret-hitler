@@ -5,22 +5,8 @@
  */
 import { z } from "zod";
 
-import { roomCodeSchema } from "./codes";
-
-export const LANGS = ["fr", "en"] as const;
-export type Lang = (typeof LANGS)[number];
-
-export const VISIBILITIES = ["private", "public"] as const;
-export type Visibility = (typeof VISIBILITIES)[number];
-
-/**
- * Turn timers. `off` (private rooms only) means no deadline: players take the
- * time they need. `fast` is for quick games and testing.
- */
-export const TIMER_PRESETS = ["off", "relaxed", "standard", "fast"] as const;
-export type TimerPreset = (typeof TIMER_PRESETS)[number];
-
-export const MAX_SPECTATORS = 20;
+import { LANGS, MAX_SPECTATORS, TIMER_PRESETS, VISIBILITIES } from "./constants";
+import { roomCodeSchema } from "./primitives";
 
 export const roomSettingsSchema = z.strictObject({
   timers: z.enum(TIMER_PRESETS),

@@ -17,7 +17,8 @@ French and English.
 | `apps/rooms` (`@sh/rooms`)           | Cloudflare Worker: one Durable Object per game room, plus the public lobby. |
 | `apps/web` (`@sh/web`)               | Next.js website on Vercel: pages, accounts, lobby, moderation.              |
 
-The full plan is in [docs/plan.md](docs/plan.md).
+The full plan is in [docs/plan.md](docs/plan.md). Staging: https://secret-hitler-staging.vercel.app
+(how it is deployed: [docs/deploy.md](docs/deploy.md)).
 
 ## Getting started
 
@@ -36,11 +37,21 @@ npm run dev:rooms  # game server on http://localhost:8787
 npm run dev:web    # website on http://localhost:3000
 ```
 
+Then open http://localhost:3000, create a room, and open the invite link in other browsers
+(or private windows) to join as more players. `http://localhost:3000/fr/dev/table` is a
+sandbox that runs the rules engine in the page, to try every screen of the game alone.
+
 Watch bots play a whole game on the local game server (in a second terminal):
 
 ```bash
 npm run bots -- --players 7 --timers fast
 npm run bots -- --players 7 --kill-one   # cuts one bot's connection mid-game
+```
+
+Browser tests (Playwright) build the website and start both servers themselves:
+
+```bash
+npm -w @sh/web run build && npm -w @sh/web run e2e
 ```
 
 How browsers talk to rooms (tickets, messages, close codes) is described in

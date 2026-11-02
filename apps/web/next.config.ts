@@ -11,6 +11,32 @@ const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts");
 // and lets output tracing include packages/*.
 const monorepoRoot = path.resolve(process.cwd(), "../..");
 
+/**
+ * Content-Security-Policy. `connect-src` names the rooms Worker (HTTP for the
+ * health check, WS for rooms). React's development build needs 'unsafe-eval';
+ * production never gets it.
+ */
+function contentSecurityPolicy(): string {
+  const rooms = new URL(
+    process.env.ROOMS_PUBLIC_URL || process.env.ROOMS_URL || "http://localhost:8787",
+  );
+  const ws = `${rooms.protocol === "https:" ? "wss:" : "ws:"}//${rooms.host}`;
+  const scriptSrc = ["'self'", "'unsafe-inline'"];
+  if (process.env.NODE_ENV !== "production") scriptSrc.push("'unsafe-eval'");
+  return [
+    "default-src 'self'",
+    `script-src ${scriptSrc.join(" ")}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    `connect-src 'self' ${rooms.origin} ${ws}`,
+    "frame-ancestors 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join("; ");
+}
+
 const config: NextConfig = {
   reactStrictMode: true,
   // Internal workspace packages ship TypeScript source, not built JS.
@@ -26,6 +52,7 @@ const config: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          { key: "Content-Security-Policy", value: contentSecurityPolicy() },
         ],
       },
     ];

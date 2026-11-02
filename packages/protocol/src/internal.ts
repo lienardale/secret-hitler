@@ -6,10 +6,11 @@
  */
 import { z } from "zod";
 
-import { roomCodeSchema } from "./codes";
-import { IDENTITY_KINDS, identitySchema, subjectSchema } from "./identity";
+import { IDENTITY_KINDS, LANGS, VISIBILITIES } from "./constants";
+import { identitySchema } from "./identity";
 import { actionSchema } from "./player-view";
-import { LANGS, VISIBILITIES, gameResultSchema, roomSettingsSchema } from "./room-view";
+import { roomCodeSchema, subjectSchema } from "./primitives";
+import { gameResultSchema, roomSettingsSchema } from "./room-view";
 
 export const createRoomRequestSchema = z.strictObject({
   visibility: z.enum(VISIBILITIES),

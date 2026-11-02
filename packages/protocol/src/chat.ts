@@ -5,9 +5,7 @@
  */
 import { z } from "zod";
 
-export const CHAT_MAX_LENGTH = 300;
-/** Messages kept by a room (and sent to a player who (re)connects). */
-export const CHAT_HISTORY = 300;
+import { CHAT_MAX_LENGTH, SYSTEM_MESSAGE_KEYS } from "./constants";
 
 /**
  * NFC, control characters removed, runs of whitespace collapsed, trimmed.
@@ -22,21 +20,6 @@ export function normalizeChatText(raw: string): string | null {
   if (text.length === 0 || [...text].length > CHAT_MAX_LENGTH) return null;
   return text;
 }
-
-export const SYSTEM_MESSAGE_KEYS = [
-  "playerJoined",
-  "playerLeft",
-  "playerKicked",
-  "hostChanged",
-  "gameStarted",
-  "gameEnded",
-  "gameAbandoned",
-  "playerAfk",
-  "playerBack",
-  "turnForced",
-] as const;
-
-export type SystemMessageKey = (typeof SYSTEM_MESSAGE_KEYS)[number];
 
 export const chatMessageSchema = z.discriminatedUnion("kind", [
   z.strictObject({

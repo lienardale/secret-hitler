@@ -1,7 +1,15 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
-import en from "../../messages/en/common.json";
-import fr from "../../messages/fr/common.json";
+import { NAMESPACES } from "../../lib/i18n/namespaces";
+
+const MESSAGES = join(import.meta.dirname, "../../messages");
+
+function load(locale: string, namespace: string): unknown {
+  return JSON.parse(readFileSync(join(MESSAGES, locale, `${namespace}.json`), "utf8"));
+}
 
 /** Every leaf key path of a nested message object, sorted. */
 function keyPaths(value: unknown, prefix = ""): string[] {
@@ -11,7 +19,10 @@ function keyPaths(value: unknown, prefix = ""): string[] {
     .sort();
 }
 
-describe("message catalogues", () => {
+describe.each(NAMESPACES)("message catalogue %s", (namespace) => {
+  const fr = load("fr", namespace);
+  const en = load("en", namespace);
+
   it("French and English define the same keys", () => {
     expect(keyPaths(en)).toEqual(keyPaths(fr));
   });

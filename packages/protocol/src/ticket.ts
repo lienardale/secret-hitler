@@ -9,9 +9,8 @@
 import { SignJWT, errors, importJWK, jwtVerify, type CryptoKey, type JWK } from "jose";
 import { z } from "zod";
 
-import { roomCodeSchema } from "./codes";
-import { IDENTITY_KINDS, identityKeySchema, subjectSchema } from "./identity";
-import { displayNameSchema } from "./names";
+import { IDENTITY_KINDS } from "./constants";
+import { displayNameSchema, identityKeySchema, roomCodeSchema, subjectSchema } from "./primitives";
 
 export const TICKET_ALG = "Ed25519";
 export const TICKET_ISSUER = "sh-web";

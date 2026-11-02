@@ -26,4 +26,28 @@
     // Website base URL for game results; empty disables delivery (dev without the website).
     "WEB_API_URL": "",
   },
+  // `npm -w @sh/rooms run deploy:staging`. Bindings, migrations and vars are not inherited
+  // by environments, so they are repeated here. Secrets: `wrangler secret put <NAME> --env staging`.
+  "env": {
+    "staging": {
+      "name": "sh-rooms-staging",
+      "preview_urls": false,
+      "durable_objects": {
+        "bindings": [
+          { "name": "GAME_ROOM", "class_name": "GameRoom" },
+          { "name": "LOBBY", "class_name": "Lobby" },
+        ],
+      },
+      "migrations": [
+        { "tag": "v1", "new_sqlite_classes": ["GameRoom"] },
+        { "tag": "v2", "new_sqlite_classes": ["Lobby"] },
+      ],
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "ALLOWED_ORIGINS": "https://secret-hitler-staging.vercel.app",
+        // Game results arrive with accounts (M4).
+        "WEB_API_URL": "",
+      },
+    },
+  },
 }

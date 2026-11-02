@@ -1,0 +1,151 @@
+{
+  "meta": {
+    "title": "Salle {code}"
+  },
+  "home": {
+    "createTitle": "Partie privée",
+    "createLead": "Créez une salle et envoyez le lien à vos amis. De 5 à 10 joueurs, sans compte.",
+    "createButton": "Créer une salle",
+    "joinTitle": "Rejoindre une salle",
+    "joinLead": "Entrez le code de 5 lettres qu'on vous a donné.",
+    "codeLabel": "Code de la salle",
+    "joinButton": "Rejoindre",
+    "publicSoon": "Parties publiques avec des inconnus : bientôt.",
+    "playingAs": "Vous jouez sous le nom {name}."
+  },
+  "name": {
+    "title": "Comment vous appelle-t-on ?",
+    "lead": "Pas besoin de compte pour une partie privée : choisissez juste un nom.",
+    "label": "Votre nom",
+    "hint": "2 à 20 caractères, visible par les autres joueurs.",
+    "save": "Entrer dans la salle"
+  },
+  "errors": {
+    "name_length": "Le nom doit faire entre 2 et 20 caractères.",
+    "name_characters": "Lettres, chiffres, espaces, tirets, points et apostrophes seulement (pas au début ni à la fin).",
+    "name_reserved": "Ce nom est réservé, choisissez-en un autre.",
+    "code_invalid": "Un code fait 5 lettres, sans voyelles.",
+    "room_not_found": "Aucune salle avec ce code. Elle est peut-être fermée.",
+    "rate_limited": "Trop de tentatives. Réessayez dans quelques minutes.",
+    "rooms_unavailable": "Le serveur de jeu ne répond pas. Réessayez dans un instant.",
+    "forbidden": "Requête refusée. Rechargez la page."
+  },
+  "notFound": {
+    "title": "Salle introuvable",
+    "lead": "Aucune salle ne porte ce code. Elle a peut-être été fermée après la partie.",
+    "home": "Retour à l'accueil"
+  },
+  "publicGate": {
+    "title": "Partie publique",
+    "lead": "Les parties publiques demandent un compte. Les comptes arrivent bientôt."
+  },
+  "unavailable": {
+    "title": "Le serveur de jeu ne répond pas",
+    "lead": "Réessayez dans un instant.",
+    "retry": "Réessayer"
+  },
+  "connection": {
+    "connecting": "Connexion à la salle…",
+    "reconnecting": "Connexion perdue. Reconnexion…"
+  },
+  "closed": {
+    "title": "Vous n'êtes plus dans la salle",
+    "c4400": "La communication avec la salle a échoué.",
+    "c4403": "Les parties publiques demandent un compte.",
+    "c4404": "Cette salle n'existe pas ou est fermée.",
+    "c4409": "La salle est pleine (10 joueurs et 20 spectateurs).",
+    "c4410": "La salle est fermée.",
+    "c4423": "L'hôte vous a retiré de la salle.",
+    "c4426": "Une nouvelle version du site est en ligne : rechargez la page.",
+    "c4429": "Trop de messages d'un coup : la salle a fermé votre connexion.",
+    "other": "La connexion à la salle a été fermée.",
+    "home": "Retour à l'accueil",
+    "reload": "Recharger la page"
+  },
+  "lobby": {
+    "heading": "Salle {code}",
+    "codeLabel": "Code",
+    "invite": "Invitez vos amis",
+    "inviteLead": "Envoyez ce lien, ou donnez le code à lire sur votre écran.",
+    "copy": "Copier le lien",
+    "copied": "Lien copié !",
+    "share": "Partager",
+    "shareText": "Rejoins ma partie de Secret Hitler",
+    "players": "Joueurs ({count} sur 10)",
+    "emptySeat": "Place libre",
+    "spectators": "Spectateurs ({count})",
+    "you": "vous",
+    "host": "hôte",
+    "disconnected": "hors ligne",
+    "kick": "Retirer",
+    "kickLabel": "Retirer {name} de la salle",
+    "kickConfirm": "Retirer {name} de la salle ? Cette personne ne pourra plus revenir.",
+    "sit": "M'asseoir",
+    "stand": "Juste regarder",
+    "start": "Lancer la partie",
+    "needPlayers": "{missing, plural, one {Encore # joueur assis pour lancer} other {Encore # joueurs assis pour lancer}} (5 au minimum).",
+    "waitingDisconnected": "Attendez que tous les joueurs assis soient connectés.",
+    "waitingHost": "En attente de l'hôte pour lancer la partie.",
+    "settings": "Réglages",
+    "timers": "Minuteurs",
+    "timersHelp": "Sans minuteur, chacun prend son temps. Avec, un choix par défaut est joué quand le temps est écoulé.",
+    "timer": {
+      "off": "Sans minuteur",
+      "relaxed": "Détendu",
+      "standard": "Standard",
+      "fast": "Rapide"
+    }
+  },
+  "chat": {
+    "title": "Discussion",
+    "label": "Message",
+    "placeholder": "Écrire un message…",
+    "send": "Envoyer",
+    "empty": "Aucun message pour l'instant.",
+    "spectator": "Les spectateurs ne parlent pas pendant la partie.",
+    "dead": "Les joueurs exécutés ne parlent plus.",
+    "silence": "Silence : le président et le chancelier se taisent pendant la session législative.",
+    "system": {
+      "playerJoined": "{name} a rejoint la salle.",
+      "playerLeft": "{name} a quitté la salle.",
+      "playerKicked": "{name} a été retiré de la salle.",
+      "hostChanged": "{name} devient hôte de la salle.",
+      "gameStarted": "La partie commence !",
+      "gameEnded": "La partie est terminée.",
+      "gameAbandoned": "La partie a été arrêtée sans vainqueur.",
+      "playerAfk": "{name} ne répond plus : la salle joue à sa place.",
+      "playerBack": "{name} est de retour.",
+      "turnForced": "L'hôte a joué le tour de {name}."
+    }
+  },
+  "host": {
+    "controls": "Contrôles de l'hôte",
+    "endGame": "Arrêter la partie",
+    "endGameConfirm": "Arrêter la partie sans vainqueur ?",
+    "forceTurn": "Jouer pour {name}",
+    "forceTurnHelp": "Possible après une minute de déconnexion.",
+    "rematch": "Revanche",
+    "rematchWaiting": "En attente de l'hôte pour une revanche.",
+    "abandoned": "Partie arrêtée sans vainqueur."
+  },
+  "notices": {
+    "invalid_message": "Message refusé par la salle.",
+    "not_host": "Seul l'hôte peut faire ça.",
+    "wrong_status": "Impossible pour le moment.",
+    "room_full": "Toutes les places sont prises.",
+    "not_seated": "Vous n'avez pas de place.",
+    "already_seated": "Vous avez déjà une place.",
+    "not_enough_players": "Il faut entre 5 et 10 joueurs assis.",
+    "players_disconnected": "Un joueur assis est déconnecté.",
+    "not_a_player": "Vous regardez la partie sans y jouer.",
+    "stale_turn": "Trop tard : la partie a avancé.",
+    "unknown_member": "Ce joueur n'est plus dans la salle.",
+    "not_disconnected_long_enough": "Attendez une minute de déconnexion avant de jouer à sa place.",
+    "not_their_turn": "Ce n'est pas à ce joueur de jouer.",
+    "private_only": "Possible seulement dans une partie privée.",
+    "chat_not_allowed": "Vous ne pouvez pas parler maintenant.",
+    "chat_too_fast": "Doucement : attendez un peu avant d'écrire.",
+    "chat_invalid": "Message vide ou trop long (300 caractères au plus).",
+    "engine": "Action impossible."
+  }
+}

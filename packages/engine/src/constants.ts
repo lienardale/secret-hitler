@@ -41,17 +41,24 @@ export type PowerBoard = readonly [
 /**
  * Fascist board powers: entry i is granted by the (i+1)-th fascist policy.
  * The 6th fascist policy wins the game, so it has no entry.
+ *
+ * Keys are plain identifiers on purpose: with keys like "5-6" and "7-8",
+ * Turbopack's production minifier (Next 16.4.3) merged two boards and 7–8
+ * player games got the 5–6 board in the browser (.debug/004).
  */
-export const POWER_BOARDS: Readonly<Record<"5-6" | "7-8" | "9-10", PowerBoard>> = {
-  "5-6": [null, null, "peek", "execute", "execute"],
-  "7-8": [null, "investigate", "specialElection", "execute", "execute"],
-  "9-10": ["investigate", "investigate", "specialElection", "execute", "execute"],
+export const POWER_BOARDS: Readonly<Record<"small" | "medium" | "large", PowerBoard>> = {
+  /** 5 and 6 players. */
+  small: [null, null, "peek", "execute", "execute"],
+  /** 7 and 8 players. */
+  medium: [null, "investigate", "specialElection", "execute", "execute"],
+  /** 9 and 10 players. */
+  large: ["investigate", "investigate", "specialElection", "execute", "execute"],
 };
 
 export function powerBoard(playerCount: PlayerCount): PowerBoard {
-  if (playerCount <= 6) return POWER_BOARDS["5-6"];
-  if (playerCount <= 8) return POWER_BOARDS["7-8"];
-  return POWER_BOARDS["9-10"];
+  if (playerCount <= 6) return POWER_BOARDS.small;
+  if (playerCount <= 8) return POWER_BOARDS.medium;
+  return POWER_BOARDS.large;
 }
 
 export function isPlayerCount(n: number): n is PlayerCount {
