@@ -59,8 +59,9 @@ describe("userGameHistory", () => {
       role: newer.players[0]?.role,
       won: newer.players[0]?.won,
       userId: bob,
+      guest: false,
     });
-    expect(game.others[1]).toMatchObject({ seat: 1, name: "Guest 1", userId: null });
+    expect(game.others[1]).toMatchObject({ seat: 1, name: "Guest 1", userId: null, guest: true });
   });
 
   it("pages with `limit` and `before`", async () => {

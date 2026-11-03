@@ -55,10 +55,10 @@ function game(extra: Partial<HistoryGame> = {}): HistoryGame {
     reason: "hitlerExecuted",
     you: { seat: 0, role: "liberal", won: true, left: false, alive: true },
     others: [
-      { seat: 1, name: "Bob", role: "fascist", won: false, userId: BOB },
-      { seat: 2, name: "Carol", role: "liberal", won: true, userId: CAROL },
-      { seat: 3, name: null, role: "hitler", won: false, userId: null },
-      { seat: 4, name: "Guest 4", role: "liberal", won: true, userId: null },
+      { seat: 1, name: "Bob", role: "fascist", won: false, userId: BOB, guest: false },
+      { seat: 2, name: "Carol", role: "liberal", won: true, userId: CAROL, guest: false },
+      { seat: 3, name: null, role: "hitler", won: false, userId: null, guest: false },
+      { seat: 4, name: "Guest 4", role: "liberal", won: true, userId: null, guest: true },
     ],
     ...extra,
   };

@@ -113,7 +113,9 @@ function HistoryEntry({
             <li key={player.seat} className="flex min-h-9 items-center justify-between gap-2">
               <span className="min-w-0">
                 {player.name === null ? (
-                  <span className="italic text-ink-muted">{t("history.deletedPlayer")}</span>
+                  <span className="italic text-ink-muted">
+                    {t(player.guest ? "history.unnamedGuest" : "history.deletedPlayer")}
+                  </span>
                 ) : (
                   <span className="break-words">{player.name}</span>
                 )}

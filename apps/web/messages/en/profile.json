@@ -73,7 +73,8 @@
     "blockLabel": "Block {name}",
     "blockedTag": "Blocked",
     "older": "Older games",
-    "newest": "Latest games"
+    "newest": "Latest games",
+    "unnamedGuest": "Guest"
   },
   "roles": {
     "liberal": "Liberal",

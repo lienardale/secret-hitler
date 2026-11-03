@@ -265,9 +265,13 @@ below is built except Web Push, `launch_handler` and the uptime check (phase 2).
 Found while writing the privacy page (M6), fixed: Google sign-in stored Google's OAuth tokens
 (the id_token carries the name and picture) — `lib/auth/minimal-accounts.ts` now keeps only the
 provider id; rooms were created without the `weur` location hint — every `getByName` now passes
-`PLACEMENT` (`apps/rooms/src/placement.ts`). Open: retention limits (rate-limit rows, report
-evidence, moderation log, game logs, room visits, expired e-mail tokens are kept with no time
-limit; the privacy page says so), and a deleted-then-recreated account escapes its ban.
+`PLACEMENT` (`apps/rooms/src/placement.ts`). Then decided with the user and built (2026-11-02):
+a **daily retention cleanup** (`lib/retention/cleanup.ts`, Vercel Cron →
+`/api/internal/cron/cleanup` with `CRON_SECRET`): abuse counters 24 h, expired e-mail links,
+room visits 7 days, reports 6 months after dismissal / 12 after an action (open ones kept),
+moderation log 2 years, game replay logs and guest names 12 months; and **no re-sign-up during a
+suspension**: deleting a suspended account keeps a keyed fingerprint of its address
+(`BarredEmail`) until the suspension ends, and sign-up (form and Google) refuses it.
 
 Decided not to adopt: bots in public play (maybe a solo practice mode one day), portrait avatars
 (licence unclear), secret votes, a private fascist chat, expansions.

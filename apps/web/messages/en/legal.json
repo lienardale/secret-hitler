@@ -139,7 +139,7 @@
     },
     "retention": {
       "title": "For how long",
-      "lead": "Where the site does not set a limit yet, we say so.",
+      "lead": "Old data is deleted once a day by an automatic cleanup.",
       "caption": "How long each kind of data is kept",
       "what": "Data",
       "howLong": "Kept for",
@@ -154,7 +154,7 @@
         },
         "games": {
           "what": "Game results and how each game went",
-          "howLong": "No time limit for now. If you delete your account, your name and the link to your account are erased: you appear as \"Deleted player\"."
+          "howLong": "Results: no time limit (they are your game history). The detailed record of each game is deleted after 12 months, and guests' names after 12 months too. If you delete your account, your name and the link to your account are erased: you appear as \"Deleted player\"."
         },
         "chat": {
           "what": "A room: people present, the game and its chat",
@@ -162,15 +162,19 @@
         },
         "reports": {
           "what": "Reports and their copy (chat, log, people present)",
-          "howLong": "No time limit for now, even after the accounts involved are deleted (the names at the time stay)"
+          "howLong": "Deleted 6 months after a moderator closes them without action, 12 months after an action. Reports still waiting for a moderator are kept. The names at the time stay, even after the accounts are deleted."
         },
         "moderation": {
           "what": "Record of moderation decisions",
-          "howLong": "No time limit for now; after an account is deleted, its name at the time stays"
+          "howLong": "2 years; after an account is deleted, its name at the time stays"
         },
         "bans": {
           "what": "Suspensions",
-          "howLong": "Until the suspended account is deleted"
+          "howLong": "Until they end, or until the suspended account is deleted"
+        },
+        "barred": {
+          "what": "Address of an account deleted while suspended (fingerprint only, never the address)",
+          "howLong": "Until the suspension would have ended (permanent if the suspension was): meanwhile, that address cannot create a new account"
         },
         "blocks": {
           "what": "Blocks",
@@ -178,15 +182,15 @@
         },
         "visits": {
           "what": "Rooms visited",
-          "howLong": "One week: older ones are erased the next time you enter a room, and all of them with the account"
+          "howLong": "One week, then deleted (also with the account)"
         },
         "limits": {
           "what": "Abuse counters (fingerprints, no IP address or e-mail)",
-          "howLong": "No time limit for now"
+          "howLong": "One day after the counting period, then deleted"
         },
         "links": {
           "what": "E-mail verification links (fingerprint)",
-          "howLong": "Valid 24 hours; erased when used, when a new link is made, or with the account"
+          "howLong": "Valid 24 hours; deleted when used, when a new link is made, once expired, or with the account"
         },
         "mutes": {
           "what": "Muted players (in your browser)",
@@ -238,7 +242,7 @@
       "title": "Your rights",
       "lead": "You can ask to access your data, to have it corrected or erased, to receive it in a common format (portability), to object to its use or to have its use restricted.",
       "profile": "On your <link>profile</link> you see your history and your blocks, change your name (once every 30 days) and can delete your account yourself.",
-      "deletion": "Deleting your account erases the account, the link with Google, your blocks (and those aimed at you), your suspensions and the list of rooms visited. In other players' history you become \"Deleted player\". Reports (with their copy of the chat) and the moderation record keep the name you had at the time.",
+      "deletion": "Deleting your account erases the account, the link with Google, your blocks (and those aimed at you), your suspensions and the list of rooms visited. In other players' history you become \"Deleted player\". Reports (with their copy of the chat) and the moderation record keep the name you had at the time, for the periods above. If your account is suspended when you delete it, we keep a fingerprint of its address until the suspension ends, so it cannot be used to sign up again meanwhile.",
       "ask": "For anything else, write to <mail>{email}</mail> from your account's address, with your player name.",
       "cnil": "If you think your rights are not respected, you can complain to the CNIL, the French data protection authority: <link>cnil.fr/fr/plaintes</link>."
     },

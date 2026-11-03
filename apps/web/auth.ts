@@ -30,6 +30,7 @@ import Google from "next-auth/providers/google";
 
 import { authorizeCredentials } from "@/lib/auth/authorize";
 import { minimalAccounts } from "@/lib/auth/minimal-accounts";
+import { isEmailBarred } from "@/lib/moderation/barred-emails";
 import { guardedSignIn } from "@/lib/auth/oauth-link-guard";
 import {
   decodeSessionToken,
@@ -103,8 +104,15 @@ function config(): NextAuthConfig {
       signIn: guardedSignIn({
         baseSignIn: async ({ account, profile }) => {
           if (account?.provider !== "google") return true;
-          if (isEmailVerified(profile)) return true;
-          return `/${await requestLocale()}/connexion?error=OAuthAccountNotLinked`;
+          if (!isEmailVerified(profile)) {
+            return `/${await requestLocale()}/connexion?error=OAuthAccountNotLinked`;
+          }
+          // An account deleted while suspended: its address waits for the suspension's end.
+          const email = typeof profile?.email === "string" ? profile.email : "";
+          if (email !== "" && (await isEmailBarred(prisma, email))) {
+            return `/${await requestLocale()}/connexion?error=EmailBarred`;
+          }
+          return true;
         },
         sessionUserId: sessionCookieUserId,
         lookups: {

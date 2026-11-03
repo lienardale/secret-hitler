@@ -22,12 +22,13 @@ export type Team = "liberal" | "fascist";
 
 export interface HistoryPlayer {
   seat: number;
-  /** Null for a deleted account. */
+  /** Null for a deleted account, and for a guest once the daily cleanup forgot the name (12 months). */
   name: string | null;
   role: Role;
   won: boolean;
   /** The account, while it exists; null for guests and deleted accounts. */
   userId: string | null;
+  guest: boolean;
 }
 
 export interface HistoryGame {
@@ -132,6 +133,7 @@ export async function userGameHistory(
         role: p.role,
         won: p.won,
         userId: p.userId,
+        guest: p.kind === "guest",
       })),
   }));
 }
