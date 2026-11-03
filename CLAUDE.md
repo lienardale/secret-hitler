@@ -99,6 +99,12 @@ prefix + vibration): `lib/turn-alert/`, mounted by `components/room/TurnAlerts.t
 `GameStage`; the vibration preference is `localStorage["sh:turn-alert:vibrate"]`. Form fields use
 `border-field` (3:1 contrast); `border-rule` is for decoration only.
 
+Retention (M6): `lib/retention/cleanup.ts` holds every period the privacy page states
+(`RETENTION_MS`); change both together. It runs daily from `app/api/internal/cron/cleanup`
+(Vercel Cron, `CRON_SECRET`). Deleting a suspended account bars its address until the suspension
+ends (`lib/moderation/barred-emails.ts`: a keyed fingerprint, never the address; checked by
+sign-up and Google sign-in).
+
 ## Rules that matter
 
 - **The engine is pure.** `packages/engine/src` has no I/O, clock or `Math.random`

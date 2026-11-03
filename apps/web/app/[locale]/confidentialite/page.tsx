@@ -29,6 +29,7 @@ const RETENTION = [
   "reports",
   "moderation",
   "bans",
+  "barred",
   "blocks",
   "visits",
   "limits",

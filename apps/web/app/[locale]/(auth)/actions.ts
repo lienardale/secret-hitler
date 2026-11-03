@@ -38,6 +38,7 @@ import {
 } from "@/lib/security/db-rate-limit";
 import { isSameOrigin } from "@/lib/security/origin";
 import { siteOrigin } from "@/lib/site-url";
+import { isEmailBarred } from "@/lib/moderation/barred-emails";
 
 type Field = "email" | "password" | "displayName" | "age";
 
@@ -144,6 +145,10 @@ export async function signUpAction(
   if (!name.ok) fields.displayName = `errors.${name.error}`;
   if (formData.get("age") !== "on") fields.age = "errors.ageRequired";
   if (Object.keys(fields).length > 0 || !name.ok) return { ok: false, fields, values };
+  // An account deleted while suspended: its address waits for the suspension's end.
+  if (await isEmailBarred(prisma, email)) {
+    return { ok: false, fields: { email: "errors.emailBarred" }, values };
+  }
 
   const now = new Date();
   let user: { id: string; email: string; displayName: string | null; locale: Locale };

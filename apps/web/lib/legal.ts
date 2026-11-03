@@ -101,7 +101,7 @@ export const HOSTS: readonly Host[] = [
 export const SOURCE_CODE_URL: string | null = null;
 
 /** When the legal notice and the privacy policy last changed (YYYY-MM-DD). */
-export const LEGAL_UPDATED = "2026-11-02";
+export const LEGAL_UPDATED = "2026-11-03";
 
 /**
  * The original game's credit line, exactly as the official rules give it. It

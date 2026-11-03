@@ -317,6 +317,19 @@ model Ban {
   @@index([userId, revokedAt])
 }
 
+/// The e-mail address of an account deleted while suspended, kept only as a
+/// keyed fingerprint (`sha256(AUTH_SECRET:barred-email:address)`, never the
+/// address) so it cannot sign up again before the suspension ends. Deleted by
+/// the daily cleanup once `until` has passed.
+model BarredEmail {
+  fingerprint String    @id @db.Char(64)
+  /// NULL: the suspension was permanent.
+  until       DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([until])
+}
+
 /// Every moderator action, append-only. Kept when either account is deleted
 /// (ids set to NULL, the target's name at the time stays).
 model ModerationAction {

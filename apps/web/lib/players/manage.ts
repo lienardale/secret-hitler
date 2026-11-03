@@ -33,10 +33,14 @@ import { verifyPassword } from "@/lib/auth/password";
 import { isKnownPrismaError } from "@/lib/db/errors";
 import { isUuid } from "@/lib/games/ids";
 import type { PrismaClient } from "@/lib/generated/prisma/client";
+import { barEmailStatement, barringEnd } from "@/lib/moderation/barred-emails";
 
 import { MAX_BLOCK_KEYS } from "./blocks";
 
-export type ManageDb = Pick<PrismaClient, "user" | "block" | "gamePlayer" | "$transaction">;
+export type ManageDb = Pick<
+  PrismaClient,
+  "user" | "block" | "gamePlayer" | "ban" | "barredEmail" | "$transaction"
+>;
 
 // -------------------------------------------------------------- rename ----
 
@@ -216,7 +220,7 @@ export async function deleteAccount(
   if (!isUuid(userId)) return { ok: false, error: "accountNotFound" };
   const user = await db.user.findUnique({
     where: { id: userId },
-    select: { passwordHash: true, displayName: true },
+    select: { passwordHash: true, displayName: true, email: true },
   });
   if (!user) return { ok: false, error: "accountNotFound" };
 
@@ -231,9 +235,13 @@ export async function deleteAccount(
     }
   }
 
+  // A suspended account keeps its suspension: its address stays barred from
+  // signing up until the suspension ends (lib/moderation/barred-emails.ts).
+  const bar = await barringEnd(db, userId);
   const [, deleted] = await db.$transaction([
     db.gamePlayer.updateMany({ where: { userId }, data: { name: null } }),
     db.user.deleteMany({ where: { id: userId } }),
+    ...(bar ? [barEmailStatement(db, user.email, bar.until)] : []),
   ]);
   return deleted.count === 1 ? { ok: true } : { ok: false, error: "accountNotFound" };
 }
