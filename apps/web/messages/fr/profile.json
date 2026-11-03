@@ -73,7 +73,8 @@
     "blockLabel": "Bloquer {name}",
     "blockedTag": "Bloqué",
     "older": "Parties plus anciennes",
-    "newest": "Parties les plus récentes"
+    "newest": "Parties les plus récentes",
+    "unnamedGuest": "Invité"
   },
   "roles": {
     "liberal": "Libéral",

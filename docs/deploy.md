@@ -9,12 +9,27 @@ Two pieces, deployed separately:
 | Database                   | Neon Postgres (free plan, `fra1`), resource `sh-staging` added from the Vercel Marketplace and connected to the Vercel project | (no public URL)                               |
 
 **Production (M6 decision, 2026-11-02):** there is no domain and no separate project. The site is
-mostly for the operator's friends, so this project _is_ production: its Production environment
-gets its own Neon database (created by the operator from the Vercel Marketplace and connected to
-Production only), while `sh-staging` stays connected to Preview. The Worker stays
-`sh-rooms-staging` on `workers.dev`. No Resend: no e-mail is sent and `REQUIRE_EMAIL_VERIFICATION`
-stays off. The production runbook (usage alerts, uptime check, first deploy on the new database)
-is added in M6 phase 2.
+mostly for the operator's friends, so this project _is_ production. Databases (since 2026-11-03):
+**`sh-prod`** (Neon free plan `free_v3`, `fra1`) is connected to **Production** only and
+**`sh-staging`** to **Preview** and **Development**; both inject the same variable names, so each
+environment has exactly one. The first production deploy on `sh-prod` applied every migration.
+The Worker stays `sh-rooms-staging` on `workers.dev`. No Resend: no e-mail is sent and
+`REQUIRE_EMAIL_VERIFICATION` stays off.
+
+To recreate the split (CLI, from the repo root): `vercel integration add neon --name sh-prod
+--plan free_v3 -m region=fra1 -m auth=false -m realtime=false --no-connect` (the plan id must be
+given: `free` is refused, and the server default is not shown), then
+`vercel integration resource disconnect sh-staging --yes`,
+`vercel integration resource connect sh-staging -e preview -e development --yes`,
+`vercel integration resource connect sh-prod -e production --yes`, then deploy. Accounts made on
+`sh-staging` do not exist on `sh-prod`: grant ADMIN again with `admin:grant` against `sh-prod`.
+
+**Daily cleanup.** `apps/web/vercel.json` schedules `GET /api/internal/cron/cleanup` once a day
+(Hobby allows daily crons; the time drifts within the hour). Vercel sends
+`Authorization: Bearer $CRON_SECRET`; the route answers 404 while `CRON_SECRET` is unset and 401
+to anyone else. Set it once (≥ 32 characters, sensitive, Production):
+`openssl rand -hex 32 > CRON_SECRET && chmod 600 CRON_SECRET && vercel env add CRON_SECRET production --sensitive < CRON_SECRET && rm CRON_SECRET`.
+Each run logs `[retention] {counts}` (no personal data). Crons run on production deployments only.
 
 When a host, a region or a hosting company changes, update `HOSTS` in `apps/web/lib/legal.ts`,
 the `privacy.hosting.*` lines in `messages/*/legal.json` and `LEGAL_UPDATED`.

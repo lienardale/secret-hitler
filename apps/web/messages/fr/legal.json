@@ -139,7 +139,7 @@
     },
     "retention": {
       "title": "Combien de temps",
-      "lead": "Quand le site ne fixe pas encore de durée, nous l'écrivons.",
+      "lead": "Un nettoyage automatique supprime chaque jour les données trop anciennes.",
       "caption": "Durée de conservation de chaque donnée",
       "what": "Donnée",
       "howLong": "Durée",
@@ -154,7 +154,7 @@
         },
         "games": {
           "what": "Résultats et déroulement des parties",
-          "howLong": "Pas de durée limite pour l'instant. Si vous supprimez votre compte, votre nom et le lien vers votre compte sont effacés : vous apparaissez comme « Joueur supprimé »."
+          "howLong": "Résultats : sans limite de durée (c'est votre historique de parties). Le déroulé détaillé de chaque partie est supprimé après 12 mois, de même que le nom des invités. Si vous supprimez votre compte, votre nom et le lien avec votre compte sont effacés : vous apparaissez comme « Joueur supprimé »."
         },
         "chat": {
           "what": "Salle : présents, partie et chat",
@@ -162,15 +162,19 @@
         },
         "reports": {
           "what": "Signalements et copie jointe (chat, journal, présents)",
-          "howLong": "Pas de durée limite pour l'instant, y compris après la suppression des comptes concernés (les noms de l'époque restent)"
+          "howLong": "Supprimés 6 mois après leur classement sans suite par un modérateur, 12 mois après une sanction. Les signalements en attente d'un modérateur sont gardés. Les noms de l'époque restent, même après la suppression des comptes."
         },
         "moderation": {
           "what": "Journal des décisions de modération",
-          "howLong": "Pas de durée limite pour l'instant ; après la suppression d'un compte, le nom de l'époque reste"
+          "howLong": "2 ans ; après la suppression d'un compte, son nom de l'époque reste"
         },
         "bans": {
           "what": "Suspensions",
-          "howLong": "Jusqu'à la suppression du compte suspendu"
+          "howLong": "Jusqu'à leur fin, ou jusqu'à la suppression du compte suspendu"
+        },
+        "barred": {
+          "what": "Adresse d'un compte supprimé pendant une suspension (empreinte seulement, jamais l'adresse)",
+          "howLong": "Jusqu'à la fin qu'aurait eue la suspension (définitivement si elle l'était) : en attendant, cette adresse ne peut pas créer de compte"
         },
         "blocks": {
           "what": "Blocages",
@@ -178,15 +182,15 @@
         },
         "visits": {
           "what": "Salles visitées",
-          "howLong": "Une semaine : les plus anciennes sont effacées la prochaine fois que vous entrez dans une salle, et toutes avec le compte"
+          "howLong": "Une semaine, puis supprimées (aussi avec le compte)"
         },
         "limits": {
           "what": "Compteurs contre les abus (empreintes, sans adresse IP ni e-mail)",
-          "howLong": "Pas de durée limite pour l'instant"
+          "howLong": "Un jour après la période de comptage, puis supprimés"
         },
         "links": {
           "what": "Liens de vérification d'e-mail (empreinte)",
-          "howLong": "Valables 24 heures ; effacés quand ils servent, quand un nouveau lien est créé, ou avec le compte"
+          "howLong": "Valables 24 heures ; supprimés une fois utilisés, quand un nouveau lien est créé, une fois expirés, ou avec le compte"
         },
         "mutes": {
           "what": "Joueurs masqués (dans votre navigateur)",
@@ -238,7 +242,7 @@
       "title": "Vos droits",
       "lead": "Vous pouvez demander à accéder à vos données, à les faire corriger ou effacer, à les recevoir dans un format courant (portabilité), à vous opposer à leur traitement ou à en demander la limitation.",
       "profile": "Sur votre <link>profil</link>, vous voyez votre historique et vos blocages, vous changez de nom (une fois tous les 30 jours) et vous pouvez supprimer votre compte vous-même.",
-      "deletion": "La suppression efface votre compte, le lien avec Google, vos blocages (et ceux qui vous visent), vos suspensions et la liste des salles visitées. Dans l'historique des autres joueurs, vous devenez « Joueur supprimé ». Les signalements (avec leur copie du chat) et le journal de modération gardent le nom que vous aviez à l'époque.",
+      "deletion": "La suppression efface votre compte, le lien avec Google, vos blocages (et ceux qui vous visent), vos suspensions et la liste des salles visitées. Dans l'historique des autres joueurs, vous devenez « Joueur supprimé ». Les signalements (avec leur copie du chat) et le journal de modération gardent le nom que vous aviez à l'époque, pendant les durées ci-dessus. Si votre compte est suspendu quand vous le supprimez, nous gardons une empreinte de son adresse jusqu'à la fin de la suspension, pour qu'elle ne puisse pas servir à se réinscrire entre-temps.",
       "ask": "Pour tout le reste, écrivez à <mail>{email}</mail> depuis l'adresse de votre compte, en donnant votre nom de joueur.",
       "cnil": "Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL : <link>cnil.fr/fr/plaintes</link>."
     },

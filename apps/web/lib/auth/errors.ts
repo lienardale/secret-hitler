@@ -58,6 +58,8 @@ export function signInFailure(error: unknown): SignInFailure | null {
 const AUTH_ERROR_KEYS: Readonly<Record<string, string>> = {
   CredentialsSignin: "invalidCredentials",
   OAuthAccountNotLinked: "oauthAccountNotLinked",
+  /** Our own: a Google sign-up with the address of an account deleted while suspended. */
+  EmailBarred: "emailBarred",
   AccessDenied: "accessDenied",
   OAuthCallbackError: "oauthFailed",
   OAuthSignInError: "oauthFailed",

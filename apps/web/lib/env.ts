@@ -53,6 +53,8 @@ const schema = z
     MAIL_SINK_FILE: z.preprocess(blankToUndefined, z.string().optional()),
     /** Public play (quick match, public rooms) needs a verified e-mail address. */
     REQUIRE_EMAIL_VERIFICATION: flag,
+    /** Vercel Cron's bearer secret for the daily retention cleanup (unset: the route answers 404). */
+    CRON_SECRET: z.preprocess(blankToUndefined, z.string().min(32).optional()),
     /** Serves /dev/* test pages. Never set on a deployment. */
     ENABLE_TEST_PAGES: flag,
   })

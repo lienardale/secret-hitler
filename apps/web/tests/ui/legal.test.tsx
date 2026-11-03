@@ -150,7 +150,7 @@ describe.each([
   it("shows when it was last updated", async () => {
     const { container } = await renderNotice(locale);
     expect(container.querySelector(`time[datetime="${LEGAL_UPDATED}"]`)).toHaveTextContent(
-      locale === "fr" ? "2 novembre 2026" : "November 2, 2026",
+      locale === "fr" ? "3 novembre 2026" : "November 3, 2026",
     );
   });
 
@@ -227,17 +227,32 @@ describe.each([
     }
   });
 
-  it("has a retention table with headers, honest about missing limits", async () => {
+  it("has a retention table with headers and the cleanup's periods", async () => {
     await renderPrivacy(locale);
     const table = screen.getByRole("table", { name: p.retention.caption });
     expect(within(table).getAllByRole("columnheader")).toHaveLength(2);
     const rows = within(table).getAllByRole("rowheader");
     expect(rows).toHaveLength(Object.keys(p.retention.rows).length);
-    const noLimit = locale === "fr" ? /Pas de durée limite/ : /No time limit/;
-    for (const key of ["games", "reports", "moderation", "limits"] as const) {
-      expect(p.retention.rows[key].howLong).toMatch(noLimit);
+    // The periods of lib/retention/cleanup.ts (RETENTION_MS), as the page states them.
+    const periods =
+      locale === "fr"
+        ? {
+            games: /12\s*mois/,
+            reports: /6\s*mois.*12\s*mois/,
+            moderation: /2\s*ans/,
+            limits: /Un jour/,
+          }
+        : {
+            games: /12 months/,
+            reports: /6 months.*12 months/,
+            moderation: /2 years/,
+            limits: /One day/,
+          };
+    for (const [key, period] of Object.entries(periods) as [keyof typeof periods, RegExp][]) {
+      expect(p.retention.rows[key].howLong).toMatch(period);
       expect(within(table).getByText(plain(p.retention.rows[key].howLong))).toBeVisible();
     }
+    expect(p.retention.rows.barred.howLong).not.toBe("");
   });
 
   it("names the hosting regions and the age rule", async () => {
