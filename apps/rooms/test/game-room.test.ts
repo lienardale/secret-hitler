@@ -56,6 +56,37 @@ function outboxSize(stub: DurableObjectStub<GameRoom>): Promise<number> {
   });
 }
 
+/** The outbox rows and the time the room's alarm is set for. */
+function outbox(stub: DurableObjectStub<GameRoom>) {
+  return runInDurableObject(stub, async (_instance, state) => ({
+    rows: state.storage.sql
+      .exec<{ attempts: number; next_at: number }>("SELECT attempts, next_at FROM outbox")
+      .toArray(),
+    alarm: await state.storage.getAlarm(),
+  }));
+}
+
+/**
+ * Runs the room's alarm until `check` passes.
+ *
+ * The room also fires its alarm by itself, 50 ms to 1 s after a change. While that run is in
+ * progress the runtime reports no alarm, so `runDurableObjectAlarm` does nothing and returns
+ * false; checking right after it would see the state from before the room's own run.
+ * Retrying waits for whichever run happens, the test's or the room's.
+ */
+async function alarmUntil(
+  stub: DurableObjectStub<GameRoom>,
+  check: () => Promise<void> | void,
+): Promise<void> {
+  await vi.waitFor(
+    async () => {
+      await runDurableObjectAlarm(stub);
+      await check();
+    },
+    { timeout: 5000, interval: 20 },
+  );
+}
+
 describe("a private game over WebSockets", () => {
   it("runs from lobby chat to the end of the game", async () => {
     const code = await createRoom();
@@ -177,7 +208,7 @@ describe("alarm", () => {
     const deadline = client.room?.game?.deadline;
     expect(deadline).toBeTypeOf("number");
     vi.spyOn(Date, "now").mockReturnValue((deadline as number) + 1);
-    expect(await runDurableObjectAlarm(stub)).toBe(true);
+    await alarmUntil(stub, () => expect(client.view?.phase.kind).toBe("vote"));
     for (const c of clients) await c.until((x) => x.view?.phase.kind === "vote", "auto nomination");
   });
 
@@ -202,18 +233,22 @@ describe("alarm", () => {
     await host.until((c) => c.room?.result?.kind === "abandoned", "abandoned");
     expect(await outboxSize(stub)).toBe(1);
 
-    await runDurableObjectAlarm(stub);
     const games = () => requests.filter((r) => r.url.endsWith("/api/internal/games"));
-    expect(games().length).toBeGreaterThanOrEqual(1);
-    expect(await outboxSize(stub)).toBe(1);
+    // Refused: the result stays queued, and the alarm is set for the retry.
+    await alarmUntil(stub, async () => {
+      expect(games().length).toBeGreaterThanOrEqual(1);
+      const { rows, alarm } = await outbox(stub);
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.attempts).toBe(1);
+      expect(alarm ?? Infinity).toBeLessThanOrEqual(rows[0]?.next_at ?? -Infinity);
+    });
 
     fetchSpy.mockImplementation((input, init) => {
       capture(input, init);
       return Promise.resolve(new Response(null, { status: 204 }));
     });
     vi.spyOn(Date, "now").mockReturnValue(Date.now() + 31_000);
-    expect(await runDurableObjectAlarm(stub)).toBe(true);
-    expect(await outboxSize(stub)).toBe(0);
+    await alarmUntil(stub, async () => expect(await outboxSize(stub)).toBe(0));
 
     const delivered = games().at(-1);
     expect(delivered?.url).toBe("https://web.test/api/internal/games");
@@ -234,11 +269,10 @@ describe("alarm", () => {
     const { code, host, clients, stub } = await startedGame();
     host.send({ t: "endGame" });
     await host.until((c) => c.room?.status === "ended", "ended");
-    await runDurableObjectAlarm(stub);
-    expect(await outboxSize(stub)).toBe(0);
+    await alarmUntil(stub, async () => expect(await outboxSize(stub)).toBe(0));
 
     vi.spyOn(Date, "now").mockReturnValue(Date.now() + ROOM_TIMING.purgeAfterEndMs + 1000);
-    await runDurableObjectAlarm(stub);
+    await alarmUntil(stub, async () => expect(await stub.info()).toBeNull());
     for (const client of clients) expect(await client.closeCode()).toBe(CLOSE.roomClosed);
     expect(await stub.info()).toBeNull();
     const late = await Client.connect(code, guestId(1));
@@ -249,8 +283,9 @@ describe("alarm", () => {
     const code = await createRoom({ visibility: "public", lang: "en", host: userId(1) });
     const host = await Client.connect(code, userId(1));
     await host.welcomed();
-    await runDurableObjectAlarm(roomStub(code));
-    const rooms = await env.LOBBY.getByName("global").list();
-    expect(rooms.find((r) => r.code === code)).toMatchObject({ players: 1, status: "lobby" });
+    await alarmUntil(roomStub(code), async () => {
+      const rooms = await env.LOBBY.getByName("global").list();
+      expect(rooms.find((r) => r.code === code)).toMatchObject({ players: 1, status: "lobby" });
+    });
   });
 });

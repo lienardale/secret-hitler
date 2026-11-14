@@ -29,3 +29,4 @@ See `test/game-room.test.ts` › "delivers the result to the website".
 
 `vi.spyOn(Date, "now")` reaches the Durable Objects, because they run in the test isolate. Tests
 use it with `runDurableObjectAlarm` to jump past deadlines instead of making the clock injectable.
+A forced alarm does nothing while the room's own alarm is running: see 012.

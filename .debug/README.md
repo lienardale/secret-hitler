@@ -17,3 +17,4 @@ Add a line to the index below when you add a note.
 - [009](009-obscenity-in-workerd-and-word-boundaries-2026-11-02.md) — obscenity in workerd tests (deps optimizer), ASCII word boundaries, doubled letters
 - [010](010-e2e-alternate-port-origin-2026-11-02.md) — e2e on another website port: room sockets refused by the Worker's Origin check
 - [011](011-unknown-locale-paths-default-404-2026-11-02.md) — Unknown paths got Next's bare 404 (no `lang`); fixed with a `[locale]` catch-all
+- [012](012-forced-alarm-skipped-during-own-run-2026-11-03.md) — `runDurableObjectAlarm` does nothing while the room's own alarm runs: retry the check
